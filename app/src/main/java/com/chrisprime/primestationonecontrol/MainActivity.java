@@ -2,7 +2,6 @@ package com.chrisprime.primestationonecontrol;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -28,7 +27,6 @@ import java.io.InputStreamReader;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.android.view.OnClickEvent;
 import rx.android.view.ViewObservable;
 import rx.functions.Action1;
@@ -72,6 +70,7 @@ public class MainActivity extends AppCompatActivity
         //TODO: Delete once mastered:
         rxJavaHelloWorldVerbose();
         rxJavaHelloWorldShorthand();
+        rxJavaHelloWorldHash();
     }
 
     private void rxJavaHelloWorldVerbose() {
@@ -116,6 +115,15 @@ public class MainActivity extends AppCompatActivity
                 .map(s -> s + " -Love, Chris")
                 .subscribe(s -> {
                     Log.d(LOG_TAG, s);
+                });
+    }
+
+    private void rxJavaHelloWorldHash() {
+        //RxJava experiments:
+        Observable.just("Hello, world hash!")
+                .map(String::hashCode)
+                .subscribe(i -> {
+                    Log.d(LOG_TAG, "Hello, world hash = " + i);
                 });
     }
 
