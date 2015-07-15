@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity
         rxJavaHelloWorldVerbose();
         rxJavaHelloWorldShorthand();
         rxJavaHelloWorldHash();
+        rxJavaHelloWorldDoubleTransformedHash();
     }
 
     private void rxJavaHelloWorldVerbose() {
@@ -124,6 +125,16 @@ public class MainActivity extends AppCompatActivity
                 .map(String::hashCode)
                 .subscribe(i -> {
                     Log.d(LOG_TAG, "Hello, world hash = " + i);
+                });
+    }
+
+    private void rxJavaHelloWorldDoubleTransformedHash() {
+        //RxJava experiments:
+        Observable.just("Hello, world hash!")
+                .map(String::hashCode)
+                .map(i -> Integer.toString(i))
+                .subscribe(s -> {
+                    Log.d(LOG_TAG, "Hello, world double-transformed hash = " + s);
                 });
     }
 
