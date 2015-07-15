@@ -49,21 +49,10 @@ public class MainActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 drawerLayout);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.actionbar_up, R.string.actionbar_menu) {
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu();
-                syncState();
-            }
+        setupHamburgerMenuUpButtonToggleAnimation(drawerLayout);
 
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-                syncState();
-            }
-        };
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
+
+
 
 
         //RxJava experiments:
@@ -98,7 +87,26 @@ public class MainActivity extends AppCompatActivity
         };
 
         myObservable.subscribe(mySubscriber);
+        mySubscriber.unsubscribe();
 
+    }
+
+    private void setupHamburgerMenuUpButtonToggleAnimation(final DrawerLayout drawerLayout) {
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.actionbar_up, R.string.actionbar_menu) {
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+                syncState();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+                syncState();
+            }
+        };
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
     }
 
     @Override
