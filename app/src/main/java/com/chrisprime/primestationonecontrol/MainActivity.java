@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -74,7 +75,12 @@ public class MainActivity extends AppCompatActivity
                         sub.onCompleted();
                     }
                 }
-        );
+        ).map(new Func1<String, String>() {
+            @Override
+            public String call(String s) {
+                return s + " -Love, Chris";
+            }
+        });
 
         Subscriber<String> mySubscriber = new Subscriber<String>() {
             @Override
