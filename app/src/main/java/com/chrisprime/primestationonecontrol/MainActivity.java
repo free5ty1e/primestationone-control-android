@@ -69,13 +69,18 @@ public class MainActivity extends AppCompatActivity
                 drawerLayout);
         setupHamburgerMenuUpButtonToggleAnimation(drawerLayout);
 
+        //TODO: Delete once mastered:
+        rxJavaHelloWorldVerbose();
+        rxJavaHelloWorldShorthand();
+    }
 
+    private void rxJavaHelloWorldVerbose() {
         //RxJava experiments:
         Observable<String> myObservable = Observable.create(
                 new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> sub) {
-                        sub.onNext("Hello, world!");
+                        sub.onNext("Hello, world verbose!");
                         sub.onCompleted();
                     }
                 }
@@ -89,7 +94,7 @@ public class MainActivity extends AppCompatActivity
         Subscriber<String> mySubscriber = new Subscriber<String>() {
             @Override
             public void onNext(String s) {
-                Log.d(getClass().getSimpleName(), s);
+                Log.d(LOG_TAG, s);
             }
 
             @Override
@@ -104,6 +109,16 @@ public class MainActivity extends AppCompatActivity
         myObservable.subscribe(mySubscriber);
         mySubscriber.unsubscribe();
     }
+
+    private void rxJavaHelloWorldShorthand() {
+        //RxJava experiments:
+        Observable.just("Hello, world shorthand!")
+                .map(s -> s + " -Love, Chris")
+                .subscribe(s -> {
+                    Log.d(LOG_TAG, s);
+                });
+    }
+
 
     private void setupHamburgerMenuUpButtonToggleAnimation(final DrawerLayout drawerLayout) {
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.actionbar_up, R.string.actionbar_menu) {
