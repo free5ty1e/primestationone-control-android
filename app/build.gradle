@@ -1,8 +1,14 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
         applicationId "com.chrisprime.primestationonecontrol"
@@ -27,3 +33,23 @@ dependencies {
     compile 'com.jcraft:jsch:0.1.53'
     compile 'de.hdodenhof:circleimageview:1.2.1'
 }
+
+String java8 = getJavaVersion(8)
+String java7 = getJavaVersion(7)
+String getJavaVersion(Integer v) {
+    def sout = new StringBuffer()
+    def proc = "/usr/libexec/java_home -v 1.$v".execute()
+    proc.consumeProcessOutput(sout, new StringBuffer())
+    proc.waitForOrKill(1000)
+    return sout.toString().replace("\n", "").replace("\r", "")
+}
+
+retrolambda {
+    jdk java8
+    oldJdk java7
+    javaVersion JavaVersion.VERSION_1_7
+//    jvmArgs '-arg1', '-arg2'
+    defaultMethods false
+    incremental true
+}
+

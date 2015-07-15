@@ -2,6 +2,7 @@ package com.chrisprime.primestationonecontrol;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -16,16 +17,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.android.view.OnClickEvent;
 import rx.android.view.ViewObservable;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -55,9 +68,6 @@ public class MainActivity extends AppCompatActivity
                 R.id.navigation_drawer,
                 drawerLayout);
         setupHamburgerMenuUpButtonToggleAnimation(drawerLayout);
-
-
-
 
 
         //RxJava experiments:
@@ -207,8 +217,44 @@ public class MainActivity extends AppCompatActivity
             Subscription findPiButtonSubscription = buttonObservable.subscribe(new Action1<OnClickEvent>() {
                 @Override
                 public void call(OnClickEvent onClickEvent) {
-                    Log.d(getClass().getSimpleName(), "findPi button clicked!");
+                    Log.d(LOG_TAG, "findPi button clicked!");
+
+                    Observable<String> findPiObservable = Observable.create(
+                            new Observable.OnSubscribe<String>() {
+                                @Override
+                                public void call(Subscriber<? super String> sub) {
+                                    sub.onNext(findPi());
+                                    sub.onCompleted();
+                                }
+                            }
+                    ).map(new Func1<String, String>() {
+                        @Override
+                        public String call(String s) {
+                            return s + " -Love, Chris";
+                        }
+                    });
+//                    findPiObservable.subscribeOn(AndroidSchedulers.handlerThread(new Handler()));
+                    findPiObservable.subscribeOn(Schedulers.io());
+
+                    Subscriber<String> findPiSubscriber = new Subscriber<String>() {
+                        @Override
+                        public void onNext(String s) {
+                            Log.d(getClass().getSimpleName(), s);
+                        }
+
+                        @Override
+                        public void onCompleted() {
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                        }
+                    };
+
+                    findPiObservable.subscribe(findPiSubscriber);
+                    findPiSubscriber.unsubscribe();
                 }
+
             });
 
             return rootView;
@@ -220,6 +266,44 @@ public class MainActivity extends AppCompatActivity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
+    }
+
+    private static String findPi() {
+        String user = "pi";
+        String password = "raspberry";
+        String host = "192.168.1.53";
+        int port = 22;
+        String foundPi = "";
+
+        String remoteFile = "/home/pi/primestationone/reference/version.txt";
+
+        try {
+            JSch jsch = new JSch();
+            Session session = jsch.getSession(user, host, port);
+            session.setPassword(password);
+            session.setConfig("StrictHostKeyChecking", "no");
+            Log.d(LOG_TAG, "Establishing Connection...");
+            session.connect();
+            Log.d(LOG_TAG, "Connection established.");
+            Log.d(LOG_TAG, "Crating SFTP Channel.");
+            ChannelSftp sftpChannel = (ChannelSftp) session.openChannel("sftp");
+            sftpChannel.connect();
+            Log.d(LOG_TAG, "SFTP Channel created.");
+
+
+            InputStream out = null;
+            out = sftpChannel.get(remoteFile);
+            BufferedReader br = new BufferedReader(new InputStreamReader(out));
+            String line;
+            while ((line = br.readLine()) != null) {
+                foundPi += line + "\n";
+                Log.d(LOG_TAG, line);
+            }
+            br.close();
+        } catch (Exception e) {
+            Log.d(LOG_TAG, e.getMessage(), e);
+        }
+        return foundPi;
     }
 
 }
