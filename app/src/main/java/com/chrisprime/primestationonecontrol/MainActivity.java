@@ -14,9 +14,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
+import rx.android.view.OnClickEvent;
+import rx.android.view.ViewObservable;
+import rx.functions.Action1;
 import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity
@@ -88,7 +93,6 @@ public class MainActivity extends AppCompatActivity
 
         myObservable.subscribe(mySubscriber);
         mySubscriber.unsubscribe();
-
     }
 
     private void setupHamburgerMenuUpButtonToggleAnimation(final DrawerLayout drawerLayout) {
@@ -197,6 +201,16 @@ public class MainActivity extends AppCompatActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            Button findPiButton = (Button) rootView.findViewById(R.id.button_find_pi);
+            Observable<OnClickEvent> buttonObservable = ViewObservable.clicks(findPiButton, false);
+            Subscription findPiButtonSubscription = buttonObservable.subscribe(new Action1<OnClickEvent>() {
+                @Override
+                public void call(OnClickEvent onClickEvent) {
+                    Log.d(getClass().getSimpleName(), "findPi button clicked!");
+                }
+            });
+
             return rootView;
         }
 
