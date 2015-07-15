@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +19,9 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import rx.Observable;
+import rx.Subscriber;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -67,6 +71,32 @@ public class MainActivity extends AppCompatActivity
         };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
+
+
+        //RxJava experiments:
+        Observable<String> myObservable = Observable.create(
+                new Observable.OnSubscribe<String>() {
+                    @Override
+                    public void call(Subscriber<? super String> sub) {
+                        sub.onNext("Hello, world!");
+                        sub.onCompleted();
+                    }
+                }
+        );
+
+        Subscriber<String> mySubscriber = new Subscriber<String>() {
+            @Override
+            public void onNext(String s) { Log.d(getClass().getSimpleName(), s); }
+
+            @Override
+            public void onCompleted() { }
+
+            @Override
+            public void onError(Throwable e) { }
+        };
+
+        myObservable.subscribe(mySubscriber);
+
     }
 
     @Override
