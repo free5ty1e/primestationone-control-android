@@ -1,24 +1,19 @@
 package com.chrisprime.primestationonecontrol;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
-import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -53,17 +48,14 @@ public class MainActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 drawerLayout);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.actionbar_up, R.string.actionbar_menu)
-        {
-            public void onDrawerClosed(View view)
-            {
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.actionbar_up, R.string.actionbar_menu) {
+            public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 invalidateOptionsMenu();
                 syncState();
             }
 
-            public void onDrawerOpened(View drawerView)
-            {
+            public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu();
                 syncState();
@@ -86,13 +78,17 @@ public class MainActivity extends AppCompatActivity
 
         Subscriber<String> mySubscriber = new Subscriber<String>() {
             @Override
-            public void onNext(String s) { Log.d(getClass().getSimpleName(), s); }
+            public void onNext(String s) {
+                Log.d(getClass().getSimpleName(), s);
+            }
 
             @Override
-            public void onCompleted() { }
+            public void onCompleted() {
+            }
 
             @Override
-            public void onError(Throwable e) { }
+            public void onError(Throwable e) {
+            }
         };
 
         myObservable.subscribe(mySubscriber);
