@@ -1,6 +1,7 @@
 package com.chrisprime.primestationonecontrol;
 
 import android.app.Activity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -44,9 +45,28 @@ public class MainActivity extends AppCompatActivity
         mTitle = getTitle();
 
         // Set up the drawer.
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+                drawerLayout);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.actionbar_up, R.string.actionbar_menu)
+        {
+            public void onDrawerClosed(View view)
+            {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+                syncState();
+            }
+
+            public void onDrawerOpened(View drawerView)
+            {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+                syncState();
+            }
+        };
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
     }
 
     @Override
