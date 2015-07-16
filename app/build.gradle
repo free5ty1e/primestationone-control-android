@@ -1,5 +1,12 @@
+import java.text.SimpleDateFormat
+
+def buildVersionNameMajorMinorPatchString() {
+    return "0.1.1";
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 22
@@ -12,10 +19,11 @@ android {
 
     defaultConfig {
         applicationId "com.chrisprime.primestationonecontrol"
-        minSdkVersion 14
+        minSdkVersion 18
         targetSdkVersion 22
-        versionCode 1
-        versionName "0.1"
+        versionName genVersionName()
+        versionCode gitVersion()
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -23,6 +31,42 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+def gitVersion() {
+    def process = "git rev-list HEAD --first-parent --count".execute()
+    def gitVersionInteger = process.text.toInteger()
+    println "gitVersionInteger (buildVersionCode) = " + gitVersionInteger
+    return gitVersionInteger
+}
+
+def buildTime() {
+    def df = new SimpleDateFormat("yyyyMMddhhmmSS")
+    return df.format(new Date())
+}
+
+def genVersionName() {
+    def versionName = buildVersionNameMajorMinorPatchString() + "." + buildTime()
+    println "buildVersionName = " + versionName
+    return versionName;
 }
 
 dependencies {
@@ -31,24 +75,53 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'io.reactivex:rxandroid:0.25.0'
     compile 'com.jcraft:jsch:0.1.53'
-    compile 'de.hdodenhof:circleimageview:1.2.1'
+
+    compile 'com.jakewharton:butterknife:7.0.1'
+
+    compile 'com.jakewharton.timber:timber:3.1.0'
+
+    // Needed for dagger 2
+    compile 'com.google.dagger:dagger:2.0.1'
+    apt "com.google.dagger:dagger-compiler:2.0.1"
+
+    // Needed specifically for annotations in Java 1.6
+    compile 'org.glassfish:javax.annotation:10.0-b28'
+
+
+    testCompile 'junit:junit:4.12'
+
+    androidTestCompile 'com.android.support.test:runner:0.3'
+    // Set this dependency to use JUnit 4 rules
+    androidTestCompile 'com.android.support.test:rules:0.3'
+    // Set this dependency to build and run Espresso tests
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2'
+    // Set this dependency to build and run UI Automator tests
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+
 }
 
 String java8 = getJavaVersion(8)
 String java7 = getJavaVersion(7)
+
 String getJavaVersion(Integer v) {
-    def sout = new StringBuffer()
-    def proc = "/usr/libexec/java_home -v 1.$v".execute()
-    proc.consumeProcessOutput(sout, new StringBuffer())
-    proc.waitForOrKill(1000)
-    return sout.toString().replace("\n", "").replace("\r", "")
+    def retrievedJavaVersionHome;
+    retrievedJavaVersionHome = System.getenv("JAVA$v" + "_HOME")
+    if (retrievedJavaVersionHome == null || retrievedJavaVersionHome.size() < 1) {
+        def sout = new StringBuffer()
+        def proc = "/usr/libexec/java_home -v 1.$v".execute()
+        proc.consumeProcessOutput(sout, new StringBuffer())
+        proc.waitForOrKill(1000)
+        retrievedJavaVersionHome = sout.toString().replace("\n", "").replace("\r", "")
+    }
+    println "getJavaVersion($v" + ") has retrieved $retrievedJavaVersionHome"
+    return retrievedJavaVersionHome
 }
 
 retrolambda {
     jdk java8
     oldJdk java7
     javaVersion JavaVersion.VERSION_1_7
-//    jvmArgs '-arg1', '-arg2'
     defaultMethods false
     incremental true
 }
