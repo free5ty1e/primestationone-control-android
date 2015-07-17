@@ -27,7 +27,7 @@ android {
     }
     defaultConfig {
         applicationId "com.chrisprime.primestationonecontrol"
-        minSdkVersion 18
+        minSdkVersion 9
         targetSdkVersion 22
         versionName genVersionName()
         versionCode gitVersion()
@@ -40,6 +40,9 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError true
+    }
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -101,12 +104,6 @@ dependencies {
     androidTestCompile 'com.android.support.test:runner:0.3'
     // Set this dependency to use JUnit 4 rules
     androidTestCompile 'com.android.support.test:rules:0.3'
-    // Set this dependency to build and run Espresso tests
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2'
-    // Set this dependency to build and run UI Automator tests
-    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
-
 }
 
 String java8 = getJavaVersion(8)
