@@ -1,5 +1,6 @@
 package com.chrisprime.primestationonecontrol.fragments;
 
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -93,15 +94,12 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+        mDrawerListView.setOnItemClickListener((parent, view, position, id) -> selectItem(position));
+        int simpleListItemActivated1 = Build.VERSION.SDK_INT >= 11 ? android.R.layout.simple_list_item_activated_1 :
+                android.R.layout.simple_list_item_1;
+        mDrawerListView.setAdapter(new ArrayAdapter<>(
                 getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
+                simpleListItemActivated1,
                 android.R.id.text1,
                 new String[]{
                         getString(R.string.title_section1),
@@ -180,13 +178,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Defer code dependent on restoration of previous instance state.
-        mDrawerLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mDrawerToggle.syncState();
-            }
-        });
-
+        mDrawerLayout.post(mDrawerToggle::syncState);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
@@ -264,7 +256,6 @@ public class NavigationDrawerFragment extends Fragment {
     private void showGlobalContextActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setTitle(R.string.app_name);
     }
 
@@ -275,7 +266,7 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         /**
          * Called when an item in the navigation drawer is selected.
          */

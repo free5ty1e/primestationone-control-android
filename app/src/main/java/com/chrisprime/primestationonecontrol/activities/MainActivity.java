@@ -1,5 +1,7 @@
 package com.chrisprime.primestationonecontrol.activities;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -129,13 +131,17 @@ public class MainActivity extends AppCompatActivity
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.actionbar_up, R.string.actionbar_menu) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                invalidateOptionsMenu();
+                if (Build.VERSION.SDK_INT >= 11) {
+                    invalidateOptionsMenu();
+                }
                 syncState();
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
+                if (Build.VERSION.SDK_INT >= 11) {
+                    invalidateOptionsMenu();
+                }
                 syncState();
             }
         };
