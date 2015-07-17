@@ -15,8 +15,8 @@ public class PrimeStationOneControlApplication extends Application {
             Timber.plant(new CrashReportingTree());
         }
 
-        Timber.d("Launching build version " + BuildConfig.VERSION_NAME + ", which is version code " + BuildConfig.VERSION_CODE);
-
+        String buildType = BuildConfig.DEBUG ? "debug" : "production";
+        Timber.d("Launching " + buildType + " build version " + BuildConfig.VERSION_NAME + ", which is version code " + BuildConfig.VERSION_CODE);
     }
 
     /**

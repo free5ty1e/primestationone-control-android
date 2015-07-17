@@ -9,6 +9,15 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
+    repositories {
+        jcenter()
+        mavenCentral()
+        //Backup http source for dependencies just in case certificates get updated and builds start failing again
+        jcenter {
+            url "http://jcenter.bintray.com/"
+        }
+    }
+
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
 
@@ -16,7 +25,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     defaultConfig {
         applicationId "com.chrisprime.primestationonecontrol"
         minSdkVersion 18
@@ -124,5 +132,34 @@ retrolambda {
     javaVersion JavaVersion.VERSION_1_7
     defaultMethods false
     incremental true
+}
+
+// Get the path to ADB.  Required when running tests directly from Android Studio.
+// Source: http://stackoverflow.com/a/26771087/112705
+def adb = android.getAdbExe().toString()
+
+// Source: http://stackoverflow.com/q/29908110/112705
+afterEvaluate {
+    task grantAnimationPermissionDev(type: Exec, dependsOn: 'installDebug') {
+        def grantAnimationPermissionCommand = "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE"
+        println grantAnimationPermissionCommand
+        commandLine grantAnimationPermissionCommand.split(' ')
+    }
+
+    task grantAnimationPermissionProduction(type: Exec, dependsOn: 'installRelease') {
+        def grantAnimationPermissionCommand = "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE"
+        println grantAnimationPermissionCommand
+        commandLine grantAnimationPermissionCommand.split(' ')
+    }
+
+    // When launching individual tests from Android Studio, it seems that only the assemble tasks
+    // get called directly, not the install* versions
+    tasks.each { task ->
+        if (task.name.startsWith('assembleDebugAndroidTest')) {
+            task.dependsOn grantAnimationPermissionDev
+        } else if (task.name.startsWith('assembleReleaseAndroidTest')) {
+            task.dependsOn grantAnimationPermissionProduction
+        }
+    }
 }
 
