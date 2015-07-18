@@ -1,6 +1,5 @@
 language: android
 jdk:
-    - oraclejdk7
     - oraclejdk8
 
 android:
@@ -28,15 +27,20 @@ android:
         - sys-img-armeabi-v7a-android-19
         #- sys-img-x86-android-17
 
+env:
+    global:
+        - JAVA7_HOME=/usr/lib/jvm/java-7-oracle
+        - JAVA8_HOME=/usr/lib/jvm/java-8-oracle
+
 # Emulator Management: Create, Start and Wait
 before_script:
+    - echo "JAVA_HOME = $JAVA_HOME"
+    - echo "JAVA8_HOME = $JAVA8_HOME"
+    - echo "JAVA7_HOME = $JAVA7_HOME"
     - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
     - emulator -avd test -no-skin -no-audio -no-window &
     - android-wait-for-emulator
     - adb shell input keyevent 82 &
 
 script:
-    - echo "JAVA_HOME = $JAVA_HOME"
-    - echo "JAVA8_HOME = $JAVA8_HOME"
-    - echo "JAVA7_HOME = $JAVA7_HOME"
     - ./gradlew clean build connectedAndroidTest
