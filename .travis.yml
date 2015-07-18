@@ -24,7 +24,9 @@ android:
 
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
+        - sys-img-armeabi-v7a-android-10
         - sys-img-armeabi-v7a-android-19
+        - sys-img-armeabi-v7a-android-22
         #- sys-img-x86-android-17
 
 env:
@@ -37,8 +39,15 @@ before_script:
     - echo "JAVA_HOME = $JAVA_HOME"
     - echo "JAVA8_HOME = $JAVA8_HOME"
     - echo "JAVA7_HOME = $JAVA7_HOME"
-    - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
-    - emulator -avd test -no-skin -no-audio -no-window &
+    - echo Creating and starting Android Emulator API10...
+    - echo no | android create avd --force -n test10 -t android-10 --abi armeabi-v7a
+    - emulator -avd test10 -no-skin -no-audio -no-window &
+    - echo Creating and starting Android Emulator API19...
+    - echo no | android create avd --force -n test19 -t android-19 --abi armeabi-v7a
+    - emulator -avd test19 -no-skin -no-audio -no-window &
+    - echo Creating and starting Android Emulator API22...
+    - echo no | android create avd --force -n test22 -t android-22 --abi armeabi-v7a
+    - emulator -avd test22 -no-skin -no-audio -no-window &
     - android-wait-for-emulator
     - adb shell input keyevent 82 &
 

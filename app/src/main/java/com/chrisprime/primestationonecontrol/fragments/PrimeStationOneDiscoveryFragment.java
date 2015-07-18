@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.R;
-import com.chrisprime.primestationonecontrol.utilities.SshUtilities;
+import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -45,7 +45,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                 new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> sub) {
-                        sub.onNext(SshUtilities.findPi());
+                        sub.onNext(NetworkUtilities.sshCheckForPi("192.168.1.53"));
                         sub.onCompleted();
                     }
                 }
