@@ -1,6 +1,5 @@
 package com.chrisprime.primestationonecontrol.activities;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -128,11 +127,16 @@ public class MainActivity extends AppCompatActivity
 
 
     private void setupHamburgerMenuUpButtonToggleAnimation(final DrawerLayout drawerLayout) {
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.actionbar_up, R.string.actionbar_menu) {
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
+                R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
+        ) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 if (Build.VERSION.SDK_INT >= 11) {
                     invalidateOptionsMenu();
+                } else {
+                    supportInvalidateOptionsMenu();
                 }
                 syncState();
             }
@@ -141,6 +145,8 @@ public class MainActivity extends AppCompatActivity
                 super.onDrawerOpened(drawerView);
                 if (Build.VERSION.SDK_INT >= 11) {
                     invalidateOptionsMenu();
+                } else {
+                    supportInvalidateOptionsMenu();
                 }
                 syncState();
             }

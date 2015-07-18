@@ -2,11 +2,9 @@ package com.chrisprime.primestationonecontrol.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.R;
@@ -18,7 +16,6 @@ import butterknife.OnClick;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -59,6 +56,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
         Subscriber<String> findPiSubscriber = new Subscriber<String>() {
             String foundPiVersion = null;
+
             @Override
             public void onNext(String s) {
                 foundPiVersion = s;
