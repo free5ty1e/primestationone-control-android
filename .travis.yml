@@ -64,3 +64,7 @@ before_script:
 
 script:
     - ./gradlew clean build connectedAndroidTest
+
+after_script:
+    - echo "Dumping lint reports out to console so it can be reviewed, save the following to an HTML file and open in a web browser for a nice report..."
+    - cat /home/travis/build/free5ty1e/primestationone-control-android/app/build/outputs/lint-results.html
