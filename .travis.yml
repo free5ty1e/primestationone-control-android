@@ -1,6 +1,5 @@
 language: android
 jdk:
-    - oraclejdk7
     - oraclejdk8
 
 android:
@@ -34,9 +33,11 @@ before_script:
     - emulator -avd test -no-skin -no-audio -no-window &
     - android-wait-for-emulator
     - adb shell input keyevent 82 &
-
-script:
+    - JAVA7_HOME="/usr/lib/jvm/java-7-oracle"
+    - JAVA8_HOME="/usr/lib/jvm/java-8-oracle"
     - echo "JAVA_HOME = $JAVA_HOME"
     - echo "JAVA8_HOME = $JAVA8_HOME"
     - echo "JAVA7_HOME = $JAVA7_HOME"
+
+script:
     - ./gradlew clean build connectedAndroidTest
