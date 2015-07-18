@@ -1,4 +1,8 @@
 language: android
+jdk:
+    - oraclejdk7
+    - oraclejdk8
+
 android:
     components:
         # Uncomment the lines below if you want to
@@ -32,4 +36,7 @@ before_script:
     - adb shell input keyevent 82 &
 
 script:
+    - echo "JAVA_HOME = $JAVA_HOME"
+    - echo "JAVA8_HOME = $JAVA8_HOME"
+    - echo "JAVA7_HOME = $JAVA7_HOME"
     - ./gradlew clean build connectedAndroidTest
