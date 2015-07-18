@@ -40,7 +40,7 @@ before_script:
     - echo "JAVA8_HOME = $JAVA8_HOME"
     - echo "JAVA7_HOME = $JAVA7_HOME"
     - echo Creating and starting Android Emulator API10...
-    - echo no | android create avd --force -n test10 -t android-10 --abi armeabi-v7a
+    - echo no | android create avd --force -n test10 -t android-10 --abi armeabi
     - emulator -avd test10 -no-skin -no-audio -no-window &
     - echo Creating and starting Android Emulator API19...
     - echo no | android create avd --force -n test19 -t android-19 --abi armeabi-v7a
