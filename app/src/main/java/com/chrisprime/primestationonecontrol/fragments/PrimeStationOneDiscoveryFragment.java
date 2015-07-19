@@ -94,8 +94,10 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                         numPrimestationsFound > 1 ? "Found " + numPrimestationsFound + " Primestations! xD" : "Found Primestation! :D"
                         : "None found :(");
 
+/*
                 mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
                 mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
+*/
                 unsubscribe();
             }
 
@@ -127,12 +129,20 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
         for (int ipLastOctetToTry = NetworkUtilities.LAST_IP_OCTET_MIN;
              ipLastOctetToTry <= NetworkUtilities.LAST_IP_OCTET_MAX; ipLastOctetToTry++) {
             String ipAddressToTry = gatewayPrefix + ipLastOctetToTry;
+
+            //Update status text to show current IP being scanned
+            getActivity().runOnUiThread(() -> {
+                mTvFoundPi.setText(ipAddressToTry + "...");
+            });
+
             String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
             if (primeStationVersion.length() > 0) {
                 String hostname = getHostname(ipAddressToTry, sub);
                 PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion);
                 Timber.d("Found PrimeStationOne: " + primeStationOne);
                 mPrimeStationOneList.add(primeStationOne);
+
+                //TODO: Update adapter during search so can see primestations as they are found!
             }
         }
         sub.onCompleted();
@@ -160,6 +170,8 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
+        mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
         return rootView;
     }
 }
