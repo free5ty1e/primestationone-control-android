@@ -19,7 +19,6 @@ import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,21 +34,7 @@ import timber.log.Timber;
 
 public class PrimeStationOneDiscoveryFragment extends Fragment {
 
-    public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
-    public static final String IP_SEPARATOR_CHAR = ".";
-
-
-    //TODO: Uncomment for full sweep!
-/*
-    public static final int LAST_IP_OCTET_MIN = 1;
-    public static final int LAST_IP_OCTET_MAX = 255;
-*/
-    public static final int LAST_IP_OCTET_MIN = 116;
-    public static final int LAST_IP_OCTET_MAX = 120;
-
-
-    List<String> mFoundPiVersions = new ArrayList<>();
-    List<String> mFoundPiIps = new ArrayList<>();
+    private List<PrimeStationOne> mPrimeStationOneList = new ArrayList<>();
     private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
 
     /**
@@ -73,11 +58,13 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
     @OnClick(R.id.btn_find_pi)
     void onFindPiButtonClicked(View view) {
         Timber.d("findPi button clicked!");
-        mFoundPiIps.clear();
-        mFoundPiVersions.clear();
+        mPrimeStationOneList.clear();
         Button findPiButton = (Button) view;
         findPiButton.setEnabled(false);
+
+        //TODO: Just put in a wifi wakelock, but for now this lazy thing works
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         final String gatewayPrefix = getCurrentGatewayPrefix();
 
         Observable<String> findPiObservable = Observable.create(
@@ -94,7 +81,6 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
         Subscriber<String> findPiSubscriber = new Subscriber<String>() {
 
-
             @Override
             public void onNext(String s) {
                 Timber.d(".onNext(" + s + ")");
@@ -103,54 +89,50 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
             @Override
             public void onCompleted() {
                 findPiButton.setEnabled(true);
-                mTvFoundPi.setText(mFoundPiIps + "\n" + mFoundPiVersions);
+                int numPrimestationsFound = mPrimeStationOneList.size();
+                mTvFoundPi.setText(numPrimestationsFound > 0 ?
+                        numPrimestationsFound > 1 ? "Found " + numPrimestationsFound + " Primestations! xD" : "Found Primestation! :D"
+                        : "None found :(");
 
-                List<PrimeStationOne> primeStationOneList = new ArrayList<>();
-                for (int i = 0; i < mFoundPiIps.size(); i++) {
-
-                    String ipAddress = mFoundPiIps.get(i);
-
-                    //TODO: Actually retrieve hostname without causing a damn failure!
-//                    String hostname = getHostname(ipAddress);
-                    String hostname = "hostname";
-                    primeStationOneList.add(new PrimeStationOne(ipAddress, hostname, mFoundPiVersions.get(i)));
-                }
-                mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), primeStationOneList);
+                mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
                 mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
-
                 unsubscribe();
             }
 
             @Override
             public void onError(Throwable e) {
-                Timber.e("Error with subscriber: " + e.getMessage(), e);
+                Timber.e("Error with subscriber: " + e + ": " + e.getMessage(), e);
             }
         };
         findPiObservable.subscribe(findPiSubscriber);
 
     }
 
-    private String getHostname(String ipAddress) {
+    private String getHostname(String ipAddress, Subscriber<? super String> subscriber) {
         String hostname = "hostname";
-        InetAddress address = null;
+        InetAddress address;
         try {
             address = InetAddress.getByName(ipAddress);
+            Timber.d("InetAddress for " + ipAddress + " = " + address);
             hostname = address.getCanonicalHostName();
             Timber.d("IP " + ipAddress + " hostname = " + hostname);
-        } catch (UnknownHostException e) {
-            Timber.e("error obtaining hostname from " + ipAddress + ": " + e.getMessage(), e);
+        } catch (Exception e) {
+            Timber.e("error obtaining hostname from " + ipAddress + ": " + e);
+            subscriber.onError(e);
         }
         return hostname;
     }
 
     private String checkForPi(String gatewayPrefix, Subscriber<? super String> sub) {
-        for (int ipLastOctetToTry = LAST_IP_OCTET_MIN; ipLastOctetToTry <= LAST_IP_OCTET_MAX; ipLastOctetToTry++) {
+        for (int ipLastOctetToTry = NetworkUtilities.LAST_IP_OCTET_MIN;
+             ipLastOctetToTry <= NetworkUtilities.LAST_IP_OCTET_MAX; ipLastOctetToTry++) {
             String ipAddressToTry = gatewayPrefix + ipLastOctetToTry;
             String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
             if (primeStationVersion.length() > 0) {
-                Timber.d("Found PrimestationOne at " + ipAddressToTry + ", version: " + primeStationVersion);
-                mFoundPiVersions.add(primeStationVersion);
-                mFoundPiIps.add(ipAddressToTry);
+                String hostname = getHostname(ipAddressToTry, sub);
+                PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion);
+                Timber.d("Found PrimeStationOne: " + primeStationOne);
+                mPrimeStationOneList.add(primeStationOne);
             }
         }
         sub.onCompleted();
@@ -163,10 +145,9 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
         StringBuffer stringBuffer = new StringBuffer();
         NetworkUtilities.putAddress(stringBuffer, dhcpInfo.gateway);
         String gatewayIp = stringBuffer.toString();
-        String[] gatewayIpOctets = gatewayIp.split(IP_SEPARATOR_CHAR_MATCHER);
-
+        String[] gatewayIpOctets = gatewayIp.split(NetworkUtilities.IP_SEPARATOR_CHAR_MATCHER);
         String gatewayPrefix = gatewayIpOctets.length == 0 ? "" : gatewayIpOctets[0]
-                + IP_SEPARATOR_CHAR + gatewayIpOctets[1] + IP_SEPARATOR_CHAR + gatewayIpOctets[2] + IP_SEPARATOR_CHAR;
+                + NetworkUtilities.IP_SEPARATOR_CHAR + gatewayIpOctets[1] + NetworkUtilities.IP_SEPARATOR_CHAR + gatewayIpOctets[2] + NetworkUtilities.IP_SEPARATOR_CHAR;
         Timber.d("gatewayIpOctets = " + Arrays.toString(gatewayIpOctets) + ", gatewayPrefix = "
                 + gatewayPrefix + ", gatewayIp = " + gatewayIp + ", DhcpInfo = " + dhcpInfo);
         return gatewayPrefix;
