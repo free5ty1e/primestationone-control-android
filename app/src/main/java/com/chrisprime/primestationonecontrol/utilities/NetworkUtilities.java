@@ -20,6 +20,16 @@ public class NetworkUtilities {
 
     //TODO: User preference for timeouts
     public static final int TIMEOUT_MILLIS = 1500;
+    public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
+    public static final String IP_SEPARATOR_CHAR = ".";
+    //TODO: Uncomment for full sweep!
+/*
+    private static final int LAST_IP_OCTET_MIN = 1;
+    private static final int LAST_IP_OCTET_MAX = 255;
+*/
+    //TODO: Default to full sweep but provide user settings for last octet range
+    public static final int LAST_IP_OCTET_MIN = 50;
+    public static final int LAST_IP_OCTET_MAX = 55;
 
     public static DhcpInfo getDhcpInfo(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);

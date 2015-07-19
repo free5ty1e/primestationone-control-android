@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        mTitle = getString(R.string.title_section1);
+        mTitle = getString(R.string.title_primestation_search);
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PrimeStationOneDiscoveryFragment.newInstance())
                 .commit();

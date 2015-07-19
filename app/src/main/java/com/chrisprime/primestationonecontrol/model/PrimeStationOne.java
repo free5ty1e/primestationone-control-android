@@ -14,6 +14,15 @@ public class PrimeStationOne {
         this.version = version;
     }
 
+    @Override
+    public String toString() {
+        return "PrimeStationOne{" +
+                "ipAddress='" + ipAddress + '\'' +
+                ", hostname='" + hostname + '\'' +
+                ", version='" + version + '\'' +
+                '}';
+    }
+
     public String getIpAddress() {
         return ipAddress;
     }
