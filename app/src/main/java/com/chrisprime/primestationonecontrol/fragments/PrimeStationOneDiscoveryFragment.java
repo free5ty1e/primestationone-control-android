@@ -109,16 +109,10 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                 for (int i = 0; i < mFoundPiIps.size(); i++) {
 
                     String ipAddress = mFoundPiIps.get(i);
+
+                    //TODO: Actually retrieve hostname without causing a damn failure!
+//                    String hostname = getHostname(ipAddress);
                     String hostname = "hostname";
-/*
-                    InetAddress address = null;
-                    try {
-                        address = InetAddress.getByName(ipAddress);
-                        hostname = address.getHostName();
-                    } catch (UnknownHostException e) {
-                        Timber.e("error obtaining hostname from " + ipAddress + ": " + e.getMessage(), e);
-                    }
-*/
                     primeStationOneList.add(new PrimeStationOne(ipAddress, hostname, mFoundPiVersions.get(i)));
                 }
                 mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), primeStationOneList);
@@ -134,6 +128,19 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
         };
         findPiObservable.subscribe(findPiSubscriber);
 
+    }
+
+    private String getHostname(String ipAddress) {
+        String hostname = "hostname";
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName(ipAddress);
+            hostname = address.getCanonicalHostName();
+            Timber.d("IP " + ipAddress + " hostname = " + hostname);
+        } catch (UnknownHostException e) {
+            Timber.e("error obtaining hostname from " + ipAddress + ": " + e.getMessage(), e);
+        }
+        return hostname;
     }
 
     private String checkForPi(String gatewayPrefix, Subscriber<? super String> sub) {
