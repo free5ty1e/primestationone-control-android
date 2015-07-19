@@ -4,6 +4,8 @@ import android.net.DhcpInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +14,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.R;
+import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
+import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,10 +37,20 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
     public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
     public static final String IP_SEPARATOR_CHAR = ".";
+
+
+    //TODO: Uncomment for full sweep!
+/*
+    public static final int LAST_IP_OCTET_MIN = 1;
     public static final int LAST_IP_OCTET_MAX = 255;
+*/
+    public static final int LAST_IP_OCTET_MIN = 116;
+    public static final int LAST_IP_OCTET_MAX = 120;
+
 
     List<String> mFoundPiVersions = new ArrayList<>();
     List<String> mFoundPiIps = new ArrayList<>();
+    private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -51,9 +67,14 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
     @Bind(R.id.tv_found_pi)
     TextView mTvFoundPi;
 
+    @Bind(R.id.rv_pi_list)
+    RecyclerView mRvPiList;
+
     @OnClick(R.id.btn_find_pi)
     void onFindPiButtonClicked(View view) {
         Timber.d("findPi button clicked!");
+        mFoundPiIps.clear();
+        mFoundPiVersions.clear();
         Button findPiButton = (Button) view;
         findPiButton.setEnabled(false);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -64,7 +85,6 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                     @Override
                     public void call(Subscriber<? super String> sub) {
                         sub.onNext(checkForPi(gatewayPrefix, sub));
-//                            sub.onCompleted();
                     }
                 }
         )
@@ -77,13 +97,33 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
             @Override
             public void onNext(String s) {
-                Timber.d("Found PrimestationOne version: " + s);
+                Timber.d(".onNext(" + s + ")");
             }
 
             @Override
             public void onCompleted() {
                 findPiButton.setEnabled(true);
                 mTvFoundPi.setText(mFoundPiIps + "\n" + mFoundPiVersions);
+
+                List<PrimeStationOne> primeStationOneList = new ArrayList<>();
+                for (int i = 0; i < mFoundPiIps.size(); i++) {
+
+                    String ipAddress = mFoundPiIps.get(i);
+                    String hostname = "hostname";
+/*
+                    InetAddress address = null;
+                    try {
+                        address = InetAddress.getByName(ipAddress);
+                        hostname = address.getHostName();
+                    } catch (UnknownHostException e) {
+                        Timber.e("error obtaining hostname from " + ipAddress + ": " + e.getMessage(), e);
+                    }
+*/
+                    primeStationOneList.add(new PrimeStationOne(ipAddress, hostname, mFoundPiVersions.get(i)));
+                }
+                mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), primeStationOneList);
+                mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
+
                 unsubscribe();
             }
 
@@ -97,10 +137,11 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
     }
 
     private String checkForPi(String gatewayPrefix, Subscriber<? super String> sub) {
-        for (int ipLastOctetToTry = 1; ipLastOctetToTry <= LAST_IP_OCTET_MAX; ipLastOctetToTry++) {
+        for (int ipLastOctetToTry = LAST_IP_OCTET_MIN; ipLastOctetToTry <= LAST_IP_OCTET_MAX; ipLastOctetToTry++) {
             String ipAddressToTry = gatewayPrefix + ipLastOctetToTry;
             String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
             if (primeStationVersion.length() > 0) {
+                Timber.d("Found PrimestationOne at " + ipAddressToTry + ", version: " + primeStationVersion);
                 mFoundPiVersions.add(primeStationVersion);
                 mFoundPiIps.add(ipAddressToTry);
             }
@@ -117,8 +158,10 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
         String gatewayIp = stringBuffer.toString();
         String[] gatewayIpOctets = gatewayIp.split(IP_SEPARATOR_CHAR_MATCHER);
 
-        String gatewayPrefix = gatewayIpOctets.length == 0 ? "" : gatewayIpOctets[0] + IP_SEPARATOR_CHAR + gatewayIpOctets[1] + IP_SEPARATOR_CHAR + gatewayIpOctets[2] + IP_SEPARATOR_CHAR;
-        Timber.d("gatewayIpOctets = " + Arrays.toString(gatewayIpOctets) + ", gatewayPrefix = " + gatewayPrefix + ", gatewayIp = " + gatewayIp + ", DhcpInfo = " + dhcpInfo);
+        String gatewayPrefix = gatewayIpOctets.length == 0 ? "" : gatewayIpOctets[0]
+                + IP_SEPARATOR_CHAR + gatewayIpOctets[1] + IP_SEPARATOR_CHAR + gatewayIpOctets[2] + IP_SEPARATOR_CHAR;
+        Timber.d("gatewayIpOctets = " + Arrays.toString(gatewayIpOctets) + ", gatewayPrefix = "
+                + gatewayPrefix + ", gatewayIp = " + gatewayIp + ", DhcpInfo = " + dhcpInfo);
         return gatewayPrefix;
     }
 
@@ -128,6 +171,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
+        mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
         return rootView;
     }
 }
