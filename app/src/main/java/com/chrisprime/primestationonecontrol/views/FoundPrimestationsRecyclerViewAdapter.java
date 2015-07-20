@@ -46,7 +46,7 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
 
         //Setting text view title
         foundPrimeStationsRecyclerViewHolder.textView.setText(primeStationOne.getIpAddress() +
-                "(" + primeStationOne.getHostname() + "): " + primeStationOne.getVersion());
+                "\n" + primeStationOne.getHostname() + "\n" + primeStationOne.getVersion());
     }
 
     @Override

@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -36,6 +37,9 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
     private List<PrimeStationOne> mPrimeStationOneList = new ArrayList<>();
     private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
+    private Observable<String> mFindPiObservable;
+    private Subscriber<String> mFindPiSubscriber;
+    private Subscription mFindPiSubscription;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -55,62 +59,71 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
     @Bind(R.id.rv_pi_list)
     RecyclerView mRvPiList;
 
+    @Bind(R.id.btn_find_pi)
+    Button mBtnFindPi;
+
     @OnClick(R.id.btn_find_pi)
     void onFindPiButtonClicked(View view) {
-        Timber.d("findPi button clicked!");
-        mPrimeStationOneList.clear();
-        Button findPiButton = (Button) view;
-        findPiButton.setEnabled(false);
+        boolean isScanning = determineIsScanning();
+        String scanStatusText = isScanning ? "Currently scanning!" : "Not currently scanning!";
+        Timber.d("findPi button clicked! " + scanStatusText);
+        if (isScanning) { //Cancel!
+            mFindPiSubscriber.onCompleted();
+        } else {
+            mPrimeStationOneList.clear();
+            mBtnFindPi.setText(R.string.button_find_pi_cancel_text);
 
-        //TODO: Just put in a wifi wakelock, but for now this lazy thing works
-        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            //TODO: Just put in a wifi wakelock, but for now this lazy thing works
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        final String gatewayPrefix = getCurrentGatewayPrefix();
+            final String gatewayPrefix = getCurrentGatewayPrefix();
 
-        Observable<String> findPiObservable = Observable.create(
-                new Observable.OnSubscribe<String>() {
-                    @Override
-                    public void call(Subscriber<? super String> sub) {
-                        sub.onNext(checkForPi(gatewayPrefix, sub));
+            mFindPiObservable = Observable.create(
+                    new Observable.OnSubscribe<String>() {
+                        @Override
+                        public void call(Subscriber<? super String> sub) {
+                            sub.onNext(checkForPi(gatewayPrefix));
+                        }
                     }
-                }
-        )
+            )
 //                .map(s -> s + " -Love, Chris")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread());
 
-        Subscriber<String> findPiSubscriber = new Subscriber<String>() {
+            mFindPiSubscriber = new Subscriber<String>() {
 
-            @Override
-            public void onNext(String s) {
-                Timber.d(".onNext(" + s + ")");
-            }
+                @Override
+                public void onNext(String s) {
+                    Timber.d(".onNext(" + s + ")");
+                }
 
-            @Override
-            public void onCompleted() {
-                findPiButton.setEnabled(true);
-                int numPrimestationsFound = mPrimeStationOneList.size();
-                mTvFoundPi.setText(numPrimestationsFound > 0 ?
-                        numPrimestationsFound > 1 ? "Found " + numPrimestationsFound + " Primestations! xD" : "Found Primestation! :D"
-                        : "None found :(");
+                @Override
+                public void onCompleted() {
+                    //                findPiButton.setEnabled(true);
+                    getActivity().runOnUiThread(() -> {
+                        mBtnFindPi.setText(R.string.button_find_pi_text);
+                        int numPrimestationsFound = mPrimeStationOneList.size();
+                        mTvFoundPi.setText(numPrimestationsFound > 0 ?
+                                numPrimestationsFound > 1 ? "Found " + numPrimestationsFound + " Primestations! xD" : "Found Primestation! :D"
+                                : "None found :(");
+                    });
+                    unsubscribe();
+                }
 
-/*
-                mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
-                mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
-*/
-                unsubscribe();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
-            }
-        };
-        findPiObservable.subscribe(findPiSubscriber);
-
+                @Override
+                public void onError(Throwable e) {
+                    Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
+                }
+            };
+            mFindPiSubscription = mFindPiObservable.subscribe(mFindPiSubscriber);
+        }
     }
 
-    private String getHostname(String ipAddress, Subscriber<? super String> subscriber) {
+    private boolean determineIsScanning() {
+        return mFindPiSubscription != null && !mFindPiSubscriber.isUnsubscribed();
+    }
+
+    private String getHostname(String ipAddress) {
         String hostname = "hostname";
         InetAddress address;
         try {
@@ -120,32 +133,32 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
             Timber.d("IP " + ipAddress + " hostname = " + hostname);
         } catch (Exception e) {
             Timber.e(e, "error obtaining hostname from " + ipAddress + ": " + e);
-            subscriber.onError(e);
+            mFindPiSubscriber.onError(e);
         }
         return hostname;
     }
 
-    private String checkForPi(String gatewayPrefix, Subscriber<? super String> sub) {
+    private String checkForPi(String gatewayPrefix) {
         for (int ipLastOctetToTry = NetworkUtilities.LAST_IP_OCTET_MIN;
              ipLastOctetToTry <= NetworkUtilities.LAST_IP_OCTET_MAX; ipLastOctetToTry++) {
-            String ipAddressToTry = gatewayPrefix + ipLastOctetToTry;
+            if (determineIsScanning()) {  //Only if it wasn't cancelled!
+                String ipAddressToTry = gatewayPrefix + ipLastOctetToTry;
 
-            //Update status text to show current IP being scanned
-            getActivity().runOnUiThread(() -> {
-                mTvFoundPi.setText(ipAddressToTry + "...");
-            });
+                //Update status text to show current IP being scanned
+                getActivity().runOnUiThread(() -> mTvFoundPi.setText(ipAddressToTry + "..."));
 
-            String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
-            if (primeStationVersion.length() > 0) {
-                String hostname = getHostname(ipAddressToTry, sub);
-                PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion);
-                Timber.d("Found PrimeStationOne: " + primeStationOne);
-                mPrimeStationOneList.add(primeStationOne);
-
-                //TODO: Update adapter during search so can see primestations as they are found!
+                String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
+                if (primeStationVersion.length() > 0) {
+                    String hostname = getHostname(ipAddressToTry);
+                    PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion);
+                    Timber.d("Found PrimeStationOne: " + primeStationOne);
+                    mPrimeStationOneList.add(primeStationOne);
+                }
+            } else {
+                return "cancelled";
             }
         }
-        sub.onCompleted();
+        mFindPiSubscriber.onCompleted();
         return "success";
     }
 
@@ -169,6 +182,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
+
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
         mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
         mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);

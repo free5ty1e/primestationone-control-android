@@ -10,4 +10,5 @@
 
     <string name="action_settings">Settings</string>
     <string name="button_find_pi_text">Find PrimeStations</string>
+    <string name="button_find_pi_cancel_text">Stop scanning!</string>
 </resources>
