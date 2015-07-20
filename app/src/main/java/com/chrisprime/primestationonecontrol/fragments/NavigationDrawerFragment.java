@@ -239,8 +239,9 @@ public class NavigationDrawerFragment extends Fragment {
             return true;
         }
 
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
+        if (item.getItemId() == R.id.action_show_current) {
+            //TODO: Toast info about currently selected Primestation
+            Toast.makeText(getActivity(), "No current Primestation selected yet.", Toast.LENGTH_SHORT).show();
             return true;
         }
 

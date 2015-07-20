@@ -34,8 +34,8 @@ public class NetworkUtilities {
     public static final String IP_SEPARATOR_CHAR = ".";
 
     //TODO: Default to full sweep but provide user settings for last octet range
-    public static final int LAST_IP_OCTET_MIN = 50;
-    public static final int LAST_IP_OCTET_MAX = 55;
+    public static final int LAST_IP_OCTET_MIN = 1;
+    public static final int LAST_IP_OCTET_MAX = 255;
 
     public static DhcpInfo getDhcpInfo(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
