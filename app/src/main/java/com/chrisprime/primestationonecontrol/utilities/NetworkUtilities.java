@@ -34,8 +34,8 @@ public class NetworkUtilities {
     public static final String IP_SEPARATOR_CHAR = ".";
 
     //TODO: Default to full sweep but provide user settings for last octet range
-    public static final int LAST_IP_OCTET_MIN = 1;
-    public static final int LAST_IP_OCTET_MAX = 255;
+    public static final int LAST_IP_OCTET_MIN = 50;
+    public static final int LAST_IP_OCTET_MAX = 55;
 
     public static DhcpInfo getDhcpInfo(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -53,10 +53,8 @@ public class NetworkUtilities {
     }
 
     public static String sshCheckForPi(String ip, String user, String password, int port, String remoteFile) {
-        String foundPi = "";
-        InputStream out = getInputStreamFromPiRemoteFile(ip, user, password, port, remoteFile);
-        foundPi = readLastLineFromTextInputStream(out);
-        return foundPi;
+        InputStream inputStream = getInputStreamFromPiRemoteFile(ip, user, password, port, remoteFile);
+        return inputStream == null ? "" : readLastLineFromTextInputStream(inputStream);
     }
 
     public static String readLastLineFromTextInputStream(InputStream out) {
@@ -70,7 +68,7 @@ public class NetworkUtilities {
             }
             br.close();
         } catch (IOException e) {
-            Timber.e(".readLastLineFromTextInputStream() error: " + e.getMessage(), e);
+            Timber.e(e, ".readLastLineFromTextInputStream() error: " + e.getMessage());
         }
         return foundPi;
     }
@@ -100,10 +98,10 @@ public class NetworkUtilities {
                 bufferedOutputStream.close();
                 uri = Uri.fromFile(newFile);
             } catch (IOException e) {
-                Timber.e(".sshRetrievePrimeStationImage() error: " + e.getMessage(), e);
+                Timber.e(e, ".sshRetrievePrimeStationImage() error: " + e.getMessage());
             }
         } catch (SftpException e) {
-            Timber.e(".sshRetrievePrimeStationImage() error: " + e.getMessage(), e);
+            Timber.e(e, ".sshRetrievePrimeStationImage() error: " + e.getMessage());
         }
         return uri;
     }
@@ -111,10 +109,12 @@ public class NetworkUtilities {
     public static InputStream getInputStreamFromPiRemoteFile(String ip, String user, String password, int port, String remoteFile) {
         ChannelSftp channelSftp = connectSftpChannelToPi(ip, user, password, port);
         InputStream inputStream = null;
-        try {
-            inputStream = channelSftp.get(remoteFile);
-        } catch (SftpException e) {
-            Timber.e(".getInputStreamFromPiRemoteFile(" + ip + ") error: " + e.getMessage(), e);
+        if (channelSftp != null) {
+            try {
+                inputStream = channelSftp.get(remoteFile);
+            } catch (SftpException e) {
+                Timber.e(e, ".getInputStreamFromPiRemoteFile(" + ip + ") error: " + e.getMessage());
+            }
         }
         return inputStream;
     }
@@ -122,20 +122,22 @@ public class NetworkUtilities {
     public static ChannelSftp connectSftpChannelToPi(String ip, String user, String password, int port) {
         Session session = connectSshSessionToPi(ip, user, password, port);
         ChannelSftp channelSftp = null;
-        Timber.d("Crating SFTP Channel.");
-        try {
-            channelSftp = (ChannelSftp) session.openChannel("sftp");
-            channelSftp.connect();
-            Timber.d("SFTP Channel created.");
-        } catch (JSchException e) {
-            Timber.e(".connectSftpChannelToPi(" + ip + ") error: " + e.getMessage(), e);
+        if (session != null) {
+            Timber.d("Creating SFTP Channel.");
+            try {
+                channelSftp = (ChannelSftp) session.openChannel("sftp");
+                channelSftp.connect();
+                Timber.d("SFTP Channel created.");
+            } catch (JSchException e) {
+                Timber.w(".connectSftpChannelToPi(" + ip + ") error: " + e + ": " + e.getMessage());
+            }
         }
         return channelSftp;
     }
 
     public static Session connectSshSessionToPi(String ip, String user, String password, int port) {
         JSch jsch = new JSch();
-        Session session = null;
+        Session session;
         try {
             session = jsch.getSession(user, ip, port);
             session.setTimeout(TIMEOUT_MILLIS);
@@ -144,10 +146,11 @@ public class NetworkUtilities {
             Timber.d("Establishing Connection...");
             session.connect();
             Timber.d("Connection established.");
+            return session;
         } catch (JSchException e) {
-            Timber.e(".connectSshSessionToPi(" + ip + ") error: " + e.getMessage(), e);
+            Timber.w(".connectSshSessionToPi(" + ip + ") error: " + e + ": " + e.getMessage());
+            return null;
         }
-        return session;
     }
 
     public static void putAddress(StringBuffer buf, int addr) {

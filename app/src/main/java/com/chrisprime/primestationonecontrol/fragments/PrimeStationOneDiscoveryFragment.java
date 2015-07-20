@@ -103,7 +103,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
             @Override
             public void onError(Throwable e) {
-                Timber.e("Error with subscriber: " + e + ": " + e.getMessage(), e);
+                Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
             }
         };
         findPiObservable.subscribe(findPiSubscriber);
@@ -119,7 +119,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
             hostname = address.getCanonicalHostName();
             Timber.d("IP " + ipAddress + " hostname = " + hostname);
         } catch (Exception e) {
-            Timber.e("error obtaining hostname from " + ipAddress + ": " + e);
+            Timber.e(e, "error obtaining hostname from " + ipAddress + ": " + e);
             subscriber.onError(e);
         }
         return hostname;
