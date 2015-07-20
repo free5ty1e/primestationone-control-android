@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
@@ -37,6 +38,7 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
     @Override
     public void onBindViewHolder(FoundPrimeStationsRecyclerViewHolder foundPrimeStationsRecyclerViewHolder, int i) {
         PrimeStationOne primeStationOne = mPrimeStationOneList.get(i);
+        foundPrimeStationsRecyclerViewHolder.primeStationOne = primeStationOne;
 
         //Download image using picasso library
         Picasso.with(mContext).load(PRIMESTATION_IMGUR_SPLASHSCREEN_SOURCE_IMAGE_URL)
@@ -54,14 +56,23 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
         return (null != mPrimeStationOneList ? mPrimeStationOneList.size() : 0);
     }
 
-    public class FoundPrimeStationsRecyclerViewHolder extends RecyclerView.ViewHolder {
+    public class FoundPrimeStationsRecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected ImageView imageView;
         protected TextView textView;
+        protected PrimeStationOne primeStationOne;
 
         public FoundPrimeStationsRecyclerViewHolder(View view) {
             super(view);
             this.imageView = (ImageView) view.findViewById(R.id.thumbnail);
             this.textView = (TextView) view.findViewById(R.id.title);
+            itemView.setClickable(true);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(v.getContext(), "Item no. " + getAdapterPosition() + ": "
+                    + primeStationOne.getIpAddress() + " onClick!", Toast.LENGTH_SHORT).show();
         }
     }
 }
