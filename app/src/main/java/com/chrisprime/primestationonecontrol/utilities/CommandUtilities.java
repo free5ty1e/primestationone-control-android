@@ -12,10 +12,10 @@ import timber.log.Timber;
  */
 public class CommandUtilities {
 
-    public static String doCommand(List<String> command)
+    public static int doCommand(List<String> command)
     {
         String s = null;
-        String commandResult = "";
+        int processExitValue = 1;   //Default to "errored"
         ProcessBuilder pb = new ProcessBuilder(command);
         try {
             Process process = pb.start();
@@ -26,27 +26,21 @@ public class CommandUtilities {
             StringBuilder stringBuilder = new StringBuilder();
 
             // read the output from the command
-            String stdOutTitle = "Here is the standard output of the command:\n";
-            Timber.d(stdOutTitle);
-            stringBuilder.append(stdOutTitle);
+            Timber.d("Here is the standard output of the command:\n");
             while ((s = stdInput.readLine()) != null) {
                 Timber.d(s);
-                stringBuilder.append(s);
             }
 
             // read any errors from the attempted command
-            String stdErrTitle = "Here is the standard error of the command (if any):\n";
-            Timber.d(stdErrTitle);
-            stringBuilder.append(stdErrTitle);
+            Timber.d("Here is the standard error of the command (if any):\n");
             while ((s = stdError.readLine()) != null) {
                 Timber.d(s);
-                stringBuilder.append(s);
             }
-            commandResult = stringBuilder.toString();
-            process.exitValue()
+
+            processExitValue = process.exitValue();
         } catch(IOException e) {
             Timber.e(e, "Exception executing command " + command);
         }
-        return commandResult;
+        return processExitValue;
     }
 }
