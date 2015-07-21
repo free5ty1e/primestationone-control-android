@@ -146,13 +146,14 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
                 //Update status text to show current IP being scanned
                 getActivity().runOnUiThread(() -> mTvFoundPi.setText(ipAddressToTry + "..."));
-
-                String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
-                if (primeStationVersion.length() > 0) {
-                    String hostname = getHostname(ipAddressToTry);
-                    PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion);
-                    Timber.d("Found PrimeStationOne: " + primeStationOne);
-                    mPrimeStationOneList.add(primeStationOne);
+                if (NetworkUtilities.ping(ipAddressToTry)) {
+                    String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
+                    if (primeStationVersion.length() > 0) {
+                        String hostname = getHostname(ipAddressToTry);
+                        PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion);
+                        Timber.d("Found PrimeStationOne: " + primeStationOne);
+                        mPrimeStationOneList.add(primeStationOne);
+                    }
                 }
             } else {
                 return "cancelled";

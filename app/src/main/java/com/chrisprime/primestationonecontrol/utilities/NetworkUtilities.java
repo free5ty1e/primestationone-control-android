@@ -23,19 +23,36 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import timber.log.Timber;
 
 public class NetworkUtilities {
 
-    //TODO: User preference for timeouts
-    public static final int TIMEOUT_MILLIS = 1500;
+    //TODO: User preferences for timeouts
+    public static final int PING_TIMEOUT_MILLIS = 150;
+    public static final int SSH_TIMEOUT_MILLIS = 1500;
     public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
     public static final String IP_SEPARATOR_CHAR = ".";
 
     //TODO: Default to full sweep but provide user settings for last octet range
     public static final int LAST_IP_OCTET_MIN = 1;
     public static final int LAST_IP_OCTET_MAX = 255;
+
+    public static boolean ping(String ip) {
+        List<String> commands = new ArrayList<>();
+        commands.add("ping");
+        commands.add("-c");
+        commands.add("1");
+        commands.add("-W");
+        commands.add(String.valueOf(PING_TIMEOUT_MILLIS));
+        commands.add(ip);
+        String commandResult = CommandUtilities.doCommand(commands);
+
+        //Determine if ping of this address itself was successful
+        return commandResult.contains("1 packets transmitted, 1 received");
+    }
 
     public static DhcpInfo getDhcpInfo(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -140,7 +157,7 @@ public class NetworkUtilities {
         Session session;
         try {
             session = jsch.getSession(user, ip, port);
-            session.setTimeout(TIMEOUT_MILLIS);
+            session.setTimeout(SSH_TIMEOUT_MILLIS);
             session.setPassword(password);
             session.setConfig("StrictHostKeyChecking", "no");
             Timber.d("Establishing Connection...");
