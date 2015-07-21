@@ -15,6 +15,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by cpaian on 7/18/15.
  */
@@ -57,14 +60,16 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
     }
 
     public class FoundPrimeStationsRecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        protected ImageView imageView;
-        protected TextView textView;
-        protected PrimeStationOne primeStationOne;
+        @Bind(R.id.thumbnail)
+        ImageView imageView;
+        @Bind(R.id.title)
+        TextView textView;
+
+        PrimeStationOne primeStationOne;
 
         public FoundPrimeStationsRecyclerViewHolder(View view) {
             super(view);
-            this.imageView = (ImageView) view.findViewById(R.id.thumbnail);
-            this.textView = (TextView) view.findViewById(R.id.title);
+            ButterKnife.bind(this, itemView);
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
         }

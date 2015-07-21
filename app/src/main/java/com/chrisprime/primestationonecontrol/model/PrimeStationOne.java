@@ -1,8 +1,13 @@
 package com.chrisprime.primestationonecontrol.model;
 
+import com.google.gson.annotations.SerializedName;
+
+import org.parceler.Parcel;
+
 /**
  * Created by cpaian on 7/18/15.
  */
+@Parcel
 public class PrimeStationOne {
     public static final String DEFAULT_PI_USERNAME = "pi";
     public static final String DEFAULT_PI_PASSWORD = "raspberry";
@@ -11,9 +16,15 @@ public class PrimeStationOne {
     public static final String SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME = "splashscreenwithcontrolsandversion.png";
     public static final String DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION = "/home/pi/" + SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME;
 
-    private String ipAddress;
-    private String hostname;
-    private String version;
+    @SerializedName("ipAddress")
+    String ipAddress;
+    @SerializedName("hostname")
+    String hostname;
+    @SerializedName("version")
+    String version;
+
+    public PrimeStationOne() {
+    }
 
     public PrimeStationOne(String ipAddress, String hostname, String version) {
         this.ipAddress = ipAddress;
