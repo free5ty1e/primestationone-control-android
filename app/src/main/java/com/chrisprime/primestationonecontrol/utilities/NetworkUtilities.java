@@ -31,21 +31,23 @@ import java.util.regex.Pattern;
 import timber.log.Timber;
 
 public class NetworkUtilities {
-
     //TODO: User preferences for timeouts
     public static final int PING_TIMEOUT_MILLIS = 150;
     public static final int SSH_TIMEOUT_MILLIS = 1500;
-    public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
-    public static final String IP_SEPARATOR_CHAR = ".";
 
     //TODO: Default to full sweep but provide user settings for last octet range
-    public static final int LAST_IP_OCTET_MIN = 1;
-    public static final int LAST_IP_OCTET_MAX = 255;
+    public static final int LAST_IP_OCTET_MIN = 50;
+    public static final int LAST_IP_OCTET_MAX = 70;
 
-    Pattern macpt = null;
+    public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
+    public static final String IP_SEPARATOR_CHAR = ".";
+    public static final String PING_RESPONSE_PREFIX_MATCHER = "from ";
+    public final static String IPADDRESS_PATTERN =
+            "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
 
-    //TODO: Also getMac!
-    private String getMac(String ip) {
+
+    public static String getMac(String ip) {
+        Pattern macpt = null;
 
         // Find OS and set command according to OS
         String OS = System.getProperty("os.name").toLowerCase();
@@ -55,13 +57,13 @@ public class NetworkUtilities {
             // Windows
             macpt = Pattern
                     .compile("[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+");
-            String[] a = { "arp", "-a", ip };
+            String[] a = {"arp", "-a", ip};
             cmd = a;
         } else {
             // Mac OS X, Linux
             macpt = Pattern
                     .compile("[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+");
-            String[] a = { "arp", ip };
+            String[] a = {"arp", ip};
             cmd = a;
         }
 
@@ -149,7 +151,7 @@ public class NetworkUtilities {
     }
 
 
-    public static Uri sshRetrievePrimeStationImage(String ip, String user, String password, int port, String remoteFile) {
+    public static Uri sshRetrievePrimeStationImage(Context context, String ip, String user, String password, int port, String remoteFile) {
         ChannelSftp channelSftp = connectSftpChannelToPi(ip, user, password, port);
         File newFile = null;
         Uri uri = null;
@@ -160,7 +162,7 @@ public class NetworkUtilities {
 
             //Save image file locally
             //TODO: Save splashscreen image under ip-based foldername
-            newFile = new File(PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME);
+            newFile = new File(context.getFilesDir(), PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME);
 
             try {
                 OutputStream fileOutputStream = new FileOutputStream(newFile);

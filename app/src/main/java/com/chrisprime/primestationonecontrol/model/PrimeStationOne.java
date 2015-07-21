@@ -22,14 +22,17 @@ public class PrimeStationOne {
     String hostname;
     @SerializedName("version")
     String version;
+    @SerializedName("mac")
+    String mac;
 
     public PrimeStationOne() {
     }
 
-    public PrimeStationOne(String ipAddress, String hostname, String version) {
+    public PrimeStationOne(String ipAddress, String hostname, String version, String mac) {
         this.ipAddress = ipAddress;
         this.hostname = hostname;
         this.version = version;
+        this.mac = mac;
     }
 
     @Override
@@ -63,5 +66,13 @@ public class PrimeStationOne {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getMac() {
+        return mac;
+    }
+
+    public void setMac(String mac) {
+        this.mac = mac;
     }
 }

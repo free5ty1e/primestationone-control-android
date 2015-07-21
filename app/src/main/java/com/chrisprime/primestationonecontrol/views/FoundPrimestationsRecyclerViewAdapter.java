@@ -1,6 +1,7 @@
 package com.chrisprime.primestationonecontrol.views;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +12,19 @@ import android.widget.Toast;
 
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
+import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by cpaian on 7/18/15.
@@ -51,7 +59,7 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
 
         //Setting text view title
         foundPrimeStationsRecyclerViewHolder.textView.setText(primeStationOne.getIpAddress() +
-                "\n" + primeStationOne.getHostname() + "\n" + primeStationOne.getVersion());
+                "\n" + primeStationOne.getHostname() + "\n" + primeStationOne.getVersion() + "\n" + primeStationOne.getMac());
     }
 
     @Override
@@ -76,8 +84,42 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
 
         @Override
         public void onClick(View v) {
+
+
+            Observable retrieveImageObservable = Observable.create(
+                    sub -> {
+                        sub.onNext(
+                                NetworkUtilities.sshRetrievePrimeStationImage(v.getContext(), primeStationOne.getIpAddress(),
+                                        PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION));
+                        sub.onCompleted();
+                    }
+            )
+//                .map(s -> s + " -Love, Chris")
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread());
+
+            Subscriber<Uri> retrieveImageSubscriber = new Subscriber<Uri>() {
+                @Override
+                public void onCompleted() {
+                    Timber.d("retrieval of image completed!");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
+                }
+
+                @Override
+                public void onNext(Uri uri) {
+                    Picasso.with(v.getContext()).load(uri)
+                            .into(imageView);
+                }
+            };
+            Subscription retreiveImageSubscription = retrieveImageObservable.subscribe(retrieveImageSubscriber);
+
             Toast.makeText(v.getContext(), "Item no. " + getAdapterPosition() + ": "
-                    + primeStationOne.getIpAddress() + " onClick!", Toast.LENGTH_SHORT).show();
+                    + primeStationOne.getIpAddress() + " onClick!  Loading its splashscreen into the imageView!", Toast.LENGTH_SHORT).show();
+
         }
     }
 }

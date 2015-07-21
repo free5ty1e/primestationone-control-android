@@ -82,7 +82,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                     new Observable.OnSubscribe<String>() {
                         @Override
                         public void call(Subscriber<? super String> sub) {
-                            sub.onNext(checkForPi(gatewayPrefix));
+                            sub.onNext(checkForPrimeStationOnes(gatewayPrefix));
                         }
                     }
             )
@@ -138,7 +138,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
         return hostname;
     }
 
-    private String checkForPi(String gatewayPrefix) {
+    private String checkForPrimeStationOnes(String gatewayPrefix) {
         for (int ipLastOctetToTry = NetworkUtilities.LAST_IP_OCTET_MIN;
              ipLastOctetToTry <= NetworkUtilities.LAST_IP_OCTET_MAX; ipLastOctetToTry++) {
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
@@ -146,15 +146,16 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
                 //Update status text to show current IP being scanned
                 getActivity().runOnUiThread(() -> mTvFoundPi.setText(ipAddressToTry + "..."));
-                if (NetworkUtilities.ping(ipAddressToTry)) {
-                    String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
-                    if (primeStationVersion.length() > 0) {
-                        String hostname = getHostname(ipAddressToTry);
-                        PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion);
-                        Timber.d("Found PrimeStationOne: " + primeStationOne);
-                        mPrimeStationOneList.add(primeStationOne);
-                    }
+//                if (NetworkUtilities.ping(ipAddressToTry)) {          //Seems faster to just try each IP with SSH...
+                String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
+                if (primeStationVersion.length() > 0) {
+                    String hostname = getHostname(ipAddressToTry);
+                    String mac = NetworkUtilities.getMac(ipAddressToTry);
+                    PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion, mac);
+                    Timber.d("Found PrimeStationOne: " + primeStationOne);
+                    mPrimeStationOneList.add(primeStationOne);
                 }
+//                }
             } else {
                 return "cancelled";
             }

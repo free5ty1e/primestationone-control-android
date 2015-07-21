@@ -29,7 +29,7 @@ public class PrimeStationOneTest {
      */
     @Test
     public void testPrimeStationOneModelParcelable() throws Exception {
-        PrimeStationOne primeStationOneParcelSource = new PrimeStationOne("192.168.1.50","primestationpi2.home","v0.9999beta");
+        PrimeStationOne primeStationOneParcelSource = new PrimeStationOne("192.168.1.50","primestationpi2.home","v0.9999beta","00-00-00-00-00-00");
         assertNotNull(primeStationOneParcelSource);
 
         String ip = primeStationOneParcelSource.getIpAddress();

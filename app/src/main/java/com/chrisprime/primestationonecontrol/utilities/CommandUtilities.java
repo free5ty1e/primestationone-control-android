@@ -3,6 +3,7 @@ package com.chrisprime.primestationonecontrol.utilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import timber.log.Timber;
@@ -16,14 +17,12 @@ public class CommandUtilities {
     {
         String s = null;
         int processExitValue = 1;   //Default to "errored"
-        ProcessBuilder pb = new ProcessBuilder(command);
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
         try {
-            Process process = pb.start();
+            Process process = processBuilder.start();
 
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-            StringBuilder stringBuilder = new StringBuilder();
 
             // read the output from the command
             Timber.d("Here is the standard output of the command:\n");
@@ -37,9 +36,11 @@ public class CommandUtilities {
                 Timber.d(s);
             }
 
-            processExitValue = process.exitValue();
+            processExitValue = process.waitFor();
         } catch(IOException e) {
             Timber.e(e, "Exception executing command " + command);
+        } catch (InterruptedException e) {
+            Timber.e(e, "Exception executing command, interrupted... " + command);
         }
         return processExitValue;
     }
