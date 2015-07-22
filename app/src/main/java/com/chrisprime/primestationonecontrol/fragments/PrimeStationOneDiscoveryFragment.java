@@ -160,7 +160,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                 String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
                 if (primeStationVersion.length() > 0) {
                     String hostname = getHostname(ipAddressToTry);
-                    String mac = NetworkUtilities.getMac(ipAddressToTry);
+                    String mac = "";
                     PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion, mac);
                     Timber.d("Found PrimeStationOne: " + primeStationOne);
                     mPrimeStationOneList.add(primeStationOne);
