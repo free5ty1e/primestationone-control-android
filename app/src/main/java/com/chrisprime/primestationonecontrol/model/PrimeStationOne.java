@@ -1,5 +1,7 @@
 package com.chrisprime.primestationonecontrol.model;
 
+import android.net.Uri;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
@@ -24,6 +26,10 @@ public class PrimeStationOne {
     String version;
     @SerializedName("mac")
     String mac;
+    @SerializedName("splashscreenUri")
+    Uri splashscreenUri;
+    @SerializedName("retrievedSplashscreen")
+    boolean retrievedSplashscreen = false;
 
     public PrimeStationOne() {
     }
@@ -74,5 +80,21 @@ public class PrimeStationOne {
 
     public void setMac(String mac) {
         this.mac = mac;
+    }
+
+    public boolean isRetrievedSplashscreen() {
+        return retrievedSplashscreen;
+    }
+
+    public void setRetrievedSplashscreen(boolean retrievedSplashscreen) {
+        this.retrievedSplashscreen = retrievedSplashscreen;
+    }
+
+    public Uri getSplashscreenUri() {
+        return splashscreenUri;
+    }
+
+    public void setSplashscreenUri(Uri splashscreenUri) {
+        this.splashscreenUri = splashscreenUri;
     }
 }

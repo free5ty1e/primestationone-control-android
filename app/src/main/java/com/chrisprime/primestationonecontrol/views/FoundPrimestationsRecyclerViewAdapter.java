@@ -85,41 +85,47 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
         @Override
         public void onClick(View v) {
 
-
-            Observable retrieveImageObservable = Observable.create(
-                    sub -> {
-                        sub.onNext(
-                                NetworkUtilities.sshRetrievePrimeStationImage(v.getContext(), primeStationOne.getIpAddress(),
-                                        PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION));
-                        sub.onCompleted();
-                    }
-            )
+            if (!primeStationOne.isRetrievedSplashscreen()) {
+                Observable retrieveImageObservable = Observable.create(
+                        sub -> {
+                            sub.onNext(
+                                    NetworkUtilities.sshRetrievePrimeStationImage(v.getContext(), primeStationOne.getIpAddress(),
+                                            PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION));
+                            sub.onCompleted();
+                        }
+                )
 //                .map(s -> s + " -Love, Chris")
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread());
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
 
-            Subscriber<Uri> retrieveImageSubscriber = new Subscriber<Uri>() {
-                @Override
-                public void onCompleted() {
-                    Timber.d("retrieval of image completed!");
-                }
+                Subscriber<Uri> retrieveImageSubscriber = new Subscriber<Uri>() {
+                    @Override
+                    public void onCompleted() {
+                        Timber.d("retrieval of image completed!");
+                    }
 
-                @Override
-                public void onError(Throwable e) {
-                    Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
-                }
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
+                    }
 
-                @Override
-                public void onNext(Uri uri) {
-                    Picasso.with(v.getContext()).load(uri)
-                            .into(imageView);
-                }
-            };
-            Subscription retreiveImageSubscription = retrieveImageObservable.subscribe(retrieveImageSubscriber);
+                    @Override
+                    public void onNext(Uri uri) {
+                        Picasso.with(v.getContext()).load(uri)
+                                .into(imageView);
+                        primeStationOne.setSplashscreenUri(uri);
+                        primeStationOne.setRetrievedSplashscreen(true);
+                    }
+                };
+                Subscription retreiveImageSubscription = retrieveImageObservable.subscribe(retrieveImageSubscriber);
 
-            Toast.makeText(v.getContext(), "Item no. " + getAdapterPosition() + ": "
-                    + primeStationOne.getIpAddress() + " onClick!  Loading its splashscreen into the imageView!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), "Item no. " + getAdapterPosition() + ": "
+                        + primeStationOne.getIpAddress() + " onClick!  Loading its splashscreen into the imageView!", Toast.LENGTH_SHORT).show();
 
+            } else {    //Already retrieved this splashscreen
+                //TODO: Display full screen for quick reference
+
+            }
         }
     }
 }
