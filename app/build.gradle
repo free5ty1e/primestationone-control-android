@@ -27,7 +27,7 @@ android {
     }
     defaultConfig {
         applicationId "com.chrisprime.primestationonecontrol"
-        minSdkVersion 9
+        minSdkVersion 10
         targetSdkVersion 22
         versionName genVersionName()
         versionCode gitVersion()
