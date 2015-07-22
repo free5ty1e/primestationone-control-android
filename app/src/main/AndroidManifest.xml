@@ -6,11 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-    <!-- Disable animations on debug builds so that the animations do not interfere with Espresso
-     tests.  Adding this permission to the manifest is not sufficient - you must also grant the
-     permission over adb! :eyeroll: -->
-    <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" />
-
     <application
         android:name=".PrimeStationOneControlApplication"
         android:allowBackup="true"
