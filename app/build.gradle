@@ -163,6 +163,18 @@ afterEvaluate {
         commandLine grantAnimationPermissionCommand.split(' ')
     }
 
+    task unlockEmulatorDev(type: Exec, dependsOn: 'assembleDebugAndroidTest') {
+        def unlockEmulatorCommand = "$adb shell input keyevent 82"
+        println unlockEmulatorCommand
+        commandLine unlockEmulatorCommand.split(' ')
+    }
+
+    task unlockEmulatorProduction(type: Exec, dependsOn: 'assembleReleaseAndroidTest') {
+        def unlockEmulatorCommand = "$adb shell input keyevent 82"
+        println unlockEmulatorCommand
+        commandLine unlockEmulatorCommand.split(' ')
+    }
+
     // When launching individual tests from Android Studio, it seems that only the assemble tasks
     // get called directly, not the install* versions
     tasks.each { task ->
@@ -170,6 +182,10 @@ afterEvaluate {
             task.dependsOn grantAnimationPermissionDev
         } else if (task.name.startsWith('assembleReleaseAndroidTest')) {
             task.dependsOn grantAnimationPermissionProduction
+        } else if (task.name.startsWith('connectedAndroidTestDebug')) {
+            task.dependsOn unlockEmulatorDev
+        } else if (task.name.startsWith('connectedAndroidTestRelease')) {
+            task.dependsOn unlockEmulatorProduction
         }
     }
 }
