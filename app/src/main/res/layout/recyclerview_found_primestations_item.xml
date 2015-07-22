@@ -18,6 +18,11 @@
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher" />
+        <ProgressBar
+            android:id="@+id/progress"
+            android:visibility="gone"
+            android:layout_width="100dp"
+            android:layout_height="80dp" />
 
         <TextView
             android:id="@+id/title"

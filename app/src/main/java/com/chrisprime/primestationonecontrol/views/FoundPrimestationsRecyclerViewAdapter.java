@@ -7,12 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -31,13 +33,13 @@ import timber.log.Timber;
  */
 
 public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<FoundPrimestationsRecyclerViewAdapter.FoundPrimeStationsRecyclerViewHolder> {
-    public static final String PRIMESTATION_IMGUR_SPLASHSCREEN_SOURCE_IMAGE_URL = "http://i.imgur.com/UnMdAZX.png";
     private List<PrimeStationOne> mPrimeStationOneList;
     private Context mContext;
 
     public interface ShowImage {
         void show(Uri uri);
     }
+
     private ShowImage mShowImage;
 
     public FoundPrimestationsRecyclerViewAdapter(Context context, List<PrimeStationOne> primeStationOneList, ShowImage showImage) {
@@ -58,7 +60,7 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
         foundPrimeStationsRecyclerViewHolder.primeStationOne = primeStationOne;
 
         //Download image using picasso library
-        Picasso.with(mContext).load(PRIMESTATION_IMGUR_SPLASHSCREEN_SOURCE_IMAGE_URL)
+        Picasso.with(mContext).load(PrimeStationOne.PRIMESTATION_IMGUR_SPLASHSCREEN_SOURCE_IMAGE_URL)
                 .error(android.R.drawable.ic_menu_close_clear_cancel)
                 .placeholder(R.drawable.ic_launcher)
                 .into(foundPrimeStationsRecyclerViewHolder.imageView);
@@ -78,6 +80,8 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
         ImageView imageView;
         @Bind(R.id.title)
         TextView textView;
+        @Bind(R.id.progress)
+        ProgressBar progressBar;
 
         PrimeStationOne primeStationOne;
 
@@ -91,7 +95,14 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
         @Override
         public void onClick(View v) {
 
-            if (!primeStationOne.isRetrievedSplashscreen()) {
+            if (primeStationOne.isRetrievedSplashscreen()) {    //Already retrieved this splashscreen
+                //Display full screen for quick reference
+                if (mShowImage != null) {
+                    mShowImage.show(primeStationOne.getSplashscreenUri());
+                }
+            } else {
+                itemView.setClickable(false);
+                progressBar.setVisibility(View.VISIBLE);
                 Observable retrieveImageObservable = Observable.create(
                         sub -> {
                             sub.onNext(
@@ -118,7 +129,21 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
                     @Override
                     public void onNext(Uri uri) {
                         Picasso.with(v.getContext()).load(uri)
-                                .into(imageView);
+                                .into(imageView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        progressBar.setVisibility(View.GONE);
+                                        itemView.setClickable(true);
+                                        Timber.d("Successfully loaded fullscreen image from uri: " + uri);
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        progressBar.setVisibility(View.GONE);
+                                        itemView.setClickable(true);
+                                        Timber.e("Failed to load fullscreen image from uri: " + uri);
+                                    }
+                                });
                         primeStationOne.setSplashscreenUri(uri);
                         primeStationOne.setRetrievedSplashscreen(true);
                     }
@@ -128,11 +153,6 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
                 Toast.makeText(v.getContext(), "Item no. " + getAdapterPosition() + ": "
                         + primeStationOne.getIpAddress() + " onClick!  Loading its splashscreen into the imageView!", Toast.LENGTH_SHORT).show();
 
-            } else {    //Already retrieved this splashscreen
-                //Display full screen for quick reference
-                if (mShowImage != null) {
-                    mShowImage.show(primeStationOne.getSplashscreenUri());
-                }
             }
         }
     }
