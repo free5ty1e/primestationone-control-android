@@ -35,9 +35,15 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
     private List<PrimeStationOne> mPrimeStationOneList;
     private Context mContext;
 
-    public FoundPrimestationsRecyclerViewAdapter(Context context, List<PrimeStationOne> primeStationOneList) {
+    public interface ShowImage {
+        void show(Uri uri);
+    }
+    private ShowImage mShowImage;
+
+    public FoundPrimestationsRecyclerViewAdapter(Context context, List<PrimeStationOne> primeStationOneList, ShowImage showImage) {
         this.mPrimeStationOneList = primeStationOneList;
         this.mContext = context;
+        this.mShowImage = showImage;
     }
 
     @Override
@@ -123,8 +129,10 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
                         + primeStationOne.getIpAddress() + " onClick!  Loading its splashscreen into the imageView!", Toast.LENGTH_SHORT).show();
 
             } else {    //Already retrieved this splashscreen
-                //TODO: Display full screen for quick reference
-
+                //Display full screen for quick reference
+                if (mShowImage != null) {
+                    mShowImage.show(primeStationOne.getSplashscreenUri());
+                }
             }
         }
     }

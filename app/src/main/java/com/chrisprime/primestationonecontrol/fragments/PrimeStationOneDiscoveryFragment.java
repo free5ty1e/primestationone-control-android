@@ -11,12 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -61,6 +65,12 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
     @Bind(R.id.btn_find_pi)
     Button mBtnFindPi;
+
+    @Bind(R.id.iv_fullscreen)
+    ImageView mFullScreenImageView;
+
+    @Bind(R.id.pb_centered)
+    ProgressBar mCenteredProgressSpinner;
 
     @OnClick(R.id.btn_find_pi)
     void onFindPiButtonClicked(View view) {
@@ -184,9 +194,31 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
-
+        mFullScreenImageView.setClickable(true);
+        mFullScreenImageView.setOnClickListener(v -> {
+            mFullScreenImageView.setVisibility(View.GONE);
+            mCenteredProgressSpinner.setVisibility(View.GONE);
+        });
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
+        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList, uri -> {
+            mFullScreenImageView.setVisibility(View.VISIBLE);
+            mCenteredProgressSpinner.setVisibility(View.VISIBLE);
+            Picasso.with(getActivity())
+                    .load(uri)
+                    .into(mFullScreenImageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Timber.d("Successfully loaded fullscreen image from uri: " + uri);
+                            mCenteredProgressSpinner.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            Timber.e("Failed to load fullscreen image from uri: " + uri);
+                            mCenteredProgressSpinner.setVisibility(View.GONE);
+                        }
+                    });
+        });
         mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
         return rootView;
     }
