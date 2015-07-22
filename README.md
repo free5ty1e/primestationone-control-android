@@ -5,6 +5,10 @@
 Download from the Play Store:
 https://play.google.com/store/apps/details?id=com.chrisprime.primestationonecontrol
 
+### What is a PrimeStation One?  
+Retro gaming via emulation on a Raspberry Pi, built on top of RetroPie.  See the PrimeStation One repo for more details:
+(https://github.com/free5ty1e/primestationone)
+
 ### Features (so far):
 * Scan your simple class C subnet for PrimeStation Ones, display list showing IP / hostname / version 
 
