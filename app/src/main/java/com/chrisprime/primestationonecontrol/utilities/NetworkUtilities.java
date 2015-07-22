@@ -23,19 +23,96 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import timber.log.Timber;
 
 public class NetworkUtilities {
-
-    //TODO: User preference for timeouts
-    public static final int TIMEOUT_MILLIS = 1500;
-    public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
-    public static final String IP_SEPARATOR_CHAR = ".";
+    //TODO: User preferences for timeouts
+    public static final int PING_TIMEOUT_MILLIS = 150;
+    public static final int SSH_TIMEOUT_MILLIS = 1500;
 
     //TODO: Default to full sweep but provide user settings for last octet range
-    public static final int LAST_IP_OCTET_MIN = 1;
-    public static final int LAST_IP_OCTET_MAX = 255;
+    public static final int LAST_IP_OCTET_MIN = 50;
+    public static final int LAST_IP_OCTET_MAX = 70;
+
+    public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
+    public static final String IP_SEPARATOR_CHAR = ".";
+    public static final String PING_RESPONSE_PREFIX_MATCHER = "from ";
+    public final static String IPADDRESS_PATTERN =
+            "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+
+
+    public static String getMac(String ip) {
+        Pattern macpt = null;
+
+        // Find OS and set command according to OS
+        String OS = System.getProperty("os.name").toLowerCase();
+
+        String[] cmd;
+        if (OS.contains("win")) {
+            // Windows
+            macpt = Pattern
+                    .compile("[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+-[0-9a-f]+");
+            String[] a = {"arp", "-a", ip};
+            cmd = a;
+        } else {
+            // Mac OS X, Linux
+            macpt = Pattern
+                    .compile("[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+");
+            String[] a = {"arp", ip};
+            cmd = a;
+        }
+
+        try {
+            // Run command
+            Process p = Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+            // read output with BufferedReader
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    p.getInputStream()));
+            String line = reader.readLine();
+
+            // Loop trough lines
+            while (line != null) {
+                Matcher m = macpt.matcher(line);
+
+                // when Matcher finds a Line then return it as result
+                if (m.find()) {
+                    System.out.println("Found");
+                    System.out.println("MAC: " + m.group(0));
+                    return m.group(0);
+                }
+
+                line = reader.readLine();
+            }
+
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Return empty string if no MAC is found
+        return "";
+    }
+
+    public static boolean ping(String ip) {
+        List<String> commands = new ArrayList<>();
+        commands.add("ping");
+        commands.add("-c");
+        commands.add("1");
+        commands.add("-W");
+        commands.add(String.valueOf(PING_TIMEOUT_MILLIS));
+        commands.add(ip);
+        int processExitValue = CommandUtilities.doCommand(commands);
+
+        //Determine if ping of this address itself was successful
+        return processExitValue == 0;
+    }
 
     public static DhcpInfo getDhcpInfo(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -74,7 +151,7 @@ public class NetworkUtilities {
     }
 
 
-    public static Uri sshRetrievePrimeStationImage(String ip, String user, String password, int port, String remoteFile) {
+    public static Uri sshRetrievePrimeStationImage(Context context, String ip, String user, String password, int port, String remoteFile) {
         ChannelSftp channelSftp = connectSftpChannelToPi(ip, user, password, port);
         File newFile = null;
         Uri uri = null;
@@ -85,7 +162,7 @@ public class NetworkUtilities {
 
             //Save image file locally
             //TODO: Save splashscreen image under ip-based foldername
-            newFile = new File(PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME);
+            newFile = new File(context.getFilesDir(), PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME);
 
             try {
                 OutputStream fileOutputStream = new FileOutputStream(newFile);
@@ -140,7 +217,7 @@ public class NetworkUtilities {
         Session session;
         try {
             session = jsch.getSession(user, ip, port);
-            session.setTimeout(TIMEOUT_MILLIS);
+            session.setTimeout(SSH_TIMEOUT_MILLIS);
             session.setPassword(password);
             session.setConfig("StrictHostKeyChecking", "no");
             Timber.d("Establishing Connection...");

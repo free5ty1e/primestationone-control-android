@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 def buildVersionNameMajorMinorPatchString() {
-    return "0.1.3";
+    return "0.1.4";
 }
 
 apply plugin: 'com.android.application'
@@ -38,6 +38,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+        }
     }
 
     lintOptions {
@@ -54,7 +57,6 @@ android {
         exclude 'NOTICE.txt'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
-
     }
 
     lintOptions {
@@ -96,8 +98,9 @@ dependencies {
     compile 'com.jcraft:jsch:0.1.53'
 
     compile 'com.jakewharton:butterknife:7.0.1'
-
     compile 'com.jakewharton.timber:timber:3.1.0'
+
+    compile 'com.google.code.gson:gson:2.3.1'
 
     // Needed for dagger 2
     compile 'com.google.dagger:dagger:2.0.1'
@@ -106,6 +109,9 @@ dependencies {
     // Needed specifically for annotations in Java 1.6
     compile 'org.glassfish:javax.annotation:10.0-b28'
 
+    // http://parceler.org/
+    compile 'org.parceler:parceler-api:1.0.1'
+    apt 'org.parceler:parceler:1.0.1'
 
     testCompile 'junit:junit:4.12'
 
@@ -157,6 +163,18 @@ afterEvaluate {
         commandLine grantAnimationPermissionCommand.split(' ')
     }
 
+    task unlockEmulatorDev(type: Exec, dependsOn: 'assembleDebugAndroidTest') {
+        def unlockEmulatorCommand = "$adb shell input keyevent 82"
+        println unlockEmulatorCommand
+        commandLine unlockEmulatorCommand.split(' ')
+    }
+
+    task unlockEmulatorProduction(type: Exec, dependsOn: 'assembleReleaseAndroidTest') {
+        def unlockEmulatorCommand = "$adb shell input keyevent 82"
+        println unlockEmulatorCommand
+        commandLine unlockEmulatorCommand.split(' ')
+    }
+
     // When launching individual tests from Android Studio, it seems that only the assemble tasks
     // get called directly, not the install* versions
     tasks.each { task ->
@@ -164,6 +182,10 @@ afterEvaluate {
             task.dependsOn grantAnimationPermissionDev
         } else if (task.name.startsWith('assembleReleaseAndroidTest')) {
             task.dependsOn grantAnimationPermissionProduction
+        } else if (task.name.startsWith('connectedAndroidTestDebug')) {
+            task.dependsOn unlockEmulatorDev
+        } else if (task.name.startsWith('connectedAndroidTestRelease')) {
+            task.dependsOn unlockEmulatorProduction
         }
     }
 }
