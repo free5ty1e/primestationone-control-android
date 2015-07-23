@@ -1,7 +1,9 @@
 package com.chrisprime.primestationonecontrol.fragments;
 
+import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -149,8 +151,14 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
     }
 
     private String checkForPrimeStationOnes(String gatewayPrefix) {
-        for (int ipLastOctetToTry = NetworkUtilities.LAST_IP_OCTET_MIN;
-             ipLastOctetToTry <= NetworkUtilities.LAST_IP_OCTET_MAX; ipLastOctetToTry++) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int lastIpOctetMin = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_min),
+                getResources().getString(R.string.pref_default_ip_last_octet_min)));
+        int lastIpOctetMax = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_max),
+                getResources().getString(R.string.pref_default_ip_last_octet_max)));
+
+        for (int ipLastOctetToTry = lastIpOctetMin;
+             ipLastOctetToTry <= lastIpOctetMax; ipLastOctetToTry++) {
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
                 String ipAddressToTry = gatewayPrefix + ipLastOctetToTry;
 
@@ -160,7 +168,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                 String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
                 if (primeStationVersion.length() > 0) {
                     String hostname = getHostname(ipAddressToTry);
-                    String mac = NetworkUtilities.getMac(ipAddressToTry);
+                    String mac = "";
                     PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion, mac);
                     Timber.d("Found PrimeStationOne: " + primeStationOne);
                     mPrimeStationOneList.add(primeStationOne);
@@ -176,15 +184,28 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
     @NonNull
     private String getCurrentGatewayPrefix() {
+        String gatewayPrefix;
         DhcpInfo dhcpInfo = NetworkUtilities.getDhcpInfo(getActivity());
         StringBuffer stringBuffer = new StringBuffer();
         NetworkUtilities.putAddress(stringBuffer, dhcpInfo.gateway);
         String gatewayIp = stringBuffer.toString();
         String[] gatewayIpOctets = gatewayIp.split(NetworkUtilities.IP_SEPARATOR_CHAR_MATCHER);
-        String gatewayPrefix = gatewayIpOctets.length == 0 ? "" : gatewayIpOctets[0]
+        String detectedGatewayPrefix = gatewayIpOctets.length == 0 ? "" : gatewayIpOctets[0]
                 + NetworkUtilities.IP_SEPARATOR_CHAR + gatewayIpOctets[1] + NetworkUtilities.IP_SEPARATOR_CHAR + gatewayIpOctets[2] + NetworkUtilities.IP_SEPARATOR_CHAR;
         Timber.d("gatewayIpOctets = " + Arrays.toString(gatewayIpOctets) + ", gatewayPrefix = "
-                + gatewayPrefix + ", gatewayIp = " + gatewayIp + ", DhcpInfo = " + dhcpInfo);
+                + detectedGatewayPrefix + ", gatewayIp = " + gatewayIp + ", DhcpInfo = " + dhcpInfo);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean ipPrefixOverrideEnabled = preferences.getBoolean(getString(R.string.pref_key_override_ip_enable), false);
+
+        if (ipPrefixOverrideEnabled) {
+            gatewayPrefix = preferences.getString(getString(R.string.pref_key_override_ip_prefix),
+                    getString(R.string.pref_default_ip_prefix)) + NetworkUtilities.IP_SEPARATOR_CHAR;
+            Timber.d("IP Prefix override active, forcing prefix to: " + gatewayPrefix);
+        } else {
+            gatewayPrefix = detectedGatewayPrefix;
+            Timber.d("IP Prefix override inactive, prefix autodetected: " + gatewayPrefix);
+        }
         return gatewayPrefix;
     }
 
