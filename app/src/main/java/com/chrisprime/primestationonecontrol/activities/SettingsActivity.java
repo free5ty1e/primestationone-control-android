@@ -83,9 +83,9 @@ public class SettingsActivity extends PreferenceActivity {
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
-        bindPreferenceSummaryToValue(findPreference("override_ip_prefix"));
-        bindPreferenceSummaryToValue(findPreference("override_ip_last_octet_minimum"));
-        bindPreferenceSummaryToValue(findPreference("override_ip_last_octet_maximum"));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_override_ip_prefix)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_override_ip_last_octet_min)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_override_ip_last_octet_max)));
 //        bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
 //        bindPreferenceSummaryToValue(findPreference("sync_frequency"));
     }

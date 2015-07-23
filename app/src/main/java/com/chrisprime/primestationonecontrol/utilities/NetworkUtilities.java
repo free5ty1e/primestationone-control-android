@@ -35,10 +35,6 @@ public class NetworkUtilities {
     public static final int PING_TIMEOUT_MILLIS = 150;
     public static final int SSH_TIMEOUT_MILLIS = 1500;
 
-    //TODO: Default to full sweep but provide user settings for last octet range
-    public static final int LAST_IP_OCTET_MIN = 1;
-    public static final int LAST_IP_OCTET_MAX = 255;
-
     public static final String IP_SEPARATOR_CHAR_MATCHER = "\\.";
     public static final String IP_SEPARATOR_CHAR = ".";
     public static final String PING_RESPONSE_PREFIX_MATCHER = "from ";
