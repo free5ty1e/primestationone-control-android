@@ -19,8 +19,10 @@ import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
+import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
+import com.google.gson.Gson;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -41,7 +43,7 @@ import timber.log.Timber;
 
 public class PrimeStationOneDiscoveryFragment extends Fragment {
 
-    private List<PrimeStationOne> mPrimeStationOneList = new ArrayList<>();
+    private List<PrimeStationOne> mPrimeStationOneList;
     private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
     private Observable<String> mFindPiObservable;
     private Subscriber<String> mFindPiSubscriber;
@@ -118,6 +120,12 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                         mTvFoundPi.setText(numPrimestationsFound > 0 ?
                                 numPrimestationsFound > 1 ? "Found " + numPrimestationsFound + " Primestations! xD" : "Found Primestation! :D"
                                 : "None found :(");
+
+                        //Store found primestations as JSON file
+                        String jsonString = new Gson().toJson(mPrimeStationOneList);
+                        Timber.d("bundled found primestations into JSON string:\n" + jsonString);
+                        FileUtilities.createAndSaveFile(getActivity(), PrimeStationOne.FOUND_PRIMESTATIONS_JSON_FILENAME, jsonString);
+
                     });
                     unsubscribe();
                 }
@@ -221,6 +229,14 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
             mCenteredProgressSpinner.setVisibility(View.GONE);
         });
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        //restore json from file and use as found primestations without requiring a scan, if any were stored:
+        mPrimeStationOneList = FileUtilities.readJsonPrimestationList(getActivity());
+        Timber.d("Deserialized json file into primeStationOneList: " + mPrimeStationOneList);
+        if (mPrimeStationOneList == null) {
+            mPrimeStationOneList = new ArrayList<>();
+        }
+
         mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList, uri -> {
             mFullScreenImageView.setVisibility(View.VISIBLE);
             mCenteredProgressSpinner.setVisibility(View.VISIBLE);
@@ -241,6 +257,8 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                     });
         });
         mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
+
+
         return rootView;
     }
 }

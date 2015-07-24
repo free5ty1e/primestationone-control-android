@@ -5,7 +5,6 @@ import android.net.DhcpInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 
-import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -100,11 +99,7 @@ public class NetworkUtilities {
             bufferedInputStream = new BufferedInputStream(channelSftp.get(fileLocationOnPrimestation));
 
             //Save splashscreen image under ip-based foldername
-            File folder = new File(context.getFilesDir() + File.separator
-                    + PrimeStationOneControlApplication.PRIMESTATION_DATA_STORAGE_PREFIX + ip);
-
-            //noinspection ResultOfMethodCallIgnored
-            folder.mkdirs();   //Creates folder if necessary, we don't care if it did or not
+            File folder = FileUtilities.getPrimeStationStorageFolder(context, ip);
 
             newFile = new File(folder, fileNameToSaveLocally);
             try {

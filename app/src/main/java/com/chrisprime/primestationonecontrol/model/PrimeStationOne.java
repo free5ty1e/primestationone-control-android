@@ -18,6 +18,8 @@ public class PrimeStationOne {
     public static final String SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME = "splashscreenwithcontrolsandversion.png";
     public static final String DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION = "/home/pi/" + SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME;
     public static final String PRIMESTATION_IMGUR_SPLASHSCREEN_SOURCE_IMAGE_URL = "http://i.imgur.com/UnMdAZX.png";
+    public static final String PRIMESTATION_DATA_STORAGE_PREFIX = "ps1_";
+    public static final String FOUND_PRIMESTATIONS_JSON_FILENAME = PRIMESTATION_DATA_STORAGE_PREFIX + "found_primestations.json";
 
     @SerializedName("ipAddress")
     String ipAddress;
