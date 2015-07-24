@@ -5,6 +5,7 @@ import android.net.DhcpInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 
+import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -25,8 +26,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import timber.log.Timber;
 
@@ -90,19 +89,24 @@ public class NetworkUtilities {
     }
 
 
-    public static Uri sshRetrievePrimeStationImage(Context context, String ip, String user, String password, int port, String remoteFile) {
+    public static Uri sshRetrieveAndSavePrimeStationFile(Context context, String ip, String user, String password,
+                                                         int port, String fileLocationOnPrimestation, String fileNameToSaveLocally) {
         ChannelSftp channelSftp = connectSftpChannelToPi(ip, user, password, port);
-        File newFile = null;
+        File newFile;
         Uri uri = null;
         byte[] buffer = new byte[1024];
-        BufferedInputStream bufferedInputStream = null;
+        BufferedInputStream bufferedInputStream;
         try {
-            bufferedInputStream = new BufferedInputStream(channelSftp.get(PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION));
+            bufferedInputStream = new BufferedInputStream(channelSftp.get(fileLocationOnPrimestation));
 
-            //Save image file locally
-            //TODO: Save splashscreen image under ip-based foldername
-            newFile = new File(context.getFilesDir(), PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME);
+            //Save splashscreen image under ip-based foldername
+            File folder = new File(context.getFilesDir() + File.separator
+                    + PrimeStationOneControlApplication.PRIMESTATION_DATA_STORAGE_PREFIX + ip);
 
+            //noinspection ResultOfMethodCallIgnored
+            folder.mkdirs();   //Creates folder if necessary, we don't care if it did or not
+
+            newFile = new File(folder, fileNameToSaveLocally);
             try {
                 OutputStream fileOutputStream = new FileOutputStream(newFile);
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
@@ -114,10 +118,10 @@ public class NetworkUtilities {
                 bufferedOutputStream.close();
                 uri = Uri.fromFile(newFile);
             } catch (IOException e) {
-                Timber.e(e, ".sshRetrievePrimeStationImage() error: " + e.getMessage());
+                Timber.e(e, ".sshRetrieveAndSavePrimeStationFile() error: " + e.getMessage());
             }
         } catch (SftpException e) {
-            Timber.e(e, ".sshRetrievePrimeStationImage() error: " + e.getMessage());
+            Timber.e(e, ".sshRetrieveAndSavePrimeStationFile() error: " + e.getMessage());
         }
         return uri;
     }

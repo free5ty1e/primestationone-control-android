@@ -106,8 +106,8 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
                 Observable retrieveImageObservable = Observable.create(
                         sub -> {
                             sub.onNext(
-                                    NetworkUtilities.sshRetrievePrimeStationImage(v.getContext(), primeStationOne.getIpAddress(),
-                                            PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION));
+                                    NetworkUtilities.sshRetrieveAndSavePrimeStationFile(v.getContext(), primeStationOne.getIpAddress(),
+                                            PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION, PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME));
                             sub.onCompleted();
                         }
                 )

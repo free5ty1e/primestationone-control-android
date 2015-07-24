@@ -6,6 +6,8 @@ import android.util.Log;
 import timber.log.Timber;
 
 public class PrimeStationOneControlApplication extends Application {
+    public static final String PRIMESTATION_DATA_STORAGE_PREFIX = "ps1_";
+
     @Override
     public void onCreate() {
         super.onCreate();
