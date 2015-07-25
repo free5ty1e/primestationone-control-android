@@ -241,8 +241,11 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
         Uri splashscreenUri = primeStationOne.getSplashscreenUri();
         Picasso.with(this)
                 .load(splashscreenUri)
-                .rotate(90)
+
+//TODO: Look into why fit() breaks gingerbread's ability to show the fullscreen image
 //                .fit()
+
+                .rotate(90)
                 .into(mFullScreenImageView, new Callback() {
                     @Override
                     public void onSuccess() {
