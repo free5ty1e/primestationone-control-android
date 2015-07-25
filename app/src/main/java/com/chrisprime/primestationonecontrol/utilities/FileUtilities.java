@@ -75,4 +75,12 @@ public class FileUtilities {
         }.getType();
         return new Gson().fromJson(json, listType);
     }
+
+    @Nullable
+    public static PrimeStationOne readJsonCurrentPrimestation(Context context) {
+        String json = readJsonData(new File(getPrimeStationStorageFolder(context, null),
+                PrimeStationOne.CURRENT_PRIMESTATION_JSON_FILENAME));
+        Timber.d("Read current primestation from JSON file:\n" + json);
+        return new Gson().fromJson(json, PrimeStationOne.class);
+    }
 }

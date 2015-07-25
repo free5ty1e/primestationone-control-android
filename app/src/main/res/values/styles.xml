@@ -5,4 +5,13 @@
         <item name="colorPrimary">@color/prime_green</item>
     </style>
 
+    <style name="PrimeStationOneControlButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/prime_orange</item>
+        <item name="android:textColor">@color/prime_charcoal</item>
+        <item name="android:layout_marginBottom">@dimen/primestation_command_button_spacing</item>
+        <item name="android:padding">@dimen/abc_action_bar_default_padding_material</item>
+    </style>
+
 </resources>

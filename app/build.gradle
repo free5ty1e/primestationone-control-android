@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 def buildVersionNameMajorMinorPatchString() {
-    return "0.1.6";
+    return "0.2.0";
 }
 
 apply plugin: 'com.android.application'

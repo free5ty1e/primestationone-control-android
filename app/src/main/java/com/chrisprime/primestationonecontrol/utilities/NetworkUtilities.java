@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -148,6 +150,49 @@ public class NetworkUtilities {
             }
         }
         return channelSftp;
+    }
+
+    //TODO: Create method overload to send a list / array of commands in series
+    public static int sendSshCommandToPi(String ip, String user, String password, int port, String command, boolean waitForReturnValueAndCommandOutput) {
+        int exitStatus = -1;
+        Session session = connectSshSessionToPi(ip, user, password, port);
+        if (session != null) {
+            Timber.d("Creating SSH command execution Channel...");
+            try {
+                Channel channel = session.openChannel("exec");
+                ((ChannelExec) channel).setCommand(command);
+                channel.setInputStream(null);
+
+                ((ChannelExec) channel).setErrStream(System.err);
+                InputStream in = channel.getInputStream();
+                channel.connect();
+                Timber.d("SSH command execution channel created and connected.");
+
+                byte[] tmp = new byte[1024];
+                while (true) {
+                    while (in.available() > 0) {
+                        int i = in.read(tmp, 0, 1024);
+                        if (i < 0)
+                            break;
+                        Timber.d(new String(tmp, 0, i));
+                    }
+                    if (channel.isClosed() && waitForReturnValueAndCommandOutput) {
+                        exitStatus = channel.getExitStatus();
+                        Timber.d("exit-status: " + exitStatus);
+                        break;
+                    } else if (!waitForReturnValueAndCommandOutput) {    //Just return, dont care about exit status.
+                        Timber.d("Just exiting without waiting for command exit status code...");
+                        break;
+                    }
+                    Thread.sleep(1000);
+                }
+                channel.disconnect();
+                session.disconnect();
+            } catch (JSchException | IOException | InterruptedException e) {
+                Timber.e(e, ".sendSshCommandToPi(" + ip + ") error: " + e + ": " + e.getMessage());
+            }
+        }
+        return exitStatus;
     }
 
     public static Session connectSshSessionToPi(String ip, String user, String password, int port) {

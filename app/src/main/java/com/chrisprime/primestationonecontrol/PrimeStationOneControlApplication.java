@@ -3,9 +3,25 @@ package com.chrisprime.primestationonecontrol;
 import android.app.Application;
 import android.util.Log;
 
+import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
+import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
+
 import timber.log.Timber;
 
 public class PrimeStationOneControlApplication extends Application {
+    private static PrimeStationOneControlApplication sInstance;
+
+    private PrimeStationOne mCurrentPrimeStationOne;
+
+    //This only gets started by the os so my singleton looks a little weird for this class
+    public PrimeStationOneControlApplication() {
+        super();
+        sInstance = this;
+    }
+
+    public static PrimeStationOneControlApplication getInstance() {
+        return sInstance;
+    }
 
     @Override
     public void onCreate() {
@@ -18,7 +34,10 @@ public class PrimeStationOneControlApplication extends Application {
 
         String buildType = BuildConfig.DEBUG ? "debug" : "production";
         Timber.d("Launching " + buildType + " build version " + BuildConfig.VERSION_NAME + ", which is version code " + BuildConfig.VERSION_CODE);
+
+        mCurrentPrimeStationOne = FileUtilities.readJsonCurrentPrimestation(this);
     }
+
 
     /**
      * A tree which logs important information for crash reporting.
@@ -42,5 +61,13 @@ public class PrimeStationOneControlApplication extends Application {
 //                }
 //            }
         }
+    }
+
+    public PrimeStationOne getCurrentPrimeStationOne() {
+        return mCurrentPrimeStationOne;
+    }
+
+    public void setCurrentPrimeStationOne(PrimeStationOne mCurrentPrimeStationOne) {
+        this.mCurrentPrimeStationOne = mCurrentPrimeStationOne;
     }
 }

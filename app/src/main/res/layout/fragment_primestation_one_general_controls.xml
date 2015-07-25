@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/abc_action_bar_default_padding_material" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_below="@id/tv_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/ll_button_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/abc_action_bar_default_padding_material">
+
+            <Button
+                android:id="@+id/btn_panic_kill_all_emus_and_es"
+                android:text="@string/button_panic_kill_emus_and_es_text"
+                style="@style/PrimeStationOneControlButton" />
+
+            <Button
+                android:id="@+id/btn_restart_primestation"
+                android:text="@string/button_restart_primestation"
+                style="@style/PrimeStationOneControlButton" />
+
+            <Button
+                android:id="@+id/btn_shutdown_primestation"
+                android:text="@string/button_shutdown_primestation"
+                style="@style/PrimeStationOneControlButton" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
