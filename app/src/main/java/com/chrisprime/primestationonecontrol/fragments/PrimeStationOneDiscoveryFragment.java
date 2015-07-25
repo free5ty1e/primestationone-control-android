@@ -23,8 +23,6 @@ import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
 import com.google.gson.Gson;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -69,12 +67,6 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
 
     @Bind(R.id.btn_find_pi)
     Button mBtnFindPi;
-
-    @Bind(R.id.iv_fullscreen)
-    ImageView mFullScreenImageView;
-
-    @Bind(R.id.pb_centered)
-    ProgressBar mCenteredProgressSpinner;
 
     @OnClick(R.id.btn_find_pi)
     void onFindPiButtonClicked(View view) {
@@ -126,6 +118,8 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                         Timber.d("bundled found primestations into JSON string:\n" + jsonString);
                         FileUtilities.createAndSaveFile(getActivity(), PrimeStationOne.FOUND_PRIMESTATIONS_JSON_FILENAME, jsonString);
 
+                        //Clear lazy screen wakelock now that scan has completed
+                        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     });
                     unsubscribe();
                 }
@@ -221,13 +215,8 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_primestation_one_discovery, container, false);
         ButterKnife.bind(this, rootView);
-        mFullScreenImageView.setClickable(true);
-        mFullScreenImageView.setOnClickListener(v -> {
-            mFullScreenImageView.setVisibility(View.GONE);
-            mCenteredProgressSpinner.setVisibility(View.GONE);
-        });
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         //restore json from file and use as found primestations without requiring a scan, if any were stored:
@@ -237,25 +226,7 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
             mPrimeStationOneList = new ArrayList<>();
         }
 
-        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList, uri -> {
-            mFullScreenImageView.setVisibility(View.VISIBLE);
-            mCenteredProgressSpinner.setVisibility(View.VISIBLE);
-            Picasso.with(getActivity())
-                    .load(uri)
-                    .into(mFullScreenImageView, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            Timber.d("Successfully loaded fullscreen image from uri: " + uri);
-                            mCenteredProgressSpinner.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onError() {
-                            Timber.e("Failed to load fullscreen image from uri: " + uri);
-                            mCenteredProgressSpinner.setVisibility(View.GONE);
-                        }
-                    });
-        });
+        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
         mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
 
 

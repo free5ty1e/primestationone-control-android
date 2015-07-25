@@ -3,9 +3,24 @@ package com.chrisprime.primestationonecontrol;
 import android.app.Application;
 import android.util.Log;
 
+import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
+
 import timber.log.Timber;
 
 public class PrimeStationOneControlApplication extends Application {
+    private static PrimeStationOneControlApplication sInstance;
+
+    private PrimeStationOne mCurrentPrimeStationOne;
+
+    //This only gets started by the os so my singleton looks a little weird for this class
+    public PrimeStationOneControlApplication() {
+        super();
+        sInstance = this;
+    }
+
+    public static PrimeStationOneControlApplication getInstance() {
+        return sInstance;
+    }
 
     @Override
     public void onCreate() {
@@ -42,5 +57,13 @@ public class PrimeStationOneControlApplication extends Application {
 //                }
 //            }
         }
+    }
+
+    public PrimeStationOne getCurrentPrimeStationOne() {
+        return mCurrentPrimeStationOne;
+    }
+
+    public void setCurrentPrimeStationOne(PrimeStationOne mCurrentPrimeStationOne) {
+        this.mCurrentPrimeStationOne = mCurrentPrimeStationOne;
     }
 }
