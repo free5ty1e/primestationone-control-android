@@ -171,77 +171,87 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_show_quickref) {
-            if (determineIfCurrentlyDownloadingSplashscreen()) {
-                Toast.makeText(this, "Currently downloading, please wait...", Toast.LENGTH_SHORT).show();
+            PrimeStationOne primeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
+            if (primeStationOne == null) {
+                Toast.makeText(PrimeStationOneControlActivity.this, "No PrimeStation One currently selected!", Toast.LENGTH_SHORT).show();
             } else {
-                PrimeStationOne primeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
-                String currentPrimestationReportText = "Current PrimeStation One is: " + primeStationOne.toString();
-                if (primeStationOne.isRetrievedSplashscreen()) {    //Already retrieved this splashscreen
-                    Toast.makeText(this, "Displaying splashscreen!  " + currentPrimestationReportText, Toast.LENGTH_LONG).show();
-                    mCenteredProgressSpinner.setVisibility(View.VISIBLE);
 
-                    //Display full screen for quick reference
-                    Uri splashscreenUri = primeStationOne.getSplashscreenUri();
-                    Picasso.with(this).load(splashscreenUri)
-                            .into(mFullScreenImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    mFullScreenImageView.setVisibility(View.VISIBLE);
-                                    mCenteredProgressSpinner.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Toast.makeText(PrimeStationOneControlActivity.this, "Error loading "
-                                            + splashscreenUri, Toast.LENGTH_LONG).show();
-                                    mCenteredProgressSpinner.setVisibility(View.GONE);
-                                }
-                            });
+                if (determineIfCurrentlyDownloadingSplashscreen()) {
+                    Toast.makeText(this, "Currently downloading, please wait...", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, "Retrieving splashscreen...  " + currentPrimestationReportText, Toast.LENGTH_LONG).show();
+                    String currentPrimestationReportText = "Current PrimeStation One is: " + primeStationOne.toString();
+                    if (primeStationOne.isRetrievedSplashscreen()) {    //Already retrieved this splashscreen
+                        Toast.makeText(this, "Displaying splashscreen!  " + currentPrimestationReportText, Toast.LENGTH_LONG).show();
+                        displayFullScreenQuickRef(primeStationOne);
+                    } else {
+                        Toast.makeText(this, "Retrieving splashscreen...  " + currentPrimestationReportText, Toast.LENGTH_LONG).show();
 
-                    mCenteredProgressSpinner.setVisibility(View.VISIBLE);
-                    mRetrieveImageObservable = Observable.create(
-                            sub -> {
-                                sub.onNext(
-                                        NetworkUtilities.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.getIpAddress(),
-                                                PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD,
-                                                PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION,
-                                                PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME));
-                                sub.onCompleted();
-                            }
-                    )
+                        mCenteredProgressSpinner.setVisibility(View.VISIBLE);
+                        mRetrieveImageObservable = Observable.create(
+                                sub -> {
+                                    sub.onNext(
+                                            NetworkUtilities.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.getIpAddress(),
+                                                    PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD,
+                                                    PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION,
+                                                    PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME));
+                                    sub.onCompleted();
+                                }
+                        )
 //                .map(s -> s + " -Love, Chris")
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread());
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread());
 
-                    mRetrieveImageSubscriber = new Subscriber<Uri>() {
-                        @Override
-                        public void onCompleted() {
-                            String message = "retrieval of image completed!";
-                            Timber.d(message);
-                            Toast.makeText(PrimeStationOneControlActivity.this, message, Toast.LENGTH_SHORT).show();
-                            mCenteredProgressSpinner.setVisibility(View.GONE);
-                        }
+                        mRetrieveImageSubscriber = new Subscriber<Uri>() {
+                            @Override
+                            public void onCompleted() {
+                                String message = "retrieval of image completed!";
+                                Timber.d(message);
+                                Toast.makeText(PrimeStationOneControlActivity.this, message, Toast.LENGTH_SHORT).show();
+                                mCenteredProgressSpinner.setVisibility(View.GONE);
+                                displayFullScreenQuickRef(primeStationOne);
+                            }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
-                            mCenteredProgressSpinner.setVisibility(View.GONE);
-                        }
+                            @Override
+                            public void onError(Throwable e) {
+                                Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
+                                mCenteredProgressSpinner.setVisibility(View.GONE);
+                            }
 
-                        @Override
-                        public void onNext(Uri uri) {
-                            primeStationOne.setSplashscreenUri(uri);
-                            primeStationOne.setRetrievedSplashscreen(true);
-                        }
-                    };
-                    mRetreiveImageSubscription = mRetrieveImageObservable.subscribe(mRetrieveImageSubscriber);
+                            @Override
+                            public void onNext(Uri uri) {
+                                primeStationOne.setSplashscreenUri(uri);
+                                primeStationOne.setRetrievedSplashscreen(true);
+                            }
+                        };
+                        mRetreiveImageSubscription = mRetrieveImageObservable.subscribe(mRetrieveImageSubscriber);
+                    }
                 }
+                return true;
             }
-            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void displayFullScreenQuickRef(PrimeStationOne primeStationOne) {
+        mCenteredProgressSpinner.setVisibility(View.VISIBLE);
+
+        //Display full screen for quick reference
+        Uri splashscreenUri = primeStationOne.getSplashscreenUri();
+        Picasso.with(this).load(splashscreenUri)
+                .into(mFullScreenImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        mFullScreenImageView.setVisibility(View.VISIBLE);
+                        mCenteredProgressSpinner.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        Toast.makeText(PrimeStationOneControlActivity.this, "Error loading "
+                                + splashscreenUri, Toast.LENGTH_LONG).show();
+                        mCenteredProgressSpinner.setVisibility(View.GONE);
+                    }
+                });
     }
 
     private boolean determineIfCurrentlyDownloadingSplashscreen() {

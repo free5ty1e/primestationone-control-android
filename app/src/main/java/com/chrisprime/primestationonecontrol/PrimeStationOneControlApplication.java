@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
+import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 
 import timber.log.Timber;
 
@@ -33,7 +34,10 @@ public class PrimeStationOneControlApplication extends Application {
 
         String buildType = BuildConfig.DEBUG ? "debug" : "production";
         Timber.d("Launching " + buildType + " build version " + BuildConfig.VERSION_NAME + ", which is version code " + BuildConfig.VERSION_CODE);
+
+        mCurrentPrimeStationOne = FileUtilities.readJsonCurrentPrimestation(this);
     }
+
 
     /**
      * A tree which logs important information for crash reporting.

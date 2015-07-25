@@ -20,6 +20,7 @@ public class PrimeStationOne {
     public static final String PRIMESTATION_IMGUR_SPLASHSCREEN_SOURCE_IMAGE_URL = "http://i.imgur.com/UnMdAZX.png";
     public static final String PRIMESTATION_DATA_STORAGE_PREFIX = "ps1_";
     public static final String FOUND_PRIMESTATIONS_JSON_FILENAME = PRIMESTATION_DATA_STORAGE_PREFIX + "found_primestations.json";
+    public static final String CURRENT_PRIMESTATION_JSON_FILENAME = PRIMESTATION_DATA_STORAGE_PREFIX + "current_primestation.json";
 
     @SerializedName("ipAddress")
     String ipAddress;

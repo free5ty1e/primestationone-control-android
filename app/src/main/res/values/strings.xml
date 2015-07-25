@@ -14,7 +14,7 @@
     <string name="button_find_pi_text">Find PrimeStations</string>
     <string name="button_find_pi_cancel_text">Stop scanning!</string>
 
-    <string name="button_panic_kill_emus_and_es_text">Kill All Emulators and EmulationStation</string>
+    <string name="button_panic_kill_emus_and_es_text">Kill All Emulators and Restart EmulationStation</string>
     <string name="button_restart_primestation">Restart PrimeStation</string>
     <string name="button_shutdown_primestation">Shutdown PrimeStation</string>
 

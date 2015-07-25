@@ -64,16 +64,32 @@ public class PrimeStationOneGeneralControlsFragment extends Fragment {
     @OnClick(R.id.btn_panic_kill_all_emus_and_es)
     void onPanicKillAllButtonClicked(View view) {
         Timber.d("Panic killAllEmusAndEs button clicked!");
-        setAllButtonsEnabledInList(false);
+        sendCommandToCurrentPrimeStationOne("killall emulationstation ; killall retroarch ; emulationstation 2>&1 > /dev/tty1 &");
+    }
 
+    @OnClick(R.id.btn_restart_primestation)
+    void onRestartPrimeStationButtonClicked(View view) {
+        Timber.d("Restart Primestation button clicked!");
+        sendCommandToCurrentPrimeStationOne("restart");
+    }
+
+    @OnClick(R.id.btn_shutdown_primestation)
+    void onShutdownPrimeStationButtonClicked(View view) {
+        Timber.d("Shutdown Primestation button clicked!");
+        sendCommandToCurrentPrimeStationOne("off");
+    }
+
+    private void sendCommandToCurrentPrimeStationOne(final String command) {
+        PrimeStationOne currentPrimeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
+        mTvStatus.setText("Sending command to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
+        setAllButtonsEnabledInList(false);
         mPrimeStationCommandObservable = Observable.create(
                 new Observable.OnSubscribe<Integer>() {
                     @Override
                     public void call(Subscriber<? super Integer> sub) {
-                        PrimeStationOne currentPrimeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
-                        String command = "killall retroarch && killall emulationstation && emulationstation";
                         sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(), PrimeStationOne.DEFAULT_PI_USERNAME,
-                                PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command));
+                                PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command, false));
+                        sub.onCompleted();
                     }
                 }
         )
@@ -92,7 +108,7 @@ public class PrimeStationOneGeneralControlsFragment extends Fragment {
             public void onCompleted() {
                 //                findPiButton.setEnabled(true);
                 getActivity().runOnUiThread(() -> {
-                    mTvStatus.setText("KillAll completed!");
+                    mTvStatus.setText("Command sent to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
                     setAllButtonsEnabledInList(true);
                 });
                 unsubscribe();

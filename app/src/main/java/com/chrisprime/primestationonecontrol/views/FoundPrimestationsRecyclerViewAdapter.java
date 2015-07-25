@@ -14,12 +14,15 @@ import android.widget.Toast;
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
+import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * Created by cpaian on 7/18/15.
@@ -82,6 +85,11 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
         public void onClick(View v) {
             PrimeStationOneControlApplication.getInstance().setCurrentPrimeStationOne(primeStationOne);
             Toast.makeText(v.getContext(), "Current PrimeStation One set to: " + primeStationOne.toString(), Toast.LENGTH_LONG).show();
+
+            //Store current primestation as JSON file
+            String jsonString = new Gson().toJson(primeStationOne);
+            Timber.d("bundled current primestation into JSON string:\n" + jsonString);
+            FileUtilities.createAndSaveFile(v.getContext(), PrimeStationOne.CURRENT_PRIMESTATION_JSON_FILENAME, jsonString);
         }
     }
 }
