@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
@@ -81,45 +82,49 @@ public class PrimeStationOneGeneralControlsFragment extends Fragment {
 
     private void sendCommandToCurrentPrimeStationOne(final String command) {
         PrimeStationOne currentPrimeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
-        mTvStatus.setText("Sending command to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
-        setAllButtonsEnabledInList(false);
-        mPrimeStationCommandObservable = Observable.create(
-                new Observable.OnSubscribe<Integer>() {
-                    @Override
-                    public void call(Subscriber<? super Integer> sub) {
-                        sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(), PrimeStationOne.DEFAULT_PI_USERNAME,
-                                PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command, false));
-                        sub.onCompleted();
+        if (currentPrimeStationOne == null) {
+            Toast.makeText(getActivity(), "No Primestation currently selected, please select one from Search n Scan screen...", Toast.LENGTH_SHORT).show();
+        } else {
+            mTvStatus.setText("Sending command to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
+            setAllButtonsEnabledInList(false);
+            mPrimeStationCommandObservable = Observable.create(
+                    new Observable.OnSubscribe<Integer>() {
+                        @Override
+                        public void call(Subscriber<? super Integer> sub) {
+                            sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(), PrimeStationOne.DEFAULT_PI_USERNAME,
+                                    PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command, false));
+                            sub.onCompleted();
+                        }
                     }
-                }
-        )
+            )
 //                .map(s -> s + " -Love, Chris")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread());
 
-        mPrimeStationCommandSubscriber = new Subscriber<Integer>() {
+            mPrimeStationCommandSubscriber = new Subscriber<Integer>() {
 
-            @Override
-            public void onNext(Integer i) {
-                Timber.d(".onNext(command exit code: " + i + ")");
-            }
+                @Override
+                public void onNext(Integer i) {
+                    Timber.d(".onNext(command exit code: " + i + ")");
+                }
 
-            @Override
-            public void onCompleted() {
-                //                findPiButton.setEnabled(true);
-                getActivity().runOnUiThread(() -> {
-                    mTvStatus.setText("Command sent to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
-                    setAllButtonsEnabledInList(true);
-                });
-                unsubscribe();
-            }
+                @Override
+                public void onCompleted() {
+                    //                findPiButton.setEnabled(true);
+                    getActivity().runOnUiThread(() -> {
+                        mTvStatus.setText("Command sent to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
+                        setAllButtonsEnabledInList(true);
+                    });
+                    unsubscribe();
+                }
 
-            @Override
-            public void onError(Throwable e) {
-                Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
-            }
-        };
-        mPrimeStationCommandSubscription = mPrimeStationCommandObservable.subscribe(mPrimeStationCommandSubscriber);
+                @Override
+                public void onError(Throwable e) {
+                    Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
+                }
+            };
+            mPrimeStationCommandSubscription = mPrimeStationCommandObservable.subscribe(mPrimeStationCommandSubscriber);
+        }
     }
 
     private boolean determineIsBusy() {
