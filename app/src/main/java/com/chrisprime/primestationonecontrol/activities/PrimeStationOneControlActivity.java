@@ -23,6 +23,7 @@ import com.chrisprime.primestationonecontrol.fragments.NavigationDrawerFragment;
 import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneDiscoveryFragment;
 import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneGeneralControlsFragment;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
+import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -209,6 +210,7 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
                                 Toast.makeText(PrimeStationOneControlActivity.this, message, Toast.LENGTH_SHORT).show();
                                 mCenteredProgressSpinner.setVisibility(View.GONE);
                                 displayFullScreenQuickRef(primeStationOne);
+                                FileUtilities.storeCurrentPrimeStationToJson(PrimeStationOneControlActivity.this, primeStationOne);
                             }
 
                             @Override
@@ -237,7 +239,13 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
 
         //Display full screen for quick reference
         Uri splashscreenUri = primeStationOne.getSplashscreenUri();
-        Picasso.with(this).load(splashscreenUri)
+        Picasso.with(this)
+                .load(splashscreenUri)
+
+//TODO: Look into why fit() breaks gingerbread's ability to show the fullscreen image
+//                .fit()
+
+                .rotate(90)
                 .into(mFullScreenImageView, new Callback() {
                     @Override
                     public void onSuccess() {

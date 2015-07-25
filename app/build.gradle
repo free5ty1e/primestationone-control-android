@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 def buildVersionNameMajorMinorPatchString() {
-    return "0.2.0";
+    return "0.2.1";
 }
 
 apply plugin: 'com.android.application'
@@ -151,18 +151,6 @@ def adb = android.getAdbExe().toString()
 
 // Source: http://stackoverflow.com/q/29908110/112705
 afterEvaluate {
-    task grantAnimationPermissionDev(type: Exec, dependsOn: 'installDebug') {
-        def grantAnimationPermissionCommand = "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE"
-        println grantAnimationPermissionCommand
-        commandLine grantAnimationPermissionCommand.split(' ')
-    }
-
-    task grantAnimationPermissionProduction(type: Exec, dependsOn: 'installRelease') {
-        def grantAnimationPermissionCommand = "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE"
-        println grantAnimationPermissionCommand
-        commandLine grantAnimationPermissionCommand.split(' ')
-    }
-
     task unlockEmulatorDev(type: Exec, dependsOn: 'assembleDebugAndroidTest') {
         def unlockEmulatorCommand = "$adb shell input keyevent 82"
         println unlockEmulatorCommand
@@ -178,11 +166,7 @@ afterEvaluate {
     // When launching individual tests from Android Studio, it seems that only the assemble tasks
     // get called directly, not the install* versions
     tasks.each { task ->
-        if (task.name.startsWith('assembleDebugAndroidTest')) {
-            task.dependsOn grantAnimationPermissionDev
-        } else if (task.name.startsWith('assembleReleaseAndroidTest')) {
-            task.dependsOn grantAnimationPermissionProduction
-        } else if (task.name.startsWith('connectedAndroidTestDebug')) {
+        if (task.name.startsWith('connectedAndroidTestDebug')) {
             task.dependsOn unlockEmulatorDev
         } else if (task.name.startsWith('connectedAndroidTestRelease')) {
             task.dependsOn unlockEmulatorProduction
