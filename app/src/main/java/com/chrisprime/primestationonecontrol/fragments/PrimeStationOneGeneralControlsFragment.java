@@ -65,7 +65,7 @@ public class PrimeStationOneGeneralControlsFragment extends Fragment {
     @OnClick(R.id.btn_panic_kill_all_emus_and_es)
     void onPanicKillAllButtonClicked(View view) {
         Timber.d("Panic killAllEmusAndEs button clicked!");
-        sendCommandToCurrentPrimeStationOne("killall emulationstation ; killall retroarch ; emulationstation 2>&1 > /dev/tty1 &");
+        sendCommandToCurrentPrimeStationOne("killall emulationstation ; killall retroarch ; killall reicast ; emulationstation 2>&1 > /dev/tty1 &");
     }
 
     @OnClick(R.id.btn_restart_primestation)
