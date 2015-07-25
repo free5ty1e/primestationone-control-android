@@ -221,8 +221,12 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
 
                             @Override
                             public void onNext(Uri uri) {
-                                primeStationOne.setSplashscreenUri(uri);
-                                primeStationOne.setRetrievedSplashscreen(true);
+                                if (uri == null) {
+                                    Toast.makeText(PrimeStationOneControlActivity.this, "Error downloading image from Primestation, maybe try again?", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    primeStationOne.setSplashscreenUri(uri);
+                                    primeStationOne.setRetrievedSplashscreen(true);
+                                }
                             }
                         };
                         mRetreiveImageSubscription = mRetrieveImageObservable.subscribe(mRetrieveImageSubscriber);
