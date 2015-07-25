@@ -47,7 +47,7 @@ public class PrimeStationOne {
 
     @Override
     public String toString() {
-        return "PrimeStationOne{" +
+        return "PrimeStationOne{\n" +
                 "ipAddress='" + ipAddress + '\'' +
                 ", hostname='" + hostname + '\'' +
                 ", version='" + version + '\'' +
