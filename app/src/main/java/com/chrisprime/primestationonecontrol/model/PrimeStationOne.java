@@ -30,8 +30,8 @@ public class PrimeStationOne {
     String version;
     @SerializedName("mac")
     String mac;
-    @SerializedName("splashscreenUri")
-    Uri splashscreenUri;
+    @SerializedName("splashscreenUriString")
+    String splashscreenUriString;
     @SerializedName("retrievedSplashscreen")
     boolean retrievedSplashscreen = false;
 
@@ -94,11 +94,19 @@ public class PrimeStationOne {
         this.retrievedSplashscreen = retrievedSplashscreen;
     }
 
+    public String getSplashscreenUriString() {
+        return splashscreenUriString;
+    }
+
     public Uri getSplashscreenUri() {
-        return splashscreenUri;
+        return Uri.parse(splashscreenUriString);
+    }
+
+    public void setSplashscreenUriString(String splashscreenUri) {
+        this.splashscreenUriString = splashscreenUri;
     }
 
     public void setSplashscreenUri(Uri splashscreenUri) {
-        this.splashscreenUri = splashscreenUri;
+        this.splashscreenUriString = splashscreenUri.toString();
     }
 }

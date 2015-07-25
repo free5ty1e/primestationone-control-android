@@ -83,4 +83,11 @@ public class FileUtilities {
         Timber.d("Read current primestation from JSON file:\n" + json);
         return new Gson().fromJson(json, PrimeStationOne.class);
     }
+
+    public static void storeCurrentPrimeStationToJson(Context context, PrimeStationOne primeStationOne) {
+        //Store current primestation as JSON file
+        String jsonString = new Gson().toJson(primeStationOne);
+        Timber.d("bundled current primestation into JSON string:\n" + jsonString);
+        createAndSaveFile(context, PrimeStationOne.CURRENT_PRIMESTATION_JSON_FILENAME, jsonString);
+    }
 }
