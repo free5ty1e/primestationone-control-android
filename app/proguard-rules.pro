@@ -41,3 +41,10 @@
 
 #### Picasso #####
 -dontwarn com.squareup.okhttp.**
+
+#### Otto Event Bus #####
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @com.squareup.otto.Subscribe public *;
+    @com.squareup.otto.Produce public *;
+}

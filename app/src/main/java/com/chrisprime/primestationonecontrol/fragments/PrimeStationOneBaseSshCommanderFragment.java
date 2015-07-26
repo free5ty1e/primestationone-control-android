@@ -1,6 +1,5 @@
 package com.chrisprime.primestationonecontrol.fragments;
 
-import android.support.v4.app.Fragment;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -24,7 +23,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
+abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseEventBusFragment {
 
     protected Observable<Integer> mPrimeStationCommandObservable;
     protected Subscriber<Integer> mPrimeStationCommandSubscriber;
