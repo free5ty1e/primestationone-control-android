@@ -3,6 +3,7 @@ package com.chrisprime.primestationonecontrol.fragments;
 import android.support.v4.app.Fragment;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -10,6 +11,7 @@ import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
+import com.chrisprime.primestationonecontrol.utilities.TextViewUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +31,16 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
     protected Subscription mPrimeStationCommandSubscription;
     protected List<Button> mButtonList = new ArrayList<>();
 
+    @Bind(R.id.sv_status)
+    ScrollView mSvStatus;
+
     @Bind(R.id.tv_status)
     TextView mTvStatus;
 
     @Bind(R.id.ll_button_container)
     LinearLayout mButtonContainer;
 
-    protected void sendCommandToCurrentPrimeStationOne(final String command) {
+    protected void sendCommandToCurrentPrimeStationOne(final String command, final boolean waitForReturnValueAndCommandOutput, final TextView textViewForConsoleUpdates) {
         PrimeStationOne currentPrimeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
         if (currentPrimeStationOne == null) {
             Toast.makeText(getActivity(), "No Primestation currently selected, please select one from Search n Scan screen...", Toast.LENGTH_SHORT).show();
@@ -47,7 +52,8 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
                         @Override
                         public void call(Subscriber<? super Integer> sub) {
                             sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(), PrimeStationOne.DEFAULT_PI_USERNAME,
-                                    PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command, false));
+                                    PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command, waitForReturnValueAndCommandOutput,
+                                    textViewForConsoleUpdates, getActivity()));
                             sub.onCompleted();
                         }
                     }
@@ -67,7 +73,7 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
                 public void onCompleted() {
                     //                findPiButton.setEnabled(true);
                     getActivity().runOnUiThread(() -> {
-                        mTvStatus.setText("Command sent to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
+                        TextViewUtilities.addLinesToTextView("\nCommand sent to current PrimeStation One at " + currentPrimeStationOne.getIpAddress(), PrimeStationOneBaseSshCommanderFragment.this.mTvStatus, PrimeStationOneBaseSshCommanderFragment.this.mSvStatus);
                         setAllButtonsEnabledInList(true);
                     });
                     unsubscribe();
@@ -86,11 +92,10 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
         return mPrimeStationCommandSubscription != null && !mPrimeStationCommandSubscriber.isUnsubscribed();
     }
 
-
     /**
      * Make sure to call this in your fragment's onCreateView!
      */
-    protected void initializeButtonList() {
+    protected void initializeCommander() {
         //Populate the button list so we can easily run through and enable or disable them
         for (int i = 0; i < mButtonContainer.getChildCount(); i++) {
             mButtonList.add((Button) mButtonContainer.getChildAt(i));

@@ -1,9 +1,12 @@
 package com.chrisprime.primestationonecontrol.utilities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.jcraft.jsch.Channel;
@@ -155,7 +158,9 @@ public class NetworkUtilities {
     }
 
     //TODO: Create method overload to send a list / array of commands in series
-    public static int sendSshCommandToPi(String ip, String user, String password, int port, String command, boolean waitForReturnValueAndCommandOutput) {
+    public static int sendSshCommandToPi(String ip, String user, String password, int port, String command,
+                                         boolean waitForReturnValueAndCommandOutput, TextView textViewForConsoleUpdates, Activity activity) {
+
         int exitStatus = -1;
         Session session = connectSshSessionToPi(ip, user, password, port);
         if (session != null) {
@@ -176,7 +181,12 @@ public class NetworkUtilities {
                         int i = in.read(tmp, 0, 1024);
                         if (i < 0)
                             break;
-                        Timber.d(new String(tmp, 0, i));
+                        String consoleOutputLine = new String(tmp, 0, i);
+                        Timber.d(consoleOutputLine);
+                        if (textViewForConsoleUpdates != null && activity != null)  {
+                            activity.runOnUiThread(() -> TextViewUtilities.addLinesToTextView(consoleOutputLine,
+                                    textViewForConsoleUpdates, (ScrollView) textViewForConsoleUpdates.getParent()));
+                        }
                     }
                     if (channel.isClosed() && waitForReturnValueAndCommandOutput) {
                         exitStatus = channel.getExitStatus();

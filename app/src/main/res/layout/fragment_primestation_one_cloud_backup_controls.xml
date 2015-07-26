@@ -2,16 +2,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="@dimen/abc_action_bar_default_padding_material" />
+    <ScrollView
+        android:id="@+id/sv_status"
+        style="@style/statusConsoleScrollView">
+
+        <TextView
+            android:id="@+id/tv_status"
+            style="@style/statusConsoleTextView" />
+    </ScrollView>
 
     <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_below="@id/tv_status"
+        android:id="@+id/sv_button_container"
+        android:layout_below="@id/sv_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
