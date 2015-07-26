@@ -3,7 +3,6 @@ package com.chrisprime.primestationonecontrol.fragments;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -21,21 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
-import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
-import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -116,7 +102,8 @@ public class NavigationDrawerFragment extends Fragment {
                 new String[]{
                         getString(R.string.title_primestation_search),
                         getString(R.string.title_primestation_general_controls),
-                        getString(R.string.title_primestation_cloud_backup_controls)
+                        getString(R.string.title_primestation_cloud_backup_controls),
+                        getString(R.string.action_settings)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

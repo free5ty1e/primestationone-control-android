@@ -130,6 +130,9 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
             case 2: //Cloud Backup Controls
                 newMainFragment(PrimeStationOneCloudBackupControlsFragment.newInstance(), R.string.title_primestation_cloud_backup_controls);
                 break;
+            case 3: //Settings -- keep moving this one so it's at the bottom, will have to re-enumerate if more screens added!
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
             default:
                 break;
         }
