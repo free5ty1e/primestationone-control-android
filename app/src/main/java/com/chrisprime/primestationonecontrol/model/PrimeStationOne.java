@@ -1,7 +1,10 @@
 package com.chrisprime.primestationonecontrol.model;
 
+import android.content.Context;
 import android.net.Uri;
 
+import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
@@ -34,6 +37,10 @@ public class PrimeStationOne {
     String splashscreenUriString;
     @SerializedName("retrievedSplashscreen")
     boolean retrievedSplashscreen = false;
+    @SerializedName("megaEmail")
+    String megaEmail;
+    @SerializedName("megaPassword")
+    String megaPassword;
 
     public PrimeStationOne() {
     }
@@ -43,6 +50,10 @@ public class PrimeStationOne {
         this.hostname = hostname;
         this.version = version;
         this.mac = mac;
+    }
+
+    public void updateStoredPrimestation(Context context) {
+        FileUtilities.storeCurrentPrimeStationToJson(context, this);
     }
 
     @Override
@@ -108,5 +119,21 @@ public class PrimeStationOne {
 
     public void setSplashscreenUri(Uri splashscreenUri) {
         this.splashscreenUriString = splashscreenUri.toString();
+    }
+
+    public String getMegaEmail() {
+        return megaEmail;
+    }
+
+    public void setMegaEmail(String megaEmail) {
+        this.megaEmail = megaEmail;
+    }
+
+    public String getMegaPassword() {
+        return megaPassword;
+    }
+
+    public void setMegaPassword(String megaPassword) {
+        this.megaPassword = megaPassword;
     }
 }

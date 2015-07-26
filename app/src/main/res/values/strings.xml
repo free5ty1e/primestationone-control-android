@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">PrimeStationOneControl</string>
 
+    <!-- Navigation drawer labels and action bar titles -->
     <string name="title_primestation_search">Search &amp; Select</string>
     <string name="title_primestation_general_controls">General Controls</string>
+    <string name="title_primestation_cloud_backup_controls">Cloud Backup Controls</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -14,8 +16,16 @@
     <string name="button_find_pi_text">Find PrimeStations</string>
     <string name="button_find_pi_cancel_text">Stop scanning!</string>
 
+    <!-- General Control Buttons -->
     <string name="button_panic_kill_emus_and_es_text">Kill All Emulators and Restart EmulationStation</string>
     <string name="button_restart_primestation">Restart PrimeStation</string>
     <string name="button_shutdown_primestation">Shutdown PrimeStation</string>
+
+    <!-- Cloud Backup Control Buttons -->
+    <string name="button_login_to_mega_text">Log into mega.co.nz cloud account on current PrimeStation</string>
+    <string name="button_logout_of_mega_text">Log out of mega.co.nz cloud account on current PrimeStation</string>
+    <string name="button_force_backup_to_mega_text">Force backup of current PrimeStation saves to overwrite previous cloud backup</string>
+    <string name="button_force_restore_from_mega_text">Force restore of current cloud backup to overwrite current PrimeStation saves</string>
+    <string name="button_intelligent_cloud_save_sync_text">Perform intelligent sync combining current PrimeStation saves on top of previous cloud backup</string>
 
 </resources>

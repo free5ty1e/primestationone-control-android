@@ -1,9 +1,12 @@
 package com.chrisprime.primestationonecontrol.utilities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.jcraft.jsch.Channel;
@@ -93,32 +96,34 @@ public class NetworkUtilities {
     public static Uri sshRetrieveAndSavePrimeStationFile(Context context, String ip, String user, String password,
                                                          int port, String fileLocationOnPrimestation, String fileNameToSaveLocally) {
         ChannelSftp channelSftp = connectSftpChannelToPi(ip, user, password, port);
-        File newFile;
         Uri uri = null;
-        byte[] buffer = new byte[1024];
-        BufferedInputStream bufferedInputStream;
-        try {
-            bufferedInputStream = new BufferedInputStream(channelSftp.get(fileLocationOnPrimestation));
-
-            //Save splashscreen image under ip-based foldername
-            File folder = FileUtilities.getPrimeStationStorageFolder(context, ip);
-
-            newFile = new File(folder, fileNameToSaveLocally);
+        if (channelSftp != null) {
+            File newFile;
+            byte[] buffer = new byte[1024];
+            BufferedInputStream bufferedInputStream;
             try {
-                OutputStream fileOutputStream = new FileOutputStream(newFile);
-                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-                int readCount;
-                while ((readCount = bufferedInputStream.read(buffer)) > 0) {
-                    bufferedOutputStream.write(buffer, 0, readCount);
+                bufferedInputStream = new BufferedInputStream(channelSftp.get(fileLocationOnPrimestation));
+
+                //Save splashscreen image under ip-based foldername
+                File folder = FileUtilities.getPrimeStationStorageFolder(context, ip);
+
+                newFile = new File(folder, fileNameToSaveLocally);
+                try {
+                    OutputStream fileOutputStream = new FileOutputStream(newFile);
+                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+                    int readCount;
+                    while ((readCount = bufferedInputStream.read(buffer)) > 0) {
+                        bufferedOutputStream.write(buffer, 0, readCount);
+                    }
+                    bufferedInputStream.close();
+                    bufferedOutputStream.close();
+                    uri = Uri.fromFile(newFile);
+                } catch (IOException e) {
+                    Timber.e(e, ".sshRetrieveAndSavePrimeStationFile() error: " + e.getMessage());
                 }
-                bufferedInputStream.close();
-                bufferedOutputStream.close();
-                uri = Uri.fromFile(newFile);
-            } catch (IOException e) {
+            } catch (SftpException e) {
                 Timber.e(e, ".sshRetrieveAndSavePrimeStationFile() error: " + e.getMessage());
             }
-        } catch (SftpException e) {
-            Timber.e(e, ".sshRetrieveAndSavePrimeStationFile() error: " + e.getMessage());
         }
         return uri;
     }
@@ -153,7 +158,9 @@ public class NetworkUtilities {
     }
 
     //TODO: Create method overload to send a list / array of commands in series
-    public static int sendSshCommandToPi(String ip, String user, String password, int port, String command, boolean waitForReturnValueAndCommandOutput) {
+    public static int sendSshCommandToPi(String ip, String user, String password, int port, String command,
+                                         boolean waitForReturnValueAndCommandOutput, TextView textViewForConsoleUpdates, Activity activity) {
+
         int exitStatus = -1;
         Session session = connectSshSessionToPi(ip, user, password, port);
         if (session != null) {
@@ -174,7 +181,12 @@ public class NetworkUtilities {
                         int i = in.read(tmp, 0, 1024);
                         if (i < 0)
                             break;
-                        Timber.d(new String(tmp, 0, i));
+                        String consoleOutputLine = new String(tmp, 0, i);
+                        Timber.d(consoleOutputLine);
+                        if (textViewForConsoleUpdates != null && activity != null)  {
+                            activity.runOnUiThread(() -> TextViewUtilities.addLinesToTextView(consoleOutputLine,
+                                    textViewForConsoleUpdates, (ScrollView) textViewForConsoleUpdates.getParent()));
+                        }
                     }
                     if (channel.isClosed() && waitForReturnValueAndCommandOutput) {
                         exitStatus = channel.getExitStatus();

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.fragments.NavigationDrawerFragment;
+import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneCloudBackupControlsFragment;
 import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneDiscoveryFragment;
 import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneGeneralControlsFragment;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
@@ -126,6 +127,12 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
             case 1: //General controls
                 newMainFragment(PrimeStationOneGeneralControlsFragment.newInstance(), R.string.title_primestation_general_controls);
                 break;
+            case 2: //Cloud Backup Controls
+                newMainFragment(PrimeStationOneCloudBackupControlsFragment.newInstance(), R.string.title_primestation_cloud_backup_controls);
+                break;
+            case 3: //Settings -- keep moving this one so it's at the bottom, will have to re-enumerate if more screens added!
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
             default:
                 break;
         }
@@ -221,8 +228,12 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
 
                             @Override
                             public void onNext(Uri uri) {
-                                primeStationOne.setSplashscreenUri(uri);
-                                primeStationOne.setRetrievedSplashscreen(true);
+                                if (uri == null) {
+                                    Toast.makeText(PrimeStationOneControlActivity.this, "Error downloading image from Primestation, maybe try again?", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    primeStationOne.setSplashscreenUri(uri);
+                                    primeStationOne.setRetrievedSplashscreen(true);
+                                }
                             }
                         };
                         mRetreiveImageSubscription = mRetrieveImageObservable.subscribe(mRetrieveImageSubscriber);

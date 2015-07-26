@@ -45,13 +45,6 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
         PrimeStationOne primeStationOne = mPrimeStationOneList.get(i);
         foundPrimeStationsRecyclerViewHolder.primeStationOne = primeStationOne;
 
-        //Download image using picasso library
-        Picasso.with(mContext).load(PrimeStationOne.PRIMESTATION_IMGUR_SPLASHSCREEN_SOURCE_IMAGE_URL)
-                .error(android.R.drawable.ic_menu_close_clear_cancel)
-                .placeholder(R.drawable.ic_launcher)
-                .fit()
-                .into(foundPrimeStationsRecyclerViewHolder.imageView);
-
         //Setting text view title
         foundPrimeStationsRecyclerViewHolder.textView.setText(primeStationOne.getIpAddress() +
                 "\n" + primeStationOne.getHostname() + "\n" + primeStationOne.getVersion() + "\n" + primeStationOne.getMac());

@@ -38,6 +38,26 @@
         android:singleLine="true"
         android:maxLines="1" />
 
+    <EditTextPreference
+        android:key="pref_key_mega_login_email"
+        android:title="@string/pref_title_mega_login_email"
+        android:defaultValue="@string/pref_default_mega_login_email"
+        android:selectAllOnFocus="true"
+        android:inputType="text"
+        android:capitalize="none"
+        android:singleLine="true"
+        android:maxLines="1" />
+
+    <EditTextPreference
+        android:key="pref_key_mega_login_password"
+        android:title="@string/pref_title_mega_login_password"
+        android:defaultValue="@string/pref_default_mega_login_password"
+        android:selectAllOnFocus="true"
+        android:inputType="textPassword"
+        android:capitalize="none"
+        android:singleLine="true"
+        android:maxLines="1" />
+
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
