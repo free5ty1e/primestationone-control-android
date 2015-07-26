@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.fragments.NavigationDrawerFragment;
+import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneCloudBackupControlsFragment;
 import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneDiscoveryFragment;
 import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneGeneralControlsFragment;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
@@ -125,6 +126,9 @@ public class PrimeStationOneControlActivity extends AppCompatActivity
                 break;
             case 1: //General controls
                 newMainFragment(PrimeStationOneGeneralControlsFragment.newInstance(), R.string.title_primestation_general_controls);
+                break;
+            case 2: //Cloud Backup Controls
+                newMainFragment(PrimeStationOneCloudBackupControlsFragment.newInstance(), R.string.title_primestation_cloud_backup_controls);
                 break;
             default:
                 break;

@@ -22,6 +22,16 @@
     <string name="pref_title_ip_last_octet_max">IP Maximum</string>
     <string name="pref_default_ip_last_octet_max">255</string>
 
+    <!--General preference keys-->
+    <string name="pref_key_mega_login_email">pref_key_mega_login_email</string>
+    <string name="pref_title_mega_login_email">MEGA.co.nz email</string>
+    <string name="pref_default_mega_login_email"/>
+
+    <string name="pref_key_mega_login_password">pref_key_mega_login_password</string>
+    <string name="pref_title_mega_login_password">MEGA.co.nz password</string>
+    <string name="pref_default_mega_login_password"/>
+
+    <!-- BELOW ARE FROM EXAMPLE TEMPLATE -->
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>

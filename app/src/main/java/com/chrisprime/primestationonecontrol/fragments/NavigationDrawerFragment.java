@@ -115,7 +115,8 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.id.text1,
                 new String[]{
                         getString(R.string.title_primestation_search),
-                        getString(R.string.title_primestation_general_controls)
+                        getString(R.string.title_primestation_general_controls),
+                        getString(R.string.title_primestation_cloud_backup_controls)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

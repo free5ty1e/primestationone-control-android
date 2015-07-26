@@ -28,12 +28,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PrimeStationOneGeneralControlsFragment extends Fragment {
-
-    private Observable<Integer> mPrimeStationCommandObservable;
-    private Subscriber<Integer> mPrimeStationCommandSubscriber;
-    private Subscription mPrimeStationCommandSubscription;
-    private List<Button> mButtonList = new ArrayList<>();
+public class PrimeStationOneGeneralControlsFragment extends PrimeStationOneBaseSshCommanderFragment {
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -47,9 +42,6 @@ public class PrimeStationOneGeneralControlsFragment extends Fragment {
         return fragment;
     }
 
-    @Bind(R.id.tv_status)
-    TextView mTvStatus;
-
     @Bind(R.id.btn_panic_kill_all_emus_and_es)
     Button mBtnPanicKillAllEmusEs;
 
@@ -58,9 +50,6 @@ public class PrimeStationOneGeneralControlsFragment extends Fragment {
 
     @Bind(R.id.btn_shutdown_primestation)
     Button mBtnShutdownPrimestation;
-
-    @Bind(R.id.ll_button_container)
-    LinearLayout mButtonContainer;
 
     @OnClick(R.id.btn_panic_kill_all_emus_and_es)
     void onPanicKillAllButtonClicked(View view) {
@@ -80,57 +69,6 @@ public class PrimeStationOneGeneralControlsFragment extends Fragment {
         sendCommandToCurrentPrimeStationOne("off");
     }
 
-    private void sendCommandToCurrentPrimeStationOne(final String command) {
-        PrimeStationOne currentPrimeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
-        if (currentPrimeStationOne == null) {
-            Toast.makeText(getActivity(), "No Primestation currently selected, please select one from Search n Scan screen...", Toast.LENGTH_SHORT).show();
-        } else {
-            mTvStatus.setText("Sending command to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
-            setAllButtonsEnabledInList(false);
-            mPrimeStationCommandObservable = Observable.create(
-                    new Observable.OnSubscribe<Integer>() {
-                        @Override
-                        public void call(Subscriber<? super Integer> sub) {
-                            sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(), PrimeStationOne.DEFAULT_PI_USERNAME,
-                                    PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command, false));
-                            sub.onCompleted();
-                        }
-                    }
-            )
-//                .map(s -> s + " -Love, Chris")
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread());
-
-            mPrimeStationCommandSubscriber = new Subscriber<Integer>() {
-
-                @Override
-                public void onNext(Integer i) {
-                    Timber.d(".onNext(command exit code: " + i + ")");
-                }
-
-                @Override
-                public void onCompleted() {
-                    //                findPiButton.setEnabled(true);
-                    getActivity().runOnUiThread(() -> {
-                        mTvStatus.setText("Command sent to current PrimeStation One at " + currentPrimeStationOne.getIpAddress() + ": " + command);
-                        setAllButtonsEnabledInList(true);
-                    });
-                    unsubscribe();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Timber.e(e, "Error with subscriber: " + e + ": " + e.getMessage());
-                }
-            };
-            mPrimeStationCommandSubscription = mPrimeStationCommandObservable.subscribe(mPrimeStationCommandSubscriber);
-        }
-    }
-
-    private boolean determineIsBusy() {
-        return mPrimeStationCommandSubscription != null && !mPrimeStationCommandSubscriber.isUnsubscribed();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -138,18 +76,5 @@ public class PrimeStationOneGeneralControlsFragment extends Fragment {
         ButterKnife.bind(this, rootView);
         initializeButtonList();
         return rootView;
-    }
-
-    private void initializeButtonList() {
-        //Populate the button list so we can easily run through and enable or disable them
-        for (int i = 0; i < mButtonContainer.getChildCount(); i++) {
-            mButtonList.add((Button) mButtonContainer.getChildAt(i));
-        }
-    }
-
-    private void setAllButtonsEnabledInList(boolean enabled) {
-        for (Button button : mButtonList) {
-            button.setEnabled(enabled);
-        }
     }
 }
