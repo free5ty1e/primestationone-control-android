@@ -157,9 +157,13 @@ public class NetworkUtilities {
         return channelSftp;
     }
 
-    //TODO: Create method overload to send a list / array of commands in series
+    public interface SshCommandConsoleStdOutLineListener {
+        void processConsoleStdOutLine(String line);
+    }
+
     public static int sendSshCommandToPi(String ip, String user, String password, int port, String command,
-                                         boolean waitForReturnValueAndCommandOutput, TextView textViewForConsoleUpdates, Activity activity) {
+                                         boolean waitForReturnValueAndCommandOutput,
+                                         SshCommandConsoleStdOutLineListener sshCommandConsoleStdOutLineListener) {
 
         int exitStatus = -1;
         Session session = connectSshSessionToPi(ip, user, password, port);
@@ -183,9 +187,8 @@ public class NetworkUtilities {
                             break;
                         String consoleOutputLine = new String(tmp, 0, i);
                         Timber.d(consoleOutputLine);
-                        if (textViewForConsoleUpdates != null && activity != null)  {
-                            activity.runOnUiThread(() -> TextViewUtilities.addLinesToTextView(consoleOutputLine,
-                                    textViewForConsoleUpdates, (ScrollView) textViewForConsoleUpdates.getParent()));
+                        if (sshCommandConsoleStdOutLineListener != null) {
+                            sshCommandConsoleStdOutLineListener.processConsoleStdOutLine(consoleOutputLine);
                         }
                     }
                     if (channel.isClosed() && waitForReturnValueAndCommandOutput) {

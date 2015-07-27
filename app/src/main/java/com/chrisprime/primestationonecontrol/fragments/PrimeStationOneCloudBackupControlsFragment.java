@@ -3,6 +3,7 @@ package com.chrisprime.primestationonecontrol.fragments;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,13 +77,35 @@ public class PrimeStationOneCloudBackupControlsFragment extends PrimeStationOneB
                     primeStationOne.setMegaEmail(charSequence.toString());
                     new MaterialDialog.Builder(getActivity())
                             .title("Login to MEGA")
-                            .content("Enter login information for Mega.co.nz...")
+                            .content("Enter password for Mega.co.nz...")
                             .positiveText("LOGIN >")
                             .negativeText("CANCEL")
+                            .inputType(InputType.TYPE_TEXT_VARIATION_PASSWORD)
                             .input("login password", primeStationOne.getMegaPassword(), false, (materialDialog1, charSequence1) -> {
                                 Timber.d("password input: " + charSequence1);
                                 primeStationOne.setMegaPassword(charSequence1.toString());
                                 primeStationOne.updateStoredPrimestation(getActivity());
+                                if (primeStationOne.getMegaEmail().equals(preferences.getString(getString(R.string.pref_key_mega_login_email), ""))
+                                        && primeStationOne.getMegaPassword().equals(preferences.getString(getString(R.string.pref_key_mega_login_password), ""))) {
+                                    Timber.d("Mega email and password match current preferences, no need to store...");
+                                } else {
+                                    new MaterialDialog.Builder(getActivity())
+                                            .title("Save MEGA login on phone?")
+                                            .content("Save this MEGA login on this phone as the preferred to pre-fill for any future PrimeStation cloud logins?")
+                                            .positiveText("OK")
+                                            .negativeText("NO THANKS")
+                                            .callback(new MaterialDialog.ButtonCallback() {
+                                                @Override
+                                                public void onPositive(MaterialDialog dialog) {
+                                                    super.onPositive(dialog);
+                                                    Timber.d("Mega email and password don't match current preferences, user requested to store in preferences...");
+                                                    SharedPreferences.Editor editor = preferences.edit();
+                                                    editor.putString(getString(R.string.pref_key_mega_login_email), primeStationOne.getMegaEmail());
+                                                    editor.putString(getString(R.string.pref_key_mega_login_password), primeStationOne.getMegaPassword());
+                                                    editor.commit();
+                                                }
+                                            }).show();
+                                }
                                 sendCommandToCurrentPrimeStationOne("echo \"Creating your .megarc file from provided email $email and not printing your password out of courtesy, you are welcome...\"\n" +
                                         "cat > /home/pi/.megarc << _EOF_\n" +
                                         "[Login]\n" +
