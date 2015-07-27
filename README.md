@@ -3,8 +3,9 @@
 
 ## PrimeStation One convenience control app for Android
 Download from the Play Store:
-https://play.google.com/store/apps/details?id=com.chrisprime.primestationonecontrol
-[![QR Code For Play Store](https://raw.githubusercontent.com/free5ty1e/primestationone-control-android/master/app/src/main/res/drawable-nodpi/qrcode.png)](https://play.google.com/store/apps/details?id=com.chrisprime.primestationonecontrol)
+* [![QR Code For Play Store](https://raw.githubusercontent.com/free5ty1e/primestationone-control-android/master/app/src/main/res/drawable-nodpi/qrcode.png)](https://play.google.com/store/apps/details?id=com.chrisprime.primestationonecontrol)
+* https://play.google.com/store/apps/details?id=com.chrisprime.primestationonecontrol
+
 
 
 
