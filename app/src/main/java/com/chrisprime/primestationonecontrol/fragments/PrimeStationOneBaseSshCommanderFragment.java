@@ -1,6 +1,6 @@
 package com.chrisprime.primestationonecontrol.fragments;
 
-import android.support.v4.app.Fragment;
+import android.app.Activity;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -24,7 +24,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
+abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseEventBusFragment {
 
     protected Observable<Integer> mPrimeStationCommandObservable;
     protected Subscriber<Integer> mPrimeStationCommandSubscriber;
@@ -53,7 +53,14 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
                         public void call(Subscriber<? super Integer> sub) {
                             sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(), PrimeStationOne.DEFAULT_PI_USERNAME,
                                     PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command, waitForReturnValueAndCommandOutput,
-                                    textViewForConsoleUpdates, getActivity()));
+                                    line -> {
+                                        String processedLine = processSshConsoleStdOutLine(line);
+                                        Activity activity = getActivity();
+                                        if (textViewForConsoleUpdates != null && activity != null) {
+                                            activity.runOnUiThread(() -> TextViewUtilities.addLinesToTextView(processedLine,
+                                                    textViewForConsoleUpdates, (ScrollView) textViewForConsoleUpdates.getParent()));
+                                        }
+                                    }));
                             sub.onCompleted();
                         }
                     }
@@ -73,7 +80,9 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
                 public void onCompleted() {
                     //                findPiButton.setEnabled(true);
                     getActivity().runOnUiThread(() -> {
-                        TextViewUtilities.addLinesToTextView("\nCommand sent to current PrimeStation One at " + currentPrimeStationOne.getIpAddress(), PrimeStationOneBaseSshCommanderFragment.this.mTvStatus, PrimeStationOneBaseSshCommanderFragment.this.mSvStatus);
+                        TextViewUtilities.addLinesToTextView("\nCommand sent to current PrimeStation One at "
+                                        + currentPrimeStationOne.getIpAddress(), PrimeStationOneBaseSshCommanderFragment.this.mTvStatus,
+                                PrimeStationOneBaseSshCommanderFragment.this.mSvStatus);
                         setAllButtonsEnabledInList(true);
                     });
                     unsubscribe();
@@ -86,6 +95,15 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends Fragment {
             };
             mPrimeStationCommandSubscription = mPrimeStationCommandObservable.subscribe(mPrimeStationCommandSubscriber);
         }
+    }
+
+    /**
+     * Override me to apply additional logic to any incoming SSH console stdout lines as they arrive, before they reach the terminal
+     * @param line
+     * @return
+     */
+    protected String processSshConsoleStdOutLine(String line) {
+        return line;
     }
 
     protected boolean determineIsCommanderBusy() {

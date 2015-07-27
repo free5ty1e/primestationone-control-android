@@ -5,11 +5,22 @@ import android.util.Log;
 
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
+import com.squareup.otto.Bus;
 
 import timber.log.Timber;
 
 public class PrimeStationOneControlApplication extends Application {
+    public static final String ID_EVENT_BUS_MAIN = "main";
+
     private static PrimeStationOneControlApplication sInstance;
+    public static PrimeStationOneControlApplication getInstance() {
+        return sInstance;
+    }
+
+    private static Bus sBus;
+    public static Bus getEventBus() {
+        return sBus;
+    }
 
     private PrimeStationOne mCurrentPrimeStationOne;
 
@@ -17,11 +28,9 @@ public class PrimeStationOneControlApplication extends Application {
     public PrimeStationOneControlApplication() {
         super();
         sInstance = this;
+        sBus = new Bus(ID_EVENT_BUS_MAIN);
     }
 
-    public static PrimeStationOneControlApplication getInstance() {
-        return sInstance;
-    }
 
     @Override
     public void onCreate() {
@@ -35,6 +44,10 @@ public class PrimeStationOneControlApplication extends Application {
         String buildType = BuildConfig.DEBUG ? "debug" : "production";
         Timber.d("Launching " + buildType + " build version " + BuildConfig.VERSION_NAME + ", which is version code " + BuildConfig.VERSION_CODE);
 
+        updateCurrentPrimeStationFromJson();
+    }
+
+    public void updateCurrentPrimeStationFromJson() {
         mCurrentPrimeStationOne = FileUtilities.readJsonCurrentPrimestation(this);
     }
 

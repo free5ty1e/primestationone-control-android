@@ -5,7 +5,6 @@ import android.net.DhcpInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,16 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.R;
+import com.chrisprime.primestationonecontrol.events.PrimeStationsListUpdatedEvent;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
-import com.google.gson.Gson;
+import com.squareup.otto.Subscribe;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -39,7 +37,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PrimeStationOneDiscoveryFragment extends Fragment {
+public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
 
     private List<PrimeStationOne> mPrimeStationOneList;
     private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
@@ -112,11 +110,8 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
                         mTvFoundPi.setText(numPrimestationsFound > 0 ?
                                 numPrimestationsFound > 1 ? "Found " + numPrimestationsFound + " Primestations! xD" : "Found Primestation! :D"
                                 : "None found :(");
+                        FileUtilities.storeFoundPrimeStationsJson(getActivity(), mPrimeStationOneList);
 
-                        //Store found primestations as JSON file
-                        String jsonString = new Gson().toJson(mPrimeStationOneList);
-                        Timber.d("bundled found primestations into JSON string:\n" + jsonString);
-                        FileUtilities.createAndSaveFile(getActivity(), PrimeStationOne.FOUND_PRIMESTATIONS_JSON_FILENAME, jsonString);
 
                         //Clear lazy screen wakelock now that scan has completed
                         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -218,18 +213,26 @@ public class PrimeStationOneDiscoveryFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_primestation_one_discovery, container, false);
         ButterKnife.bind(this, rootView);
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        initializeFoundPrimeStationsListFromJson();
 
+        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
+        mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
+
+        return rootView;
+    }
+
+    private void initializeFoundPrimeStationsListFromJson() {
         //restore json from file and use as found primestations without requiring a scan, if any were stored:
         mPrimeStationOneList = FileUtilities.readJsonPrimestationList(getActivity());
         Timber.d("Deserialized json file into primeStationOneList: " + mPrimeStationOneList);
         if (mPrimeStationOneList == null) {
             mPrimeStationOneList = new ArrayList<>();
         }
-
-        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
-        mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
-
-
-        return rootView;
     }
+
+    @Subscribe public void answerPrimeStationsListUpdatedEvent(PrimeStationsListUpdatedEvent primeStationsListUpdatedEvent) {
+        Timber.d(".answerPrimeStationsListUpdatedEvent: forcing update of primestation list to ensure data sync...");
+        initializeFoundPrimeStationsListFromJson();
+    }
+
 }

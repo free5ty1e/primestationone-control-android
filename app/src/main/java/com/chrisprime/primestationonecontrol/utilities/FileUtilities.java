@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
+import com.chrisprime.primestationonecontrol.events.PrimeStationsListUpdatedEvent;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -84,10 +86,31 @@ public class FileUtilities {
         return new Gson().fromJson(json, PrimeStationOne.class);
     }
 
+    public static void storeFoundPrimeStationsJson(Context context, List<PrimeStationOne> primeStationOneList) {
+        //Store found primestations as JSON file
+        String jsonString = new Gson().toJson(primeStationOneList);
+        Timber.d("bundled found primestations into JSON string:\n" + jsonString);
+        createAndSaveFile(context, PrimeStationOne.FOUND_PRIMESTATIONS_JSON_FILENAME, jsonString);
+        PrimeStationOneControlApplication.getEventBus().post(new PrimeStationsListUpdatedEvent());
+    }
+
     public static void storeCurrentPrimeStationToJson(Context context, PrimeStationOne primeStationOne) {
         //Store current primestation as JSON file
         String jsonString = new Gson().toJson(primeStationOne);
         Timber.d("bundled current primestation into JSON string:\n" + jsonString);
         createAndSaveFile(context, PrimeStationOne.CURRENT_PRIMESTATION_JSON_FILENAME, jsonString);
+
+        //ALSO find current primestation in json list of found primestations, and update its info in case user switches to another primestation
+        List<PrimeStationOne> primeStationOneList = readJsonPrimestationList(context);
+        if (primeStationOneList == null) {
+            Timber.w(".storeCurrentPrimeStationToJson(): PrimeStationOne List is null, cannot proceed!");
+        } else {
+            for (PrimeStationOne ps1 : primeStationOneList) {
+                if (primeStationOne.getIpAddress().equals(ps1.getIpAddress())) {
+                    ps1 = primeStationOne;
+                }
+            }
+            storeFoundPrimeStationsJson(context, primeStationOneList);
+        }
     }
 }
