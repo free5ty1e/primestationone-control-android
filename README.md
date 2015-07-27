@@ -4,6 +4,9 @@
 ## PrimeStation One convenience control app for Android
 Download from the Play Store:
 https://play.google.com/store/apps/details?id=com.chrisprime.primestationonecontrol
+[![QR Code For Play Store](https://raw.githubusercontent.com/free5ty1e/primestationone-control-android/master/app/src/main/res/drawable-nodpi/qrcode.png)](https://play.google.com/store/apps/details?id=com.chrisprime.primestationonecontrol)
+
+
 
 ### What is a PrimeStation One?  
 Retro gaming via emulation on a Raspberry Pi, built on top of RetroPie.  See the PrimeStation One repo for more details:
