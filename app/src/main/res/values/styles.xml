@@ -11,7 +11,7 @@
         <item name="android:background">@color/prime_orange</item>
         <item name="android:textColor">@color/prime_charcoal</item>
         <item name="android:layout_marginBottom">@dimen/primestation_command_button_spacing</item>
-        <item name="android:padding">@dimen/abc_action_bar_default_padding_material</item>
+        <!--<item name="android:padding">@dimen/abc_action_bar_default_padding_material</item>-->
     </style>
 
     <style name="statusConsoleTextView">
@@ -23,7 +23,7 @@
         <item name="android:background">@android:color/black</item>
         <item name="android:textColor">@color/prime_green</item>
         <item name="android:typeface">monospace</item>
-        <item name="android:padding">@dimen/abc_action_bar_default_padding_material</item>
+        <!--<item name="android:padding">@dimen/abc_action_bar_default_padding_material</item>-->
     </style>
 
     <style name="statusConsoleScrollView">

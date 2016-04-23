@@ -1,25 +1,78 @@
-import java.text.SimpleDateFormat
-
-def buildVersionNameMajorMinorPatchString() {
-    return "0.2.3";
+def appVersionName() {
+    return "0.3.0";
 }
+
+def getAppName() {
+    return "PrimeStation One Control";
+}
+
+/*
+* Android SDK on build system must have the following installed:
+*
+* Java 1.8 JDK8, set home in JAVA_HOME and JAVA_HOME8
+* Java 1.7 JDK7, set home in JAVA_HOME7 (Only required if you want to run tests!  If not, set JAVA_HOME7 to the same as JAVA_HOME8)
+*
+* Android SDK ('brew install android' to install on OSX)
+*
+* in location pointed to by system environment variable ANDROID_HOME: (also, if ANDROID_HOME is not set, set it!)
+* In Android SDK Manager ('android sdk'):
+* -Tools/Android SDK Tools 25.0.10
+* -Tools/Android SDK Platform Tools 23.1.0
+* -Tools/Android SDK Build Tools 23.0.2
+* -Android 6.0/SDK Platform API 23r3
+* -Extras/Local Maven repository for Support Libraries 28.0.0
+* -Extras/Android Support Library 23.2.1
+* -Extras/Google Play Services 29
+
+* */
+
+ext {
+    androidSupportLibraryVersion = '23.2.1'
+    whichTestSuite = project.hasProperty('testSuite') ? project.getProperties().get('testSuite') : "PrimeTestSuite"
+}
+
+def debugPackageSuffix = ".debug"
 
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'jacoco'  //For gradle-based automation test coverage reporting via the connectedAndroidTest task
+apply plugin: 'com.vanniktech.android.junit.jacoco' //For gradle-based unit test coverage reporting
+
+def getSimpleName(def fqClassname) {
+    return fqClassname.substring(fqClassname.lastIndexOf('.') + 1)
+}
 
 android {
     repositories {
-        jcenter()
+        //NOTE: These are searched for requested dependencies in order... best to have smaller / faster repos up top and the larger / slower repos as fallbacks
+
+        // Workaround for issue where android SDK repo is not automatically detected by Gradle:
+        // https://code.google.com/p/android/issues/detail?id=69270
+        def androidHome = System.getenv("ANDROID_HOME")
+        maven { url "$androidHome/extras/android/m2repository/" }
+
+        def userHome = System.getenv("HOME")
+        maven { url "$userHome/m2repository/" } //For a custom user-maintained local repo in your user folder under ~/m2repository following standard Maven artifact conventions for folder structure - see https://repo.nikedev.com/artifactory for examples - enables working off-site with new dependencies
+
         mavenCentral()
+        jcenter()
+
         //Backup http source for dependencies just in case certificates get updated and builds start failing again
-        jcenter {
+        jcenter {//noinspection GroovyAssignabilityCheck
             url "http://jcenter.bintray.com/"
         }
+        maven { url "https://jitpack.io" }
+        maven { url "http://jitpack.io" }
     }
 
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    dexOptions {
+        jumboMode = false
+        javaMaxHeapSize "2g" //Otherwise we run out of memory when building including the test coverage reports.http://stackoverflow.com/a/33854389/3686125
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -27,25 +80,41 @@ android {
     }
     defaultConfig {
         applicationId "com.chrisprime.primestationonecontrol"
-        minSdkVersion 9
-        targetSdkVersion 22
-        versionName genVersionName()
-        versionCode gitVersion()
+        minSdkVersion 10
+        targetSdkVersion 23
+        versionName getAppVersionName()
+        versionCode numGitCommits()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        def testSuiteClass = "$applicationId.${whichTestSuite}"
+        testInstrumentationRunnerArgument('class', testSuiteClass)
+        print("=====================================================================================\n\n" +
+                "====>You may pass in the following parameters to the gradle command line to indicate which test suite or test class && optional test method you would like to run:\n" +
+                "(Below parameter will work with both connectedAndroidTest and spoon tasks, specify ONLY a test suite here -- PrimeTestSuite is the default)\n\n" +
+                "          -PtestSuite=PrimeTestSuite\n\n" +
+                "(Below parameter will only work with the spoon task, and could indicate either a test class or a test suite class)\n\n" +
+                "          -PspoonClassName=packagename.TestClassName\n\n" +
+                "(Below parameter will only work with the spoon task, and indicates a specific method inside the provided spoonClassName above)\n\n" +
+                "          -PspoonMethodName=testMethodName\n\n" +
+                "=====================================================================================")
+        println("\nIf automation tests have been requested, the test suite that will be run is: ${testSuiteClass}\n")
+        manifestPlaceholders = [applicationTheme: "@style/AppTheme"]
+        multiDexEnabled true
     }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            debuggable true
+            minifyEnabled false
+            applicationIdSuffix debugPackageSuffix
+            versionNameSuffix "-SNAPSHOT"
+            testCoverageEnabled true
         }
     }
 
-    lintOptions {
-        abortOnError true
-    }
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -55,58 +124,100 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
         exclude 'NOTICE.txt'
+        exclude 'NOTICE'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
+        exclude '.README'
+        exclude '.readme'
+        exclude '*readme*'
+
+        //Workaround for espresso compilation issues with gradle android build tools 1.5
+        //http://stackoverflow.com/questions/33800924/espresso-web-import-causes-duplicatefileexception
+        exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
+        exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
+        //issue with butterknife and realm
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
 
     lintOptions {
+        abortOnError false
         disable 'InvalidPackage'
     }
 }
 
-def gitVersion() {
-    def process = "git rev-list HEAD --first-parent --count".execute()
-    def gitVersionInteger = process.text.toInteger()
-    println "gitVersionInteger (buildVersionCode) = " + gitVersionInteger
+def getAppVersionName() {
+    def versionName = appVersionName();
+    def numCommits = numGitCommits();
+    def appName = getAppName();
+    println "\nBuilding $appName app v$versionName (version code $numCommits) for Android\n"
+    return versionName
+}
+
+int numGitCommits() {
+    //noinspection GroovyUnusedAssignment
+    def pwd = "pwd".execute().text
+    def command = "git --git-dir=$rootDir/.git --work-tree=$rootDir rev-list HEAD --first-parent --count"
+    def process = command.execute()
+    def result = process.text
+//    println "numGitCommits from projectDir: $rootDir, command:\n$command\n$result"    //Leaving this in as it helps debug gradle build version issues
+    def gitVersionInteger = result.isInteger() ? result.toInteger() : 0
+    //Fallback to version code 0 to allow certain stubborn Android Studio edge cases to still Gradle Sync the app successfully on the first go
+    if (gitVersionInteger < 1) {
+        println "numGitCommits WARNING: Unable to determine version code, falling back on 0!  If this happens only in Android Studio, but not from the command line, have you recently updated XCode and have you run it yet to accept the new license agreement from Apple?"
+    }
     return gitVersionInteger
 }
 
-def buildTime() {
-    def df = new SimpleDateFormat("yyyyMMddhh")
-    return df.format(new Date())
-}
-
-def genVersionName() {
-    def versionName = buildVersionNameMajorMinorPatchString() + "." + buildTime()
-    println "buildVersionName = " + versionName
-    return versionName;
-}
-
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.android.support:cardview-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
+    //noinspection GradleDependency
+    compile "com.android.support:design:${androidSupportLibraryVersion}"
+    //noinspection GradleDependency
+    compile "com.android.support:cardview-v7:${androidSupportLibraryVersion}"
+    //noinspection GradleDependency
+    compile "com.android.support:recyclerview-v7:${androidSupportLibraryVersion}"
+    //noinspection GradleDependency
+    compile "com.android.support:preference-v7:${androidSupportLibraryVersion}"
+
+    //noinspection GroovyAssignabilityCheck
     configurations.all {
         // Enforce latest android support annotations for all dependencies
-        resolutionStrategy.force 'com.android.support:support-annotations:22.2.1'
+        resolutionStrategy.force "com.android.support:support-annotations:${androidSupportLibraryVersion}"
+
+        //This subdependency is included in the Android SDK and can easily cause conflicts
+        exclude group: 'commons-logging', module: 'commons-logging'
     }
 
+    //ReactiveX Dependencies:
+    compile 'io.reactivex:rxjava:1.1.2'
+    //TODO: When RxAndroid > 1.1.0 or newer dependency modules are released, see if we can eliminate the orphaned database/contentobservable package that had to be pulled from RxAndroid 0.2.5
+    compile 'io.reactivex:rxandroid:1.1.0'      //https://github.com/ReactiveX/RxAndroid
+    compile 'com.ogaclejapan:rxbinding:1.2.0'
+    //noinspection GradleDynamicVersion
+    compile 'com.artemzin.rxjava:proguard-rules:1.1.+'    // And ProGuard rules for RxJava!
+
+    compile 'com.jakewharton:butterknife:7.0.1'
+
+    //Below is for consumer-friendly and obvious Android device names so we can easily identify which device did what in analytics and crashlogs
+    //https://github.com/jaredrummler/AndroidDeviceNames
+    compile 'com.jaredrummler:android-device-names:1.0.8'
+
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'io.reactivex:rxandroid:0.25.0'
     compile 'com.jcraft:jsch:0.1.53'
     compile 'com.squareup:otto:1.3.8'
 
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.jakewharton.timber:timber:3.1.0'
 
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.afollestad:material-dialogs:0.7.7.0'
+    compile 'com.google.code.gson:gson:2.4'
+
+    compile('com.afollestad.material-dialogs:core:0.8.5.6@aar') {
+        // https://github.com/afollestad/material-dialogs
+        transitive = true
+    }
 
     // Needed for dagger 2
-    compile 'com.google.dagger:dagger:2.0.1'
-    apt "com.google.dagger:dagger-compiler:2.0.1"
+    compile 'com.google.dagger:dagger:2.0.2'
+    apt "com.google.dagger:dagger-compiler:2.0.2"
 
     // Needed specifically for annotations in Java 1.6
     compile 'org.glassfish:javax.annotation:10.0-b28'
@@ -115,11 +226,41 @@ dependencies {
     compile 'org.parceler:parceler-api:1.0.1'
     apt 'org.parceler:parceler:1.0.1'
 
-    testCompile 'junit:junit:4.12'
+    //noinspection GradleDynamicVersion
+    testCompile 'junit:junit-dep:4.8.+'
 
-    androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile 'com.squareup.spoon:spoon-client:1.3.2'
+
+    androidTestCompile 'com.android.support.test:runner:0.4.1'
     // Set this dependency to use JUnit 4 rules
-    androidTestCompile 'com.android.support.test:rules:0.3'
+    androidTestCompile 'com.android.support.test:rules:0.4.1'
+
+    // Set this dependency to build and run UI Automator tests
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+
+// --------------------------------------------------------------------
+//For espresso web view (NOTE: ALSO includes espresso-core!  No need to include both since gradle build tools 1.5)
+    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.1'
+
+//-----------------------------------------------------------
+
+    //Below test dependency requires some exclude statements to be able to test with RecyclerViews
+    //See http://stackoverflow.com/a/30715011/3686125
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.1') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
+}
+
+//NOTE:Automation / UI test coverage report will only actually generate a report if there are no failing automation / UI tests.
+tasks.whenTaskAdded { task ->
+    if (task.name == 'spoonDebugAndroidTest') {
+        //Always run the test coverage report after a Spoon test suite.  This will run the connectedAndroidTest task, unfortunately no way to currently utilize Spoon for coverage.
+        //  https://github.com/stanfy/spoon-gradle-plugin/issues/79
+        println "$task.name configuring automatic test coverage task upon Spoon automation test completion..."
+        task.finalizedBy 'createDebugCoverageReport'
+    }
 }
 
 String java8 = getJavaVersion(8)
@@ -142,37 +283,27 @@ String getJavaVersion(Integer v) {
 retrolambda {
     jdk java8
     oldJdk java7
+    //noinspection GroovyAssignabilityCheck
     javaVersion JavaVersion.VERSION_1_7
     defaultMethods false
     incremental true
 }
 
-// Get the path to ADB.  Required when running tests directly from Android Studio.
-// Source: http://stackoverflow.com/a/26771087/112705
-def adb = android.getAdbExe().toString()
-
-// Source: http://stackoverflow.com/q/29908110/112705
-afterEvaluate {
-    task unlockEmulatorDev(type: Exec, dependsOn: 'assembleDebugAndroidTest') {
-        def unlockEmulatorCommand = "$adb shell input keyevent 82"
-        println unlockEmulatorCommand
-        commandLine unlockEmulatorCommand.split(' ')
-    }
-
-    task unlockEmulatorProduction(type: Exec, dependsOn: 'assembleReleaseAndroidTest') {
-        def unlockEmulatorCommand = "$adb shell input keyevent 82"
-        println unlockEmulatorCommand
-        commandLine unlockEmulatorCommand.split(' ')
-    }
-
-    // When launching individual tests from Android Studio, it seems that only the assemble tasks
-    // get called directly, not the install* versions
-    tasks.each { task ->
-        if (task.name.startsWith('connectedAndroidTestDebug')) {
-            task.dependsOn unlockEmulatorDev
-        } else if (task.name.startsWith('connectedAndroidTestRelease')) {
-            task.dependsOn unlockEmulatorProduction
+apply plugin: 'spoon'
+spoon {
+    if (project.hasProperty('spoonClassName')) {
+        className = "${android.defaultConfig.applicationId}.${project.spoonClassName}"
+        if (project.hasProperty('spoonMethodName')) {
+            methodName = project.spoonMethodName
         }
+    } else {
+        def testSuiteClass = "${android.defaultConfig.applicationId}.${whichTestSuite}"
+        className = testSuiteClass  //Auto run the indicated connectedAndroidTest suite if spoon parameters are not specified
     }
+    def methodToTest = methodName == null ? "*" : methodName
+    println "\n==> Spoon will test ${className}.${methodToTest}\n"
+    adbTimeout = 600
+    failIfNoDeviceConnected = true
+    debug = true
 }
 

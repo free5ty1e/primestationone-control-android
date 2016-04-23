@@ -6,14 +6,17 @@ buildscript {
         mavenCentral()
         //Backup http source for dependencies just in case certificates get updated and builds start failing again
         jcenter {
+            //noinspection GroovyAssignabilityCheck
             url "http://jcenter.bintray.com/"
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.0'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
+        classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.0.4'
+        classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.4.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -21,15 +24,4 @@ buildscript {
 
     // Exclude the version that the android plugin depends on.
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
-}
-
-allprojects {
-    repositories {
-        jcenter()
-        mavenCentral()
-        //Backup http source for dependencies just in case certificates get updated and builds start failing again
-        jcenter {
-            url "http://jcenter.bintray.com/"
-        }
-    }
 }
