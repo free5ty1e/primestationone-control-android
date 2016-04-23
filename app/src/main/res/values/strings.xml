@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">PrimeStationOneControl</string>
-
     <!-- Navigation drawer labels and action bar titles -->
     <string name="title_primestation_search">Search &amp; Select</string>
     <string name="title_primestation_general_controls">General Controls</string>

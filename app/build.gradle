@@ -187,6 +187,8 @@ dependencies {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
 
+    compile project(':android-network-discovery:netscanlib')
+
     //ReactiveX Dependencies:
     compile 'io.reactivex:rxjava:1.1.2'
     //TODO: When RxAndroid > 1.1.0 or newer dependency modules are released, see if we can eliminate the orphaned database/contentobservable package that had to be pulled from RxAndroid 0.2.5
