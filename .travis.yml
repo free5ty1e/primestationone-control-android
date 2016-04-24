@@ -11,21 +11,22 @@ android:
         - extra
 
         # The BuildTools version used by your project
-        - build-tools-22.0.1
+        - build-tools-23.0.2
 
         # The SDK version used to compile your project
-        - android-22
+        - android-23
 
         # Additional components
         #- extra-google-google_play_services
         - extra-google-m2repository
         - extra-android-m2repository
-        - addon-google_apis-google-22
+        - addon-google_apis-google-23
 
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
 #        - sys-img-armeabi-v7a-android-19
         - sys-img-armeabi-v7a-android-22
+#        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
 
 env:
@@ -56,14 +57,14 @@ before_script:
 #    - ./gradlew clean build connectedAndroidTest
 #    - echo Killing emulator....
 #    - killall emulator64-arm
-    - echo Creating and starting Android Emulator API22...
+    - echo Creating and starting Android Emulator...
     - echo no | android create avd --force -n test22 -t android-22 --abi armeabi-v7a
     - emulator -avd test22 -no-skin -no-audio -no-window &
     - android-wait-for-emulator
     #- adb shell input keyevent 82 &
 
 script:
-    - ./gradlew clean build connectedAndroidTest
+    - ./gradlew clean build spoon
 
 after_script:
     - echo Killing emulator....
@@ -76,3 +77,7 @@ after_script:
     - echo "Dumping lint report out to console so it can be reviewed, save the following to an XML file and autoformat (or use online XML formatter)..."
     - echo "-----------------------------------------------------------------------------------------"
     - cat /home/travis/build/free5ty1e/primestationone-control-android/app/build/outputs/lint-results.xml
+    - echo "Testing, coverage, lint reports were generated:"
+    - open app/build/spoon/debug/index.html ; open app/build/reports/coverage/debug/index.html ; open app/build/reports/tests/debug/index.html ; open app/build/reports/jacoco/debug/index.html ; open app/build/outputs/lint-results-debug.html
+    - echo "Command to open all reports: "
+    - echo "open app/build/spoon/debug/index.html ; open app/build/reports/coverage/debug/index.html ; open app/build/reports/tests/debug/index.html ; open app/build/reports/jacoco/debug/index.html ; open app/build/outputs/lint-results-debug.html"
