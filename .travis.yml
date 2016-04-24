@@ -83,6 +83,3 @@ after_script:
     - echo "Dumping lint report out to console so it can be reviewed, save the following to an XML file and autoformat (or use online XML formatter)..."
     - echo "-----------------------------------------------------------------------------------------"
     - cat /home/travis/build/free5ty1e/primestationone-control-android/app/build/outputs/lint-results.xml
-    - echo "Testing, coverage, lint reports were generated:"
-    - echo "Command to open all reports: "
-    - echo "open app/build/spoon/debug/index.html ; open app/build/reports/coverage/debug/index.html ; open app/build/reports/tests/debug/index.html ; open app/build/reports/jacoco/debug/index.html ; open app/build/outputs/lint-results-debug.html"
