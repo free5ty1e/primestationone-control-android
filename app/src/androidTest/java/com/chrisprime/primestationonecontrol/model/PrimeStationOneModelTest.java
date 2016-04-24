@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Created by cpaian on 7/20/15.
  */
-public class PrimeStationOneTest {
+public class PrimeStationOneModelTest {
 
     @Before
     public void setUp() throws Exception {
@@ -25,11 +25,12 @@ public class PrimeStationOneTest {
 
     /**
      * Testing involving a Parcelable requires an actual fucking connectedAndroidTest to proceed, so here we are:
+     *
      * @throws Exception
      */
     @Test
     public void testPrimeStationOneModelParcelable() throws Exception {
-        PrimeStationOne primeStationOneParcelSource = new PrimeStationOne("192.168.1.50","primestationpi2.home","v0.9999beta","00-00-00-00-00-00");
+        PrimeStationOne primeStationOneParcelSource = new PrimeStationOne("192.168.1.50", "primestationpi2.home", "v0.9999beta", "00-00-00-00-00-00");
         assertNotNull(primeStationOneParcelSource);
 
         String ip = primeStationOneParcelSource.getIpAddress();

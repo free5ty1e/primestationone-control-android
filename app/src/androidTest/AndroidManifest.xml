@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="${applicationId}">
+
+    <!-- Needed for automated testing screenshot capabilities -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!--Below setting allows us to perform Espresso automated testing while supporting < API 18 (just can't run automated tests without API 18)-->
+    <uses-sdk tools:overrideLibrary="android.app, android.support.test, android.support.test.rule, android.support.test.espresso, android.support.test.espresso.idling, android.support.test.uiautomator.v18" />
+
+    <!--suppress AndroidDomInspection -->
+    <instrumentation
+        android:name="android.support.test.runner.AndroidJUnitRunner"
+        android:functionalTest="false"
+        android:handleProfiling="false"
+        android:targetPackage="com.chrisprime.primestationonecontrol.debug">
+
+        <meta-data
+            android:name="listener"
+            android:value="com.chrisprime.primestationonecontrol.utilities.CustomRunListener" />
+
+    </instrumentation>
+
+    <application>
+        <uses-library android:name="android.test.runner" />
+    </application>
+
+</manifest>
