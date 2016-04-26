@@ -3,12 +3,12 @@ set -e # exit with nonzero exit code if anything fails
 
 outputfolder=app/build/reports
 
-# clear and re-create the out directory
-rm -rf "$outputfolder" || exit 0;
-mkdir -p "$outputfolder";
+# clear and re-create the report directory's .git folder, effectively wiping the git repo association
+rm -rf "$outputfolder/.git" || exit 0;
+#mkdir -p "$outputfolder";
 
 # run our compile script, discussed above
-./gradlew clean build spoon
+#./gradlew clean build spoon
 
 #### Move any straggler reports into the report folder -- I'm looking at you, spoon and lint!
 mv -r "$outputfolder/../spoon" "$outputfolder/"
