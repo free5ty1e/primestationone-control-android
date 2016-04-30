@@ -68,6 +68,7 @@ before_script:
     - echo no | android create avd --force -n test22 -t android-22 --abi armeabi-v7a
     - emulator -avd test22 -no-skin -no-audio -no-window &
     - android-wait-for-emulator
+    - chmod +x gradlew
     #- adb shell input keyevent 82 &
 
 script:
