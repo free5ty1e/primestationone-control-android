@@ -1,5 +1,5 @@
 def appVersionName() {
-    return "0.3.0";
+    return "0.3.1";
 }
 
 def getAppName() {
@@ -67,7 +67,7 @@ android {
     }
 
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     dexOptions {
         jumboMode = false
