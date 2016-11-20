@@ -20,25 +20,25 @@ android:
         - extra
 
         # The BuildTools version used by your project
-        - build-tools-23.0.3
+        - build-tools-25
 
         # The Emulator API level, if different from the SDK version
         - android-22
 
         # The SDK version used to compile your project
-        - android-23
+        - android-25
 
         # Additional components
         #- extra-google-google_play_services
         - extra-google-m2repository
         - extra-android-m2repository
-        - addon-google_apis-google-23
+        - addon-google_apis-google-25
 
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
 #        - sys-img-armeabi-v7a-android-19
         - sys-img-armeabi-v7a-android-22
-        - sys-img-armeabi-v7a-android-23
+#        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
 
 # Emulator Management: Create, Start and Wait
@@ -72,7 +72,7 @@ before_script:
     #- adb shell input keyevent 82 &
 
 script:
-    - ./gradlew clean build #spoon  #automation tests disabled right now since they apparently fail the build.
+    - ./gradlew clean build spoon --info
 
 after_script:
 #    - echo Publishing reports...

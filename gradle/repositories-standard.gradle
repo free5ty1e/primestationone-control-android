@@ -1,0 +1,15 @@
+repositories {
+    jcenter()
+    //Backup http source for dependencies just in case certificates get updated and builds start failing again
+    jcenter {//noinspection GroovyAssignabilityCheck
+        url "http://jcenter.bintray.com/"
+    }
+
+    mavenCentral()
+    maven {
+        url "http://repo1.maven.org/maven2"
+    }
+
+    maven { url "https://jitpack.io" }
+    maven { url "http://jitpack.io" }
+}

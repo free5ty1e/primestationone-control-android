@@ -1,0 +1,28 @@
+apply plugin: 'me.tatarka.retrolambda'
+
+String java8 = getJavaVersion(8)
+String java7 = getJavaVersion(7)
+
+String getJavaVersion(Integer v) {
+    def retrievedJavaVersionHome;
+    retrievedJavaVersionHome = System.getenv("JAVA$v" + "_HOME")
+    if (retrievedJavaVersionHome == null || retrievedJavaVersionHome.size() < 1) {
+        def sout = new StringBuffer()
+        def proc = "/usr/libexec/java_home -v 1.$v".execute()
+        proc.consumeProcessOutput(sout, new StringBuffer())
+        proc.waitForOrKill(1000)
+        retrievedJavaVersionHome = sout.toString().replace("\n", "").replace("\r", "")
+    }
+    println "getJavaVersion($v" + ") has retrieved $retrievedJavaVersionHome"
+    return retrievedJavaVersionHome
+}
+
+retrolambda {
+    jdk java8
+    oldJdk java7
+    //noinspection GroovyAssignabilityCheck
+    javaVersion JavaVersion.VERSION_1_7
+    defaultMethods false
+    incremental false
+    //Disabled incremental builds as it was causing issues building with "broken class files" after proguard obfuscation
+}
