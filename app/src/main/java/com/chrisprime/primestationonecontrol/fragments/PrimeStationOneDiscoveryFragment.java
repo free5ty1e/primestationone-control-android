@@ -42,7 +42,6 @@ public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
 
     private List<PrimeStationOne> mPrimeStationOneList;
     private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
-    private Observable<String> mFindPiObservable;
     private Subscriber<String> mFindPiSubscriber;
     private Subscription mFindPiSubscription;
 
@@ -83,7 +82,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
 
             final String gatewayPrefix = getCurrentGatewayPrefix();
 
-            mFindPiObservable = Observable.create(
+            Observable<String> mFindPiObservable = Observable.create(
                     new Observable.OnSubscribe<String>() {
                         @Override
                         public void call(Subscriber<? super String> sub) {
@@ -231,6 +230,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
         }
     }
 
+    @SuppressWarnings("unused")
     @Subscribe public void answerPrimeStationsListUpdatedEvent(PrimeStationsListUpdatedEvent primeStationsListUpdatedEvent) {
         Timber.d(".answerPrimeStationsListUpdatedEvent: forcing update of primestation list to ensure data sync...");
         initializeFoundPrimeStationsListFromJson();
