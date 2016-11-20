@@ -1,0 +1,32 @@
+
+dependencies {
+    androidTestCompile 'com.squareup.spoon:spoon-client:1.7.0'
+    androidTestCompile 'com.jraska:falcon-spoon-compat:1.0.3'   //https://github.com/jraska/Falcon -- For full screenshots including toasts and dialogs!!
+}
+apply plugin: 'spoon'
+spoon {
+    if (project.hasProperty('spoonClassName')) {
+        className = "${android.defaultConfig.applicationId}.${project.spoonClassName}"
+        if (project.hasProperty('spoonMethodName')) {
+            methodName = project.spoonMethodName
+        }
+    } else {
+        def testSuiteClass = "${android.defaultConfig.applicationId}.${whichTestSuite}"
+        className = testSuiteClass
+        //Auto run the indicated connectedAndroidTest suite if spoon parameters are not specified
+    }
+    def methodToTest = methodName == null ? "*" : methodName
+    println "\n==> Spoon will test ${className}.${methodToTest}\n"
+    adbTimeout = 600
+    failIfNoDeviceConnected = true
+    debug = true
+
+    // To execute the tests device by device */
+//    sequential = true
+
+    // To grant permissions to Android M >= devices */
+    grantAllPermissions = true
+
+    codeCoverage = true
+}
+apply from: '../gradle/jacoco-instrumentation.gradle'

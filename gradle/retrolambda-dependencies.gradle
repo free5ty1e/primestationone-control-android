@@ -1,0 +1,4 @@
+dependencies {
+    classpath 'me.tatarka:gradle-retrolambda:3.3.0'
+    classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
+}

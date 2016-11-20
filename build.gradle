@@ -1,27 +1,40 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext.kotlin_version = '1.0.4'
     repositories {
+//        apply from: file('gradle/repositories-standard.gradle')
         jcenter()
-        mavenCentral()
         //Backup http source for dependencies just in case certificates get updated and builds start failing again
-        jcenter {
-            //noinspection GroovyAssignabilityCheck
+        jcenter {//noinspection GroovyAssignabilityCheck
             url "http://jcenter.bintray.com/"
+        }
+
+        mavenCentral()
+        maven {
+            url "http://repo1.maven.org/maven2"
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        classpath 'com.android.tools.build:gradle:2.2.2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
-        classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.0.4'
-        classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.4.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
+    apply from: file('gradle/retrolambda-dependencies.gradle'), to: buildscript
+    apply from: file('gradle/jacoco-dependencies.gradle'), to: buildscript
+    apply from: file('gradle/spoon-dependencies.gradle'), to: buildscript
 
     // Exclude the version that the android plugin depends on.
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
+}
+
+ext {
+    androidSupportLibraryVersion = '25.0.1'
+    minAndroidSdkVersion = 10
+    targetAndroidSdkVersion = 25
+    androidBuildToolsVersion = "25"
+    whichTestSuite = project.hasProperty('testSuite') ? project.getProperties().get('testSuite') : "PrimeTestSuite"
 }
