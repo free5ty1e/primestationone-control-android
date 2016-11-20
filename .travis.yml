@@ -20,7 +20,7 @@ android:
         - extra
 
         # The BuildTools version used by your project
-        - build-tools-25
+        - build-tools-25.0.0
 
         # The Emulator API level, if different from the SDK version
         - android-22
