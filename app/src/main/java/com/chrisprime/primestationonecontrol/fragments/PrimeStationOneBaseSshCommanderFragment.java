@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
+import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.chrisprime.primestationonecontrol.utilities.TextViewUtilities;
@@ -51,8 +52,11 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseEventB
                     new Observable.OnSubscribe<Integer>() {
                         @Override
                         public void call(Subscriber<? super Integer> sub) {
-                            sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(), PrimeStationOne.DEFAULT_PI_USERNAME,
-                                    PrimeStationOne.DEFAULT_PI_PASSWORD, PrimeStationOne.DEFAULT_PI_SSH_PORT, command, waitForReturnValueAndCommandOutput,
+                            PrimeStationOneControlActivity primeStationOneControlActivity = (PrimeStationOneControlActivity) getActivity();
+                            sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(),
+                                    primeStationOneControlActivity.getPiUsername(),
+                                    primeStationOneControlActivity.getPiPassword(),
+                                    PrimeStationOne.DEFAULT_PI_SSH_PORT, command, waitForReturnValueAndCommandOutput,
                                     line -> {
                                         String processedLine = processSshConsoleStdOutLine(line);
                                         Activity activity = getActivity();

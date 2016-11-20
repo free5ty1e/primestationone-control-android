@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.R;
+import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
 import com.chrisprime.primestationonecontrol.events.PrimeStationsListUpdatedEvent;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
@@ -160,9 +161,9 @@ public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
                 String ipAddressToTry = gatewayPrefix + ipLastOctetToTry;
 
                 //Update status text to show current IP being scanned
-                getActivity().runOnUiThread(() -> mTvFoundPi.setText(ipAddressToTry + "..."));
+                getActivity().runOnUiThread(() -> mTvFoundPi.setText(String.format("%s...", ipAddressToTry)));
 //                if (NetworkUtilities.ping(ipAddressToTry)) {          //Seems faster to just try each IP with SSH...
-                String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry);
+                String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry, (PrimeStationOneControlActivity) getActivity());
                 if (primeStationVersion.length() > 0) {
                     String hostname = getHostname(ipAddressToTry);
                     String mac = "";

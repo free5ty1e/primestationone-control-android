@@ -14,8 +14,6 @@ import org.parceler.Parcel;
  */
 @Parcel
 public class PrimeStationOne {
-    public static final String DEFAULT_PI_USERNAME = "pi";
-    public static final String DEFAULT_PI_PASSWORD = "raspberry";
     public static final int DEFAULT_PI_SSH_PORT = 22;
     public static final String DEFAULT_PRIMESTATION_VERSION_TEXT_FILE_LOCATION = "/home/pi/primestationone/reference/txt/version.txt";
     public static final String SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME = "splashscreenwithcontrolsandversion.png";
