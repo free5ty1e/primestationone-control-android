@@ -4,13 +4,12 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import rx.functions.Action0;
 
 public class EmptyRecyclerView extends RecyclerView {
     private View mEmptyView;
-    private ProgressBar mProgressBar;
+    private View mProgressBar;
 
     private boolean mLoading = false;
 
@@ -102,7 +101,7 @@ public class EmptyRecyclerView extends RecyclerView {
         checkIfEmpty();
     }
 
-    public void setProgressView(ProgressBar progressBar) {
+    public void setProgressView(View progressBar) {
         mProgressBar = progressBar;
     }
 }

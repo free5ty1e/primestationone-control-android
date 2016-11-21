@@ -62,20 +62,23 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     @Bind(R.id.tv_found_pi)
     TextView mTvFoundPi;
 
-    //TODO: Show spinner as appropriate
     @Bind(R.id.rv_pi_list)
     EmptyRecyclerView mRvPiList;
 
     @Bind(R.id.discovery_empty_view)
     DiscoveryEmptyView mDiscoveryEmptyView;
 
-    //TODO: Add finite scan progress bar too
-
     @Bind(R.id.btn_find_pi)
     Button mBtnFindPi;
 
     @Bind(R.id.discovery_progressbar)
     ProgressBar mProgressBar;
+
+    @Bind(R.id.discovery_spinner)
+    ProgressBar mSpinner;
+
+    @Bind(R.id.discovery_progressbar_layout)
+    View mProgressBars;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,7 +90,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
             ((PrimeStationOneControlActivity) getActivity()).onNavigationDrawerItemSelected(PrimeStationOneControlActivity.NAVIGATION_INDEX_SETTINGS);
         });
         mRvPiList.setEmptyView(mDiscoveryEmptyView);
-        mRvPiList.setProgressView(mProgressBar);
+        mRvPiList.setProgressView(mProgressBars);
         initializeFoundPrimeStationsListFromJson();
         updateDisplayedList();
         return rootView;
@@ -197,7 +200,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         for (long currentIp = startIp; currentIp <= endIp; currentIp++) {
             long finalCurrentIp = currentIp;
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
-                mNumActiveScans++;
+                ipScanStarted(finalCurrentIp);
                 safeRunOnIoThread(() -> {
                     String ipAddressString = NetInfo.getIpFromLongUnsigned(finalCurrentIp);
                     updateCurrentlyScanningAddress(ipAddressString);
@@ -208,7 +211,6 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
                         Timber.d("Alive host %s found!  Checking to see if it's a Primestation...", ipAddressString);
                         checkIsPrimeStationOne(ipAddressString);
                     }
-                    mNumActiveScans--;
                     ipScanComplete(finalCurrentIp);
                 });
             } else {
@@ -218,8 +220,17 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         return SUCCESS;
     }
 
-    private void ipScanComplete(long finalCurrentIp) {
-        Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", NetInfo.getIpFromLongUnsigned(finalCurrentIp), mNumActiveScans);
+    private void ipScanStarted(long ip) {
+        mNumActiveScans++;
+        mProgressBar.setMax(mNumActiveScans);
+        mProgressBar.setProgress(1);
+        Timber.d(".ipScanStarted(%s), number of active scans remaining: %d", NetInfo.getIpFromLongUnsigned(ip), mNumActiveScans);
+    }
+
+    private void ipScanComplete(long ip) {
+        mNumActiveScans--;
+        mProgressBar.setMax(mNumActiveScans);
+        Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", NetInfo.getIpFromLongUnsigned(ip), mNumActiveScans);
         if (mNumActiveScans == 0) {
             mFindPiSubscriber.onCompleted();
         }
