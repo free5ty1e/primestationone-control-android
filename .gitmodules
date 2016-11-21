@@ -1,0 +1,3 @@
+[submodule "android-network-discovery"]
+	path = android-network-discovery
+	url = https://github.com/free5ty1e/android-network-discovery
