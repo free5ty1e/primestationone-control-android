@@ -29,4 +29,10 @@
 
     <string name="friendly_time_ago">" ago"</string>
 
+    <!-- Preferences -->
+    <string name="pref_passwords_title">Pi Login Password</string>
+    <string name="pref_password_older_versions">old: raspberry</string>
+    <string name="pref_password_newer_versions">new: primestation1</string>
+    <string name="pref_password_custom">custom</string>
+
 </resources>

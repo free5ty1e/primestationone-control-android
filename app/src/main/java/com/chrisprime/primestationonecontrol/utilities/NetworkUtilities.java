@@ -5,9 +5,12 @@ import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.support.v4.app.FragmentActivity;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.chrisprime.primestationonecontrol.R;
+import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -61,8 +64,9 @@ public class NetworkUtilities {
         return wifiManager.getDhcpInfo();
     }
 
-    public static String sshCheckForPi(String ip) {
-        return sshCheckForPi(ip, PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD,
+    public static String sshCheckForPi(String ip, PrimeStationOneControlActivity primeStationOneControlActivity) {
+        return sshCheckForPi(ip, primeStationOneControlActivity.getPiUsername(),
+                primeStationOneControlActivity.getPiPassword(),
                 PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_VERSION_TEXT_FILE_LOCATION);
     }
 

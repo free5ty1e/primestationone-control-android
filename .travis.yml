@@ -65,7 +65,7 @@ before_script:
 #    - echo Killing emulator....
 #    - killall emulator64-arm
     - echo "Creating and starting Android Emulator..."
-    - echo no | android create avd --force -n test22 -t android-22 --abi armeabi-v7a
+    - echo no | android create avd --sdcard 4G --force -n test22 -t android-22 --abi armeabi-v7a
     - emulator -avd test22 -no-skin -no-audio -no-window &
     - android-wait-for-emulator
     - chmod +x gradlew

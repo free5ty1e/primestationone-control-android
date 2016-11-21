@@ -1,9 +1,12 @@
 package com.chrisprime.primestationonecontrol.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -36,6 +39,8 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -84,6 +89,10 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
                 R.id.navigation_drawer,
                 drawerLayout);
         setupHamburgerMenuUpButtonToggleAnimation(drawerLayout);
+
+        Timber.d(".onCreate() retrieving selected Pi login password and username from preferences: %s / %s",
+                getPiUsername(), getPiPassword());
+
     }
 
     private void setupHamburgerMenuUpButtonToggleAnimation(final DrawerLayout drawerLayout) {
@@ -113,6 +122,22 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
         };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
+    }
+
+    public SharedPreferences getPreferences() {
+        return getDefaultSharedPreferences(this);
+    }
+
+    public boolean getPreferenceBoolean(@StringRes int prefKeyRes, boolean defaultValue) {
+        return getPreferences().getBoolean(getString(prefKeyRes), defaultValue);
+    }
+
+    public String getPreferenceString(@StringRes int prefKeyRes) {
+        return getPreferences().getString(getString(prefKeyRes), null);
+    }
+
+    public String getPreferenceListSelectedValue(@StringRes int prefKeyRes) {
+        return getPreferences().getString(getString(prefKeyRes),"-1");
     }
 
     @Override
@@ -198,7 +223,7 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
                                 sub -> {
                                     sub.onNext(
                                             NetworkUtilities.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.getIpAddress(),
-                                                    PrimeStationOne.DEFAULT_PI_USERNAME, PrimeStationOne.DEFAULT_PI_PASSWORD,
+                                                    getPiUsername(), getPiPassword(),
                                                     PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION,
                                                     PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME));
                                     sub.onCompleted();
@@ -242,6 +267,18 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public String getPiUsername() {
+        return getPreferenceString(R.string.pref_key_custom_pi_username);
+    }
+
+    public String getPiPassword() {
+        String piPassword = getPreferenceListSelectedValue(R.string.pref_key_passwords);
+        if (getString(R.string.pref_actual_password_custom).equals(piPassword)) {
+            piPassword = getPreferenceString(R.string.pref_key_custom_pi_password);
+        }
+        return piPassword;
     }
 
     private void displayFullScreenQuickRef(PrimeStationOne primeStationOne) {
