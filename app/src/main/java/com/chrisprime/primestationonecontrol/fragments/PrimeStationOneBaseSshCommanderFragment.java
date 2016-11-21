@@ -55,7 +55,7 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseFragme
                             sub.onNext(NetworkUtilities.INSTANCE.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(),
                                     currentPrimeStationOne.getPiUser(),
                                     currentPrimeStationOne.getPiPassword(),
-                                    PrimeStationOne.DEFAULT_PI_SSH_PORT, command, waitForReturnValueAndCommandOutput,
+                                    PrimeStationOne.Companion.getDEFAULT_PI_SSH_PORT(), command, waitForReturnValueAndCommandOutput,
                                     line -> {
                                         String processedLine = processSshConsoleStdOutLine(line);
                                         Activity activity = getActivity();

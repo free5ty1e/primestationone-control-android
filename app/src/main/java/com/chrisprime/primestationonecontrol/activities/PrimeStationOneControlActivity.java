@@ -252,8 +252,8 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
                                     sub.onNext(
                                             NetworkUtilities.INSTANCE.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.getIpAddress(),
                                                     primeStationOne.getPiUser(), primeStationOne.getPiPassword(),
-                                                    PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION,
-                                                    PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME));
+                                                    PrimeStationOne.Companion.getDEFAULT_PI_SSH_PORT(), PrimeStationOne.Companion.getDEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION(),
+                                                    PrimeStationOne.Companion.getSPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME()));
                                     sub.onCompleted();
                                 }
                         )

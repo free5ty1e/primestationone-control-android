@@ -103,10 +103,12 @@ object FileUtilities {
         if (primeStationOneList == null) {
             Timber.w(".storeCurrentPrimeStationToJson(): PrimeStationOne List is null, cannot proceed!")
         } else {
-            for (i in 0..primeStationOneList.size) {
-                var ps1 = primeStationOneList[i]
-                if (primeStationOne.ipAddress == ps1.ipAddress) {
-                    primeStationOneList[i] = primeStationOne
+            if (primeStationOneList.size > 0) {
+                for (i in 0..primeStationOneList.size - 1) {
+                    var ps1 = primeStationOneList[i]
+                    if (primeStationOne.ipAddress == ps1.ipAddress) {
+                        primeStationOneList[i] = primeStationOne
+                    }
                 }
             }
             storeFoundPrimeStationsJson(context, primeStationOneList)
