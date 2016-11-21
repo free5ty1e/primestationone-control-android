@@ -1,19 +1,12 @@
 package com.chrisprime.primestationonecontrol.utilities
 
-import android.content.Context
 import android.content.res.Resources
 import android.support.annotation.StringRes
 import android.support.v4.util.TimeUtils
-
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
 import com.chrisprime.primestationonecontrol.R
-
-import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
+import java.util.*
 
 /**
  * A semi-sophisticated time formatter, that formats time in human relative terms.

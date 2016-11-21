@@ -60,7 +60,7 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseFragme
                                         String processedLine = processSshConsoleStdOutLine(line);
                                         Activity activity = getActivity();
                                         if (textViewForConsoleUpdates != null && activity != null) {
-                                            activity.runOnUiThread(() -> TextViewUtilities.addLinesToTextView(processedLine,
+                                            activity.runOnUiThread(() -> TextViewUtilities.INSTANCE.addLinesToTextView(processedLine,
                                                     textViewForConsoleUpdates, (ScrollView) textViewForConsoleUpdates.getParent()));
                                         }
                                     }));
@@ -83,7 +83,7 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseFragme
                 public void onCompleted() {
                     //                findPiButton.setEnabled(true);
                     getActivity().runOnUiThread(() -> {
-                        TextViewUtilities.addLinesToTextView("\nCommand sent to current PrimeStation One at "
+                        TextViewUtilities.INSTANCE.addLinesToTextView("\nCommand sent to current PrimeStation One at "
                                         + currentPrimeStationOne.getIpAddress(), PrimeStationOneBaseSshCommanderFragment.this.mTvStatus,
                                 PrimeStationOneBaseSshCommanderFragment.this.mSvStatus);
                         setAllButtonsEnabledInList(true);
