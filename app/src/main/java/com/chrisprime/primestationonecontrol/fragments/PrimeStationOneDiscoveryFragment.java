@@ -11,11 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.chrisprime.netscan.network.HostBean;
 import com.chrisprime.netscan.network.NetInfo;
 import com.chrisprime.primestationonecontrol.R;
+import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
 import com.chrisprime.primestationonecontrol.events.PrimeStationsListUpdatedEvent;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
@@ -72,13 +74,20 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     @Bind(R.id.btn_find_pi)
     Button mBtnFindPi;
 
+    @Bind(R.id.discovery_progressbar)
+    ProgressBar mProgressBar;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_primestation_one_discovery, container, false);
         ButterKnife.bind(this, rootView);
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mDiscoveryEmptyView.setOnButtonClick(() -> {
+            ((PrimeStationOneControlActivity) getActivity()).onNavigationDrawerItemSelected(PrimeStationOneControlActivity.NAVIGATION_INDEX_SETTINGS);
+        });
         mRvPiList.setEmptyView(mDiscoveryEmptyView);
+        mRvPiList.setProgressView(mProgressBar);
         initializeFoundPrimeStationsListFromJson();
         updateDisplayedList();
         return rootView;
@@ -97,7 +106,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
             mFindPiSubscriber.onCompleted();
         } else {
             mPrimeStationOneList.clear();
-            mBtnFindPi.setText(R.string.button_find_pi_cancel_text);
+            setUiScanning();
 
             //TODO: Just put in a wifi wakelock, but for now this lazy thing works
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -126,7 +135,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
                 public void onCompleted() {
                     //                findPiButton.setEnabled(true);
                     getActivity().runOnUiThread(() -> {
-                        mBtnFindPi.setText(R.string.button_find_pi_text);
+                        setUiIdle();
                         int numPrimestationsFound = mPrimeStationOneList.size();
                         mTvFoundPi.setText(numPrimestationsFound > 0 ?
                                 numPrimestationsFound > 1 ? "Found " + numPrimestationsFound + " Primestations! xD" : "Found Primestation! :D"
@@ -147,6 +156,16 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
             };
             mFindPiSubscription = mFindPiObservable.subscribe(mFindPiSubscriber);
         }
+    }
+
+    private void setUiIdle() {
+        mBtnFindPi.setText(R.string.button_find_pi_text);
+        mRvPiList.setLoading(false);
+    }
+
+    private void setUiScanning() {
+        mBtnFindPi.setText(R.string.button_find_pi_cancel_text);
+        mRvPiList.setLoading(true);
     }
 
     private boolean determineIsScanning() {
@@ -196,7 +215,6 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
                 return CANCELLED;
             }
         }
-        mFindPiSubscriber.onCompleted();
         return SUCCESS;
     }
 

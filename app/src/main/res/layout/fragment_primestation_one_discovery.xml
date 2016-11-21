@@ -32,4 +32,14 @@
         android:layout_below="@id/btn_find_pi"
         android:visibility="gone" />
 
+    <ProgressBar
+        android:id="@+id/discovery_progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+    <!--style="?android:attr/progressBarStyleHorizontal"-->
+
+
 </RelativeLayout>

@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -51,6 +50,10 @@ import static android.support.v7.preference.PreferenceManager.getDefaultSharedPr
 public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    public static final int NAVIGATION_INDEX_DISCOVERY = 0;
+    public static final int NAVIGATION_INDEX_GENERAL_CONTROLS = 1;
+    public static final int NAVIGATION_INDEX_CLOUD_BACKUP = 2;
+    public static final int NAVIGATION_INDEX_SETTINGS = 3; //Settings -- keep moving this one so it's at the bottom, will have to re-enumerate if more screens added!
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -170,16 +173,16 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
         // update the main content by replacing fragments
 
         switch (position) {
-            case 0: //Search
+            case NAVIGATION_INDEX_DISCOVERY:
                 newMainFragment(PrimeStationOneDiscoveryFragment.newInstance(), R.string.title_primestation_search);
                 break;
-            case 1: //General controls
+            case NAVIGATION_INDEX_GENERAL_CONTROLS:
                 newMainFragment(PrimeStationOneGeneralControlsFragment.newInstance(), R.string.title_primestation_general_controls);
                 break;
-            case 2: //Cloud Backup Controls
+            case NAVIGATION_INDEX_CLOUD_BACKUP:
                 newMainFragment(PrimeStationOneCloudBackupControlsFragment.newInstance(), R.string.title_primestation_cloud_backup_controls);
                 break;
-            case 3: //Settings -- keep moving this one so it's at the bottom, will have to re-enumerate if more screens added!
+            case NAVIGATION_INDEX_SETTINGS:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             default:
