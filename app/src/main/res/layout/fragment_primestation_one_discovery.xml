@@ -23,13 +23,15 @@
         android:id="@+id/rv_pi_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/btn_find_pi" />
+        android:layout_below="@id/btn_find_pi"
+        android:layout_marginTop="12dp" />
 
     <com.chrisprime.primestationonecontrol.views.DiscoveryEmptyView
         android:id="@+id/discovery_empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/btn_find_pi"
+        android:layout_marginTop="12dp"
         android:visibility="gone" />
 
     <RelativeLayout

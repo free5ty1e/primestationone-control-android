@@ -30,7 +30,9 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -50,7 +52,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
     private Subscriber<String> mFindPiSubscriber;
     private Subscription mFindPiSubscription;
-    private int mNumActiveScans;
+    private Set<String> mActiveIpScans;
 
     public static PrimeStationOneDiscoveryFragment newInstance() {
         PrimeStationOneDiscoveryFragment fragment = new PrimeStationOneDiscoveryFragment();
@@ -92,6 +94,8 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         mRvPiList.setEmptyView(mDiscoveryEmptyView);
         mRvPiList.setProgressView(mProgressBars);
         initializeFoundPrimeStationsListFromJson();
+
+
         updateDisplayedList();
         return rootView;
     }
@@ -196,7 +200,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         long startIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMin);
         long endIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMax);
 
-        mNumActiveScans = 0;
+        mActiveIpScans = new HashSet<>();
         for (long currentIp = startIp; currentIp <= endIp; currentIp++) {
             long finalCurrentIp = currentIp;
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
@@ -221,18 +225,21 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     }
 
     private void ipScanStarted(long ip) {
-        mNumActiveScans++;
-        mProgressBar.setMax(mNumActiveScans);
+        mActiveIpScans.add(NetInfo.getIpFromLongUnsigned(ip));
+        mProgressBar.setMax(mActiveIpScans.size());
         mProgressBar.setProgress(1);
-        Timber.d(".ipScanStarted(%s), number of active scans remaining: %d", NetInfo.getIpFromLongUnsigned(ip), mNumActiveScans);
+        Timber.d(".ipScanStarted(%s), number of active scans remaining: %d", NetInfo.getIpFromLongUnsigned(ip), mActiveIpScans.size());
     }
 
     private void ipScanComplete(long ip) {
-        mNumActiveScans--;
-        mProgressBar.setMax(mNumActiveScans);
-        Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", NetInfo.getIpFromLongUnsigned(ip), mNumActiveScans);
-        if (mNumActiveScans == 0) {
+        String ipString = NetInfo.getIpFromLongUnsigned(ip);
+        mActiveIpScans.remove(ipString);
+        mProgressBar.setMax(mActiveIpScans.size());
+        Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", ipString, mActiveIpScans.size());
+        if (mActiveIpScans.size() == 0) {
             mFindPiSubscriber.onCompleted();
+        } else if (mActiveIpScans.size() < 5) {
+            Timber.v(".ipScanComplete(%s): active scans remaining = %s", ipString, mActiveIpScans);
         }
     }
 
