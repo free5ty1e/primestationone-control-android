@@ -49,16 +49,11 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
     private Subscriber<String> mFindPiSubscriber;
     private Subscription mFindPiSubscription;
+    private int mNumActiveScans;
 
-
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
     public static PrimeStationOneDiscoveryFragment newInstance() {
         PrimeStationOneDiscoveryFragment fragment = new PrimeStationOneDiscoveryFragment();
         Bundle args = new Bundle();
-//        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,6 +69,10 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
 
     @OnClick(R.id.btn_find_pi)
     void onFindPiButtonClicked(View view) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean fastMethodEnabled = preferences.getBoolean(getString(R.string.pref_key_discovery_method_fast_enable),
+                getResources().getBoolean(R.bool.pref_default_discovery_method_fast_enable));
+
         boolean isScanning = determineIsScanning();
         String scanStatusText = isScanning ? "Currently scanning!" : "Not currently scanning!";
         Timber.d("findPi button clicked! " + scanStatusText);
@@ -96,7 +95,6 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
                         }
                     }
             )
-//                .map(s -> s + " -Love, Chris")
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
 
@@ -173,9 +171,12 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
 
         long startIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMin);
         long endIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMax);
+
+        mNumActiveScans = 0;
         for (long currentIp = startIp; currentIp <= endIp; currentIp++) {
             long finalCurrentIp = currentIp;
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
+                mNumActiveScans++;
                 safeRunOnIoThread(() -> {
                     String ipAddressString = NetInfo.getIpFromLongUnsigned(finalCurrentIp);
                     updateCurrentlyScanningAddress(ipAddressString);
@@ -186,6 +187,8 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
                         Timber.d("Alive host %s found!  Checking to see if it's a Primestation...", ipAddressString);
                         checkIsPrimeStationOne(ipAddressString);
                     }
+                    mNumActiveScans--;
+                    ipScanComplete(finalCurrentIp);
                 });
             } else {
                 return CANCELLED;
@@ -193,6 +196,13 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         }
         mFindPiSubscriber.onCompleted();
         return SUCCESS;
+    }
+
+    private void ipScanComplete(long finalCurrentIp) {
+        Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", NetInfo.getIpFromLongUnsigned(finalCurrentIp), mNumActiveScans);
+        if (mNumActiveScans == 0) {
+            mFindPiSubscriber.onCompleted();
+        }
     }
 
     private String checkForPrimeStationOnesSlowMethod(String gatewayPrefix) {
@@ -269,10 +279,14 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
         initializeFoundPrimeStationsListFromJson();
 
-        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(getActivity(), mPrimeStationOneList);
-        mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
+        updateDisplayedList();
 
         return rootView;
+    }
+
+    private void updateDisplayedList() {
+        mFoundPrimestationsRecyclerViewAdapter = new FoundPrimestationsRecyclerViewAdapter(mPrimeStationOneList);
+        mRvPiList.setAdapter(mFoundPrimestationsRecyclerViewAdapter);
     }
 
     private void initializeFoundPrimeStationsListFromJson() {
@@ -289,5 +303,6 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     public void answerPrimeStationsListUpdatedEvent(PrimeStationsListUpdatedEvent primeStationsListUpdatedEvent) {
         Timber.d(".answerPrimeStationsListUpdatedEvent(): forcing update of primestation list to ensure data sync...");
         initializeFoundPrimeStationsListFromJson();
+        updateDisplayedList();
     }
 }

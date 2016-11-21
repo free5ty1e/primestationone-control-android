@@ -1,6 +1,5 @@
 package com.chrisprime.primestationonecontrol.views;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -27,11 +25,9 @@ import butterknife.ButterKnife;
 
 public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<FoundPrimestationsRecyclerViewAdapter.FoundPrimeStationsRecyclerViewHolder> {
     private List<PrimeStationOne> mPrimeStationOneList;
-    private Context mContext;
 
-    public FoundPrimestationsRecyclerViewAdapter(Context context, List<PrimeStationOne> primeStationOneList) {
+    public FoundPrimestationsRecyclerViewAdapter(List<PrimeStationOne> primeStationOneList) {
         this.mPrimeStationOneList = primeStationOneList;
-        this.mContext = context;
     }
 
     @Override
