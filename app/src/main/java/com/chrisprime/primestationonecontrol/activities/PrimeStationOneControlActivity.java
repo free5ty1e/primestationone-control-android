@@ -101,7 +101,7 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Injector.getApplicationComponent().inject(this);
+        Injector.Companion.getApplicationComponent().inject(this);
 
         mFullScreenImageView.setOnClickListener(v -> {
             mFullScreenImageView.setVisibility(View.GONE);

@@ -85,7 +85,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_primestation_one_discovery, container, false);
-        Injector.getApplicationComponent().inject(this);
+        Injector.Companion.getApplicationComponent().inject(this);
         ButterKnife.bind(this, rootView);
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDiscoveryEmptyView.setOnButtonClick(() -> {

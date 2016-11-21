@@ -21,7 +21,7 @@ class PreferenceStore {
     lateinit var mPreferences: SharedPreferences
 
     init {
-        Injector.getApplicationComponent().inject(this)
+        Injector.applicationComponent.inject(this)
     }
 
     private val resources: Resources
