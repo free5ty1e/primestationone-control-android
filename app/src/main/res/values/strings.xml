@@ -31,5 +31,6 @@
     <string name="empty_discovery_no_primestations_discovered_text">No Primestations Discovered</string>
     <string name="empty_discovery_description">Connect to the same wifi network as your Primestation(s) and start a scan to attempt to discover them! If you have set a custom username or password on your Primestation, configure that in Settings.</string>
     <string name="empty_discovery_configure_button">CONFIGURE</string>
+    <string name="scan_finished_text">Finished</string>
 
 </resources>

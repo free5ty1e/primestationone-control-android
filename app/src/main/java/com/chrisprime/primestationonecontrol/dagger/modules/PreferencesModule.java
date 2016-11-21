@@ -30,7 +30,7 @@ public class PreferencesModule {
     @Provides
     @Singleton
     PreferenceStore providePreferenceStore() {
-        return PreferenceStore.getInstance();
+        return PreferenceStore.Companion.getInstance();
     }
 
 }

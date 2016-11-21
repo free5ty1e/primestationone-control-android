@@ -66,12 +66,12 @@ public class NetworkUtilities {
     }
 
     public static String getPiUsername() {
-        return PreferenceStore.getInstance().getString(R.string.pref_key_custom_pi_username, R.string.pref_default_custom_pi_username);
+        return PreferenceStore.Companion.getInstance().getString(R.string.pref_key_custom_pi_username, R.string.pref_default_custom_pi_username);
     }
 
     @NonNull
     public static List<String> getPiPasswordsToTry() {
-        PreferenceStore preferenceStore = PreferenceStore.getInstance();
+        PreferenceStore preferenceStore = PreferenceStore.Companion.getInstance();
         String customPassword = preferenceStore.getString(R.string.pref_key_custom_pi_password, "");
         String[] passwords = PrimeStationOneControlApplication.Companion.getAppResourcesContext().getResources().getStringArray(R.array.array_passwords);
         List<String> passwordsToTry = new ArrayList<>();

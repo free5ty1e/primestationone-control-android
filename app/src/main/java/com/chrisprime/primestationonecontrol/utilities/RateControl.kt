@@ -30,13 +30,12 @@ class RateControl {
     }
 
     fun adaptRate() {
-        var response_time = 0
-        response_time = getAvgResponseTime(indicator!!)
-        if ((response_time) > 0) {
-            if (response_time > 100) { // Most distanced hosts
-                rate = response_time * 5 // Minimum 500ms
+        val responseTime: Int = getAvgResponseTime(indicator!!)
+        if ((responseTime) > 0) {
+            if (responseTime > 100) { // Most distanced hosts
+                rate = responseTime * 5 // Minimum 500ms
             } else {
-                rate = response_time * 10 // Maximum 1000ms
+                rate = responseTime * 10 // Maximum 1000ms
             }
             if (rate > REACH_TIMEOUT) {
                 rate = REACH_TIMEOUT

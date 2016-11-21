@@ -6,13 +6,19 @@ import android.support.v4.app.Fragment;
 
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
+import com.chrisprime.primestationonecontrol.utilities.PreferenceStore;
 import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
 
 /**
  * Created by cpaian on 7/26/15.
  */
 public class BaseFragment extends Fragment {
     protected Bus mEventBus = PrimeStationOneControlApplication.eventBus;
+
+    @Inject
+    PreferenceStore mPreferenceStore;
 
     @Override
     public void onResume() {

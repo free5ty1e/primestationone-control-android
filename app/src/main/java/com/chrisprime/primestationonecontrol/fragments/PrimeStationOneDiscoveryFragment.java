@@ -1,9 +1,7 @@
 package com.chrisprime.primestationonecontrol.fragments;
 
-import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -16,6 +14,7 @@ import android.widget.TextView;
 
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
+import com.chrisprime.primestationonecontrol.dagger.Injector;
 import com.chrisprime.primestationonecontrol.events.PrimeStationsListUpdatedEvent;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
@@ -86,6 +85,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_primestation_one_discovery, container, false);
+        Injector.getApplicationComponent().inject(this);
         ButterKnife.bind(this, rootView);
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDiscoveryEmptyView.setOnButtonClick(() -> {
@@ -94,18 +94,12 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         mRvPiList.setEmptyView(mDiscoveryEmptyView);
         mRvPiList.setProgressView(mProgressBars);
         initializeFoundPrimeStationsListFromJson();
-
-
         updateDisplayedList();
         return rootView;
     }
 
     @OnClick(R.id.btn_find_pi)
     void onFindPiButtonClicked(View view) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean fastMethodEnabled = preferences.getBoolean(getString(R.string.pref_key_discovery_method_fast_enable),
-                getResources().getBoolean(R.bool.pref_default_discovery_method_fast_enable));
-
         boolean isScanning = determineIsScanning();
         String scanStatusText = isScanning ? "Currently scanning!" : "Not currently scanning!";
         Timber.d("findPi button clicked! " + scanStatusText);
@@ -180,9 +174,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     }
 
     private String checkForPrimeStationOnes(String gatewayPrefix) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean fastMethodEnabled = preferences.getBoolean(getString(R.string.pref_key_discovery_method_fast_enable),
-                getResources().getBoolean(R.bool.pref_default_discovery_method_fast_enable));
+        boolean fastMethodEnabled = mPreferenceStore.getBoolean(R.string.pref_key_discovery_method_fast_enable, R.bool.pref_default_discovery_method_fast_enable);
         if (fastMethodEnabled) {
             return checkForPrimeStationOnesFastMethod(gatewayPrefix);
         } else {
@@ -191,12 +183,8 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     }
 
     private String checkForPrimeStationOnesFastMethod(String gatewayPrefix) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        int lastIpOctetMin = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_min),
-                getResources().getString(R.string.pref_default_ip_last_octet_min)));
-        int lastIpOctetMax = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_max),
-                getResources().getString(R.string.pref_default_ip_last_octet_max)));
-
+        int lastIpOctetMin = getLastIpOctetMin();
+        int lastIpOctetMax = getLastIpOctetMax();
         long startIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMin);
         long endIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMax);
 
@@ -224,11 +212,21 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         return SUCCESS;
     }
 
+    private Integer getLastIpOctetMax() {
+        return Integer.valueOf(mPreferenceStore.getString(R.string.pref_key_override_ip_last_octet_max, R.string.pref_default_ip_last_octet_max));
+    }
+
+    private Integer getLastIpOctetMin() {
+        return Integer.valueOf(mPreferenceStore.getString(R.string.pref_key_override_ip_last_octet_min, R.string.pref_default_ip_last_octet_min));
+    }
+
     private void ipScanStarted(long ip) {
-        mActiveIpScans.add(NetInfo.getIpFromLongUnsigned(ip));
+        String ipString = NetInfo.getIpFromLongUnsigned(ip);
+        mActiveIpScans.add(ipString);
         mProgressBar.setMax(mActiveIpScans.size());
         mProgressBar.setProgress(1);
-        Timber.d(".ipScanStarted(%s), number of active scans remaining: %d", NetInfo.getIpFromLongUnsigned(ip), mActiveIpScans.size());
+        updateCurrentlyScanningAddress(ipString);
+        Timber.d(".ipScanStarted(%s), number of active scans remaining: %d", ipString, mActiveIpScans.size());
     }
 
     private void ipScanComplete(long ip) {
@@ -238,18 +236,18 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", ipString, mActiveIpScans.size());
         if (mActiveIpScans.size() == 0) {
             mFindPiSubscriber.onCompleted();
+            updateCurrentlyScanningAddress(getString(R.string.scan_finished_text));
         } else if (mActiveIpScans.size() < 5) {
             Timber.v(".ipScanComplete(%s): active scans remaining = %s", ipString, mActiveIpScans);
+            if (mActiveIpScans.size() > 0) {
+                updateCurrentlyScanningAddress((String) mActiveIpScans.toArray()[0]);
+            }
         }
     }
 
     private String checkForPrimeStationOnesSlowMethod(String gatewayPrefix) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        int lastIpOctetMin = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_min),
-                getResources().getString(R.string.pref_default_ip_last_octet_min)));
-        int lastIpOctetMax = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_max),
-                getResources().getString(R.string.pref_default_ip_last_octet_max)));
-
+        int lastIpOctetMin = getLastIpOctetMin();
+        int lastIpOctetMax = getLastIpOctetMax();
         for (int ipLastOctetToTry = lastIpOctetMin;
              ipLastOctetToTry <= lastIpOctetMax; ipLastOctetToTry++) {
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
@@ -289,12 +287,10 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         Timber.d("gatewayIpOctets = " + Arrays.toString(gatewayIpOctets) + ", gatewayPrefix = "
                 + detectedGatewayPrefix + ", gatewayIp = " + gatewayIp + ", DhcpInfo = " + dhcpInfo);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean ipPrefixOverrideEnabled = preferences.getBoolean(getString(R.string.pref_key_override_ip_enable), false);
+        boolean ipPrefixOverrideEnabled = mPreferenceStore.getBoolean(R.string.pref_key_override_ip_enable, R.bool.pref_default_override_ip);
 
         if (ipPrefixOverrideEnabled) {
-            gatewayPrefix = preferences.getString(getString(R.string.pref_key_override_ip_prefix),
-                    getString(R.string.pref_default_ip_prefix)) + NetworkUtilities.IP_SEPARATOR_CHAR;
+            gatewayPrefix = mPreferenceStore.getString(R.string.pref_key_override_ip_prefix, R.string.pref_default_ip_prefix) + NetworkUtilities.IP_SEPARATOR_CHAR;
             Timber.d("IP Prefix override active, forcing prefix to: " + gatewayPrefix);
         } else {
             gatewayPrefix = detectedGatewayPrefix;
