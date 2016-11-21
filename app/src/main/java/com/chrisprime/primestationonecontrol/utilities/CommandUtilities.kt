@@ -13,7 +13,7 @@ import timber.log.Timber
 object CommandUtilities {
 
     fun doCommand(command: List<String>): Int {
-        var s: String? = null
+        var s: String?
         var processExitValue = 1   //Default to "errored"
         val processBuilder = ProcessBuilder(command)
         try {

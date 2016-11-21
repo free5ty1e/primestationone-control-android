@@ -177,6 +177,7 @@ class NetInfo(private val ctxt: Context) {
         return null
     }
 
+    @Suppress("SENSELESS_COMPARISON")
     val mobileInfo: Boolean
         get() {
             val tm = ctxt.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
@@ -186,7 +187,8 @@ class NetInfo(private val ctxt: Context) {
             return false
         }
 
-    // Set wifi variables
+    @Suppress("SENSELESS_COMPARISON")
+            // Set wifi variables
     // broadcastIp = getIpFromIntSigned((dhcp.ipAddress & dhcp.netmask)
     // | ~dhcp.netmask);
     val wifiInfo: Boolean
