@@ -14,14 +14,15 @@
 
     <TextView
         android:id="@+id/tv_found_pi"
+        android:layout_toEndOf="@id/btn_find_pi"
         android:layout_toRightOf="@id/btn_find_pi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <android.support.v7.widget.RecyclerView
+    <com.chrisprime.primestationonecontrol.views.EmptyRecyclerView
         android:id="@+id/rv_pi_list"
         android:layout_below="@id/btn_find_pi"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>
