@@ -39,15 +39,21 @@ public class PrimeStationOne {
     String megaEmail;
     @SerializedName("megaPassword")
     String megaPassword;
+    @SerializedName("piUser")
+    String piUser;
+    @SerializedName("piPassword")
+    String piPassword;
 
     public PrimeStationOne() {
     }
 
-    public PrimeStationOne(String ipAddress, String hostname, String version, String mac) {
+    public PrimeStationOne(String ipAddress, String hostname, String version, String mac, String piUser, String piPassword) {
         this.ipAddress = ipAddress;
         this.hostname = hostname;
         this.version = version;
         this.mac = mac;
+        this.piUser = piUser;
+        this.piPassword = piPassword;
     }
 
     public void updateStoredPrimestation(Context context) {
@@ -56,11 +62,34 @@ public class PrimeStationOne {
 
     @Override
     public String toString() {
-        return "PrimeStationOne{\n" +
+        return "PrimeStationOne{" +
                 "ipAddress='" + ipAddress + '\'' +
                 ", hostname='" + hostname + '\'' +
                 ", version='" + version + '\'' +
+                ", mac='" + mac + '\'' +
+                ", splashscreenUriString='" + splashscreenUriString + '\'' +
+                ", retrievedSplashscreen=" + retrievedSplashscreen +
+                ", megaEmail='" + megaEmail + '\'' +
+                ", megaPassword='" + megaPassword + '\'' +
+                ", piUser='" + piUser + '\'' +
+                ", piPassword='" + piPassword + '\'' +
                 '}';
+    }
+
+    public String getPiUser() {
+        return piUser;
+    }
+
+    public void setPiUser(String piUser) {
+        this.piUser = piUser;
+    }
+
+    public String getPiPassword() {
+        return piPassword;
+    }
+
+    public void setPiPassword(String piPassword) {
+        this.piPassword = piPassword;
     }
 
     public String getIpAddress() {

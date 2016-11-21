@@ -4,10 +4,9 @@ import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.dagger.modules.ApplicationContextModule;
 import com.chrisprime.primestationonecontrol.dagger.modules.ThreadPoolModule;
 
-import java.util.Objects;
-
 public class Injector {
 
+    @SuppressWarnings("WeakerAccess")
     protected static ApplicationComponent sApplicationComponent;
 
     Injector() {
@@ -21,7 +20,9 @@ public class Injector {
     }
 
     public static ApplicationComponent getApplicationComponent() {
-        Objects.requireNonNull(sApplicationComponent, "sApplicationComponent is null");
+        if (sApplicationComponent == null) {
+            throw new NullPointerException(".getApplicationComponent(): sApplicationComponent is null!  Injection broken...");
+        }
         return sApplicationComponent;
     }
 }

@@ -52,10 +52,9 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseFragme
                     new Observable.OnSubscribe<Integer>() {
                         @Override
                         public void call(Subscriber<? super Integer> sub) {
-                            PrimeStationOneControlActivity primeStationOneControlActivity = (PrimeStationOneControlActivity) getActivity();
                             sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(),
-                                    primeStationOneControlActivity.getPiUsername(),
-                                    primeStationOneControlActivity.getPiPassword(),
+                                    currentPrimeStationOne.getPiUser(),
+                                    currentPrimeStationOne.getPiPassword(),
                                     PrimeStationOne.DEFAULT_PI_SSH_PORT, command, waitForReturnValueAndCommandOutput,
                                     line -> {
                                         String processedLine = processSshConsoleStdOutLine(line);

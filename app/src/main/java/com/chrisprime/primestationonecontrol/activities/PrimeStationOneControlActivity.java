@@ -118,10 +118,6 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
                 R.id.navigation_drawer,
                 drawerLayout);
         setupHamburgerMenuUpButtonToggleAnimation(drawerLayout);
-
-        Timber.d(".onCreate() retrieving selected Pi login password and username from preferences: %s / %s",
-                getPiUsername(), getPiPassword());
-
     }
 
     private void setupHamburgerMenuUpButtonToggleAnimation(final DrawerLayout drawerLayout) {
@@ -252,7 +248,7 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
                                 sub -> {
                                     sub.onNext(
                                             NetworkUtilities.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.getIpAddress(),
-                                                    getPiUsername(), getPiPassword(),
+                                                    primeStationOne.getPiUser(), primeStationOne.getPiPassword(),
                                                     PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION,
                                                     PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME));
                                     sub.onCompleted();
@@ -296,18 +292,6 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public String getPiUsername() {
-        return getPreferenceString(R.string.pref_key_custom_pi_username);
-    }
-
-    public String getPiPassword() {
-        String piPassword = getPreferenceListSelectedValue(R.string.pref_key_passwords);
-        if (getString(R.string.pref_actual_password_custom).equals(piPassword)) {
-            piPassword = getPreferenceString(R.string.pref_key_custom_pi_password);
-        }
-        return piPassword;
     }
 
     private void displayFullScreenQuickRef(PrimeStationOne primeStationOne) {

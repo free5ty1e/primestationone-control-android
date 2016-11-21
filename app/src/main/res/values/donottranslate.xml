@@ -2,24 +2,6 @@
 <resources>
 
     <!-- Preferences -->
-    <string-array name="pref_password_options">
-        <item>@string/pref_password_older_versions</item>
-        <item>@string/pref_password_newer_versions</item>
-        <item>@string/pref_password_custom</item>
-    </string-array>
-
-    <string name="pref_actual_password_older_versions">raspberry</string>
-    <string name="pref_actual_password_newer_versions">primestation1</string>
-    <string name="pref_actual_password_custom" />
-
-    <string name="pref_key_passwords">pref_key_passwords</string>
-    <string-array name="pref_password_values">
-        <item>@string/pref_actual_password_older_versions</item>
-        <item>@string/pref_actual_password_newer_versions</item>
-        <item>@string/pref_actual_password_custom</item>
-    </string-array>
-    <string name="pref_password_default">@string/pref_actual_password_newer_versions</string>
-
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_header_general">General</string>
@@ -61,7 +43,13 @@
 
     <string name="pref_key_custom_pi_password">pref_key_custom_pi_password</string>
     <string name="pref_title_custom_pi_password">Pi Custom Password</string>
-    <string name="pref_default_custom_pi_password">primestation1</string>
+    <string name="pref_default_custom_pi_password"/>
+    <string name="pref_actual_password_older_versions">raspberry</string>
+    <string name="pref_actual_password_newer_versions">primestation1</string>
+    <string-array name="array_passwords">
+        <item>@string/pref_actual_password_newer_versions</item>
+        <item>@string/pref_actual_password_older_versions</item>
+    </string-array>
 
     <!-- BELOW ARE FROM EXAMPLE TEMPLATE -->
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>

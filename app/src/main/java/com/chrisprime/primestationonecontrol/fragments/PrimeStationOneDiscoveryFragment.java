@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,12 @@ import android.widget.TextView;
 import com.chrisprime.netscan.network.HostBean;
 import com.chrisprime.netscan.network.NetInfo;
 import com.chrisprime.primestationonecontrol.R;
-import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
 import com.chrisprime.primestationonecontrol.events.PrimeStationsListUpdatedEvent;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 import com.chrisprime.primestationonecontrol.utilities.HostScanner;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
+import com.chrisprime.primestationonecontrol.views.EmptyRecyclerView;
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
 import com.squareup.otto.Subscribe;
 
@@ -62,7 +61,10 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     TextView mTvFoundPi;
 
     @Bind(R.id.rv_pi_list)
-    RecyclerView mRvPiList;
+            //TODO: Show empty state and spinner as appropriate
+    EmptyRecyclerView mRvPiList;
+
+    //TODO: Add finite scan progress bar too
 
     @Bind(R.id.btn_find_pi)
     Button mBtnFindPi;
@@ -134,21 +136,6 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
 
     private boolean determineIsScanning() {
         return mFindPiSubscription != null && !mFindPiSubscriber.isUnsubscribed();
-    }
-
-    private String getHostname(String ipAddress) {
-        String hostname = "hostname";
-        InetAddress address;
-        try {
-            address = InetAddress.getByName(ipAddress);
-            Timber.d("InetAddress for " + ipAddress + " = " + address);
-            hostname = address.getCanonicalHostName();
-            Timber.d("IP " + ipAddress + " hostname = " + hostname);
-        } catch (Exception e) {
-            Timber.e(e, "error obtaining hostname from " + ipAddress + ": " + e);
-            mFindPiSubscriber.onError(e);
-        }
-        return hostname;
     }
 
     private String checkForPrimeStationOnes(String gatewayPrefix) {
@@ -225,16 +212,11 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     }
 
     private void checkIsPrimeStationOne(String ipAddressToTry) {
-
         //Update status text to show current IP being scanned
         updateCurrentlyScanningAddress(ipAddressToTry);
 //                if (NetworkUtilities.ping(ipAddressToTry)) {          //Seems faster to just try each IP with SSH...
-        String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry, (PrimeStationOneControlActivity) getActivity());
-        if (primeStationVersion.length() > 0) {
-            String hostname = getHostname(ipAddressToTry);
-            String mac = "";
-            PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion, mac);
-            Timber.d("Found PrimeStationOne: " + primeStationOne);
+        PrimeStationOne primeStationOne = NetworkUtilities.sshCheckForPi(ipAddressToTry);
+        if (primeStationOne != null) {
             mPrimeStationOneList.add(primeStationOne);
         }
     }

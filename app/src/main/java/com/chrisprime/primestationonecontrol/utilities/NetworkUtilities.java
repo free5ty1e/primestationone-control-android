@@ -1,16 +1,14 @@
 package com.chrisprime.primestationonecontrol.utilities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
-import android.support.v4.app.FragmentActivity;
-import android.widget.ScrollView;
-import android.widget.TextView;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
+import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
-import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -32,11 +30,14 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import timber.log.Timber;
 
+
 public class NetworkUtilities {
+
     //TODO: User preferences for timeouts
     public static final int PING_TIMEOUT_MILLIS = 150;
     public static final int SSH_TIMEOUT_MILLIS = 1500;
@@ -64,10 +65,38 @@ public class NetworkUtilities {
         return wifiManager.getDhcpInfo();
     }
 
-    public static String sshCheckForPi(String ip, PrimeStationOneControlActivity primeStationOneControlActivity) {
-        return sshCheckForPi(ip, primeStationOneControlActivity.getPiUsername(),
-                primeStationOneControlActivity.getPiPassword(),
-                PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_VERSION_TEXT_FILE_LOCATION);
+    public static String getPiUsername() {
+        return PreferenceStore.getInstance().getString(R.string.pref_key_custom_pi_username, R.string.pref_default_custom_pi_username);
+    }
+
+    @NonNull
+    public static List<String> getPiPasswordsToTry() {
+        PreferenceStore preferenceStore = PreferenceStore.getInstance();
+        String customPassword = preferenceStore.getString(R.string.pref_key_custom_pi_password, "");
+        String[] passwords = PrimeStationOneControlApplication.getAppResourcesContext().getResources().getStringArray(R.array.array_passwords);
+        List<String> passwordsToTry = new ArrayList<>();
+        if (!TextUtils.isEmpty(customPassword)) {
+            passwordsToTry.add(customPassword);
+        }
+        Collections.addAll(passwordsToTry, passwords);
+        return passwordsToTry;
+    }
+
+    public static PrimeStationOne sshCheckForPi(String ip) {
+        //First, if custom password is set, try with that
+        //If that fails, try with each of the listed default passwords until one works or none do
+        PrimeStationOne primeStationOne = null;
+        for (String passwordToTry : getPiPasswordsToTry()) {
+            String primestationVersionResponse = sshCheckForPi(ip, getPiUsername(), passwordToTry);
+            if (!TextUtils.isEmpty(primestationVersionResponse)) {
+                String hostname = getHostname(ip);
+                String mac = "";
+                primeStationOne = new PrimeStationOne(ip, hostname, primestationVersionResponse, mac, getPiUsername(), passwordToTry);
+                Timber.d("Found PrimeStationOne: " + primeStationOne);
+                break;
+            }
+        }
+        return primeStationOne;
     }
 
     public static String sshCheckForPi(String ip, String user, String password) {
@@ -95,7 +124,6 @@ public class NetworkUtilities {
         }
         return foundPi;
     }
-
 
     public static Uri sshRetrieveAndSavePrimeStationFile(Context context, String ip, String user, String password,
                                                          int port, String fileLocationOnPrimestation, String fileNameToSaveLocally) {
@@ -159,6 +187,20 @@ public class NetworkUtilities {
             }
         }
         return channelSftp;
+    }
+
+    public static String getHostname(String ipAddress) {
+        String hostname = "hostname";
+        InetAddress address;
+        try {
+            address = InetAddress.getByName(ipAddress);
+            Timber.d("InetAddress for " + ipAddress + " = " + address);
+            hostname = address.getCanonicalHostName();
+            Timber.d("IP " + ipAddress + " hostname = " + hostname);
+        } catch (Exception e) {
+            Timber.e(e, "error obtaining hostname from " + ipAddress + ": " + e);
+        }
+        return hostname;
     }
 
     public interface SshCommandConsoleStdOutLineListener {
