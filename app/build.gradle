@@ -85,8 +85,8 @@ android {
 
         versionName getAppVersionName()
 
-//        versionCode numGitCommits()
-        versionCode dateVersionCode()
+        versionCode numGitCommits()
+//        versionCode dateVersionCode()
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         def testSuiteClass = "$applicationId.${whichTestSuite}"
