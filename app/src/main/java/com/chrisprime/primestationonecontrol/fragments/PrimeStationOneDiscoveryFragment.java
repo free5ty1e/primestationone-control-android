@@ -89,7 +89,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         ButterKnife.bind(this, rootView);
         mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDiscoveryEmptyView.setOnButtonClick(() -> {
-            ((PrimeStationOneControlActivity) getActivity()).onNavigationDrawerItemSelected(PrimeStationOneControlActivity.NAVIGATION_INDEX_SETTINGS);
+            ((PrimeStationOneControlActivity) getActivity()).onNavigationDrawerItemSelected(PrimeStationOneControlActivity.Companion.getNAVIGATION_INDEX_SETTINGS());
         });
         mRvPiList.setEmptyView(mDiscoveryEmptyView);
         mRvPiList.setProgressView(mProgressBars);
