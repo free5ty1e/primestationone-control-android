@@ -221,8 +221,6 @@ dependencies {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
 
-    compile project(':netscanlib')
-
     //Below is for consumer-friendly and obvious Android device names so we can easily identify which device did what in analytics and crashlogs
     //https://github.com/jaredrummler/AndroidDeviceNames
     compile 'com.jaredrummler:android-device-names:1.0.8'
