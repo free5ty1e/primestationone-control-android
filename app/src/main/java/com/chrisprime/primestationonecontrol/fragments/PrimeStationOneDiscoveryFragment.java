@@ -51,8 +51,6 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     private Subscription mFindPiSubscription;
 
 
-
-
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -178,15 +176,17 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         for (long currentIp = startIp; currentIp <= endIp; currentIp++) {
             long finalCurrentIp = currentIp;
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
-                String ipAddressString = NetInfo.getIpFromLongUnsigned(currentIp);
-                updateCurrentlyScanningAddress(ipAddressString);
-                HostBean host = new HostScanner(NetInfo.getIpFromLongUnsigned(finalCurrentIp)).scanForHost();
-                if (host == null) {
-                    Timber.d("Dead host %s ignored!", ipAddressString);
-                } else {
-                    Timber.d("Alive host %s found!  Checking to see if it's a Primestation...", ipAddressString);
-                    checkIsPrimeStationOne(ipAddressString);
-                }
+                safeRunOnIoThread(() -> {
+                    String ipAddressString = NetInfo.getIpFromLongUnsigned(finalCurrentIp);
+                    updateCurrentlyScanningAddress(ipAddressString);
+                    HostBean host = new HostScanner(NetInfo.getIpFromLongUnsigned(finalCurrentIp)).scanForHost();
+                    if (host == null) {
+                        Timber.d("Dead host %s ignored!", ipAddressString);
+                    } else {
+                        Timber.d("Alive host %s found!  Checking to see if it's a Primestation...", ipAddressString);
+                        checkIsPrimeStationOne(ipAddressString);
+                    }
+                });
             } else {
                 return CANCELLED;
             }
@@ -285,7 +285,8 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     }
 
     @SuppressWarnings("unused")
-    @Subscribe public void answerPrimeStationsListUpdatedEvent(PrimeStationsListUpdatedEvent primeStationsListUpdatedEvent) {
+    @Subscribe
+    public void answerPrimeStationsListUpdatedEvent(PrimeStationsListUpdatedEvent primeStationsListUpdatedEvent) {
         Timber.d(".answerPrimeStationsListUpdatedEvent(): forcing update of primestation list to ensure data sync...");
         initializeFoundPrimeStationsListFromJson();
     }
