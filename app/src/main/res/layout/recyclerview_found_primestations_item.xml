@@ -33,7 +33,7 @@
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/found_primestation_title"
             android:layout_width="0dp"
             android:layout_weight="6"
             android:layout_height="wrap_content"

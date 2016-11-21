@@ -60,7 +60,7 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
     public class FoundPrimeStationsRecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @Bind(R.id.thumbnail)
         ImageView imageView;
-        @Bind(R.id.title)
+        @Bind(R.id.found_primestation_title)
         TextView textView;
         @Bind(R.id.progress)
         ProgressBar progressBar;
