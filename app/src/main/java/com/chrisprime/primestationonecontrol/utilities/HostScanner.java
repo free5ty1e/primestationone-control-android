@@ -31,7 +31,7 @@ public class HostScanner {
     }
 
     public HostBean scanForHost() {
-        Timber.d("run="+ mAddr);
+        Timber.d(".scanForHost(): scanning %s", mAddr);
         // Create host object
         HostBean host = new HostBean();
         host.responseTime = getRate();
@@ -42,12 +42,14 @@ public class HostScanner {
             if (mRateControl.indicator != null && ++sNumHostsScanned % HOSTS_BETWEEN_RATE_ADAPTS == 0) {
                 mRateControl.adaptRate();
             }
+/*
             // Arp Check #1
             host.hardwareAddress = HardwareAddress.getHardwareAddress(mAddr);
             if(!NetInfo.NOMAC.equals(host.hardwareAddress)){
                 Timber.i( "found using arp #1 "+ mAddr);
                 return host;
             }
+*/
             // Native InetAddress check
             if (h.isReachable(getRate())) {
                 Timber.i( "found using InetAddress ping "+ mAddr);
@@ -58,12 +60,14 @@ public class HostScanner {
                 }
                 return host;
             }
+/*
             // Arp Check #2
             host.hardwareAddress = HardwareAddress.getHardwareAddress(mAddr);
             if(!NetInfo.NOMAC.equals(host.hardwareAddress)){
                 Timber.i( "found using arp #2 "+ mAddr);
                 return host;
             }
+*/
             // Custom check
 //            int port;
 //            // TODO: Get ports from options
@@ -90,15 +94,17 @@ public class HostScanner {
                 }
                 */
             // Arp Check #3
+/*
             host.hardwareAddress = HardwareAddress.getHardwareAddress(mAddr);
             if(!NetInfo.NOMAC.equals(host.hardwareAddress)){
                 Timber.i( "found using arp #3 "+ mAddr);
                 return host;
             }
+*/
             return null;
 
         } catch (IOException e) {
-            Timber.e( e.getMessage());
+            Timber.e("HostScanner error scanning %s: %s", mAddr, e.getMessage());
             return null;
         }
     }

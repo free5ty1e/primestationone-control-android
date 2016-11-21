@@ -13,9 +13,9 @@ public class Injector {
     Injector() {
     }
 
-    public static void initializeApplicationComponent(PrimeStationOneControlApplication snkrsApplication) {
+    public static void initializeApplicationComponent(PrimeStationOneControlApplication primeStationOneControlApplication) {
         sApplicationComponent = DaggerApplicationComponent.builder()
-                .applicationContextModule(new ApplicationContextModule(snkrsApplication))
+                .applicationContextModule(new ApplicationContextModule(primeStationOneControlApplication))
                 .threadPoolModule(new ThreadPoolModule())
                 .build();
     }

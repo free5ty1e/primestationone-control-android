@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication;
 import com.chrisprime.primestationonecontrol.R;
+import com.chrisprime.primestationonecontrol.dagger.Injector;
 import com.chrisprime.primestationonecontrol.fragments.NavigationDrawerFragment;
 import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneCloudBackupControlsFragment;
 import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneDiscoveryFragment;
@@ -97,6 +98,7 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        Injector.getApplicationComponent().inject(this);
 
         mFullScreenImageView.setOnClickListener(v -> {
             mFullScreenImageView.setVisibility(View.GONE);

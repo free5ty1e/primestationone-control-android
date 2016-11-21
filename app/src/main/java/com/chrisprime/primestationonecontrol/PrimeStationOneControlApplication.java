@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.chrisprime.primestationonecontrol.dagger.Injector;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 import com.squareup.leakcanary.LeakCanary;
@@ -45,6 +46,8 @@ public class PrimeStationOneControlApplication extends Application {
             return;
         }
         LeakCanary.install(this);
+
+        Injector.initializeApplicationComponent(this);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

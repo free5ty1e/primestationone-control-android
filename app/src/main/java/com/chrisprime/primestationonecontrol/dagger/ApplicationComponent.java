@@ -26,7 +26,7 @@ public interface ApplicationComponent {
 
     void inject(BaseFragment baseFragment);
 
-    void inject(PrimeStationOneControlActivity baseActivity);
+    void inject(PrimeStationOneControlActivity primeStationOneControlActivity);
 
     void inject(PreferenceStore preferencesStore);
 
