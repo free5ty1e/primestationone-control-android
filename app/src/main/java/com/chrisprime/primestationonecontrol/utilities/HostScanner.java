@@ -1,14 +1,7 @@
 package com.chrisprime.primestationonecontrol.utilities;
 
-import com.chrisprime.netscan.network.HardwareAddress;
-import com.chrisprime.netscan.network.HostBean;
-import com.chrisprime.netscan.network.NetInfo;
-import com.chrisprime.netscan.network.RateControl;
-
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
 import timber.log.Timber;
 

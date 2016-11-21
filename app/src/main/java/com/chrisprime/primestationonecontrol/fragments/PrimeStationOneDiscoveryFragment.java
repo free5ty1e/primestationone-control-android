@@ -14,14 +14,14 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.chrisprime.netscan.network.HostBean;
-import com.chrisprime.netscan.network.NetInfo;
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
 import com.chrisprime.primestationonecontrol.events.PrimeStationsListUpdatedEvent;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
+import com.chrisprime.primestationonecontrol.utilities.HostBean;
 import com.chrisprime.primestationonecontrol.utilities.HostScanner;
+import com.chrisprime.primestationonecontrol.utilities.NetInfo;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.chrisprime.primestationonecontrol.views.DiscoveryEmptyView;
 import com.chrisprime.primestationonecontrol.views.EmptyRecyclerView;
