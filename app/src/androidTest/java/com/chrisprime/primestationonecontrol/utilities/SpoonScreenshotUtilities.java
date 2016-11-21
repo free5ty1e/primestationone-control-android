@@ -24,7 +24,7 @@ public class SpoonScreenshotUtilities {
     public static void screenshot(String tag, Activity currentActivity, String className, String methodName) {
         Timber.d(".screenshot(%s) requested!", tag);
         if (currentActivity != null) {
-            if (StringUtilities.isEmpty(className) || StringUtilities.isEmpty(methodName)) {
+            if (StringUtilities.INSTANCE.isEmpty(className) || StringUtilities.INSTANCE.isEmpty(methodName)) {
                 Spoon.screenshot(currentActivity, tag);
             } else {
                 Spoon.screenshot(currentActivity, tag, className, methodName);
