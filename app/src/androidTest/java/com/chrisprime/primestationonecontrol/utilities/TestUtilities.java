@@ -120,7 +120,7 @@ public class TestUtilities {
             } catch (Exception e) {
                 if (secondsWaitedThusFar++ < maxWaitTimeSeconds) {
                     Timber.w("Control currently does not satisfy the provided ViewMatcher,  waiting 1 of allowed %d seconds and trying again...", maxWaitTimeSeconds);
-                    sleep(TimeManager.ONE_SECOND_IN_MILLIS);
+                    sleep(TimeManager.Companion.getInstance().getONE_SECOND_IN_MILLIS());
                 } else {
                     Timber.e("Control never satisfied the provided ViewMatcher condition within the allowed %d seconds, failed!", maxWaitTimeSeconds);
                     break;
@@ -169,7 +169,7 @@ public class TestUtilities {
             } catch (CustomFailureHandler.AssertionFailedWithCauseError | NoMatchingViewException | AmbiguousViewMatcherException e) {
                 if (secondsWaitedThusFar++ < maxWaitTimeSeconds) {
                     Timber.d("Check has not yet passed, waiting 1 of allowed %d seconds and trying again...", maxWaitTimeSeconds);
-                    sleep(TimeManager.ONE_SECOND_IN_MILLIS);
+                    sleep(TimeManager.Companion.getInstance().getONE_SECOND_IN_MILLIS());
                 } else {
                     Timber.e(e, "Check never passed within the allowed %d seconds, failed!", maxWaitTimeSeconds);
                     break;

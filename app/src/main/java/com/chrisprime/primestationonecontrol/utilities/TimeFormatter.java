@@ -99,7 +99,7 @@ public class TimeFormatter {
                                         @StringRes int resourceIdForPastDay, long time) {
         String results;
 
-        long nowInMs = TimeManager.currentTimeMillis();
+        long nowInMs = TimeManager.Companion.getInstance().currentTimeMillis();
         Calendar now = Calendar.getInstance();
         now.setTimeInMillis(nowInMs);
         now.setTimeZone(TimeZone.getDefault());  //use the user's time zone, not UTC to figure out what is "now"
