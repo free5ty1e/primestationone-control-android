@@ -269,7 +269,7 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
                                 Toast.makeText(PrimeStationOneControlActivity.this, message, Toast.LENGTH_SHORT).show();
                                 mCenteredProgressSpinner.setVisibility(View.GONE);
                                 displayFullScreenQuickRef(primeStationOne);
-                                FileUtilities.storeCurrentPrimeStationToJson(PrimeStationOneControlActivity.this, primeStationOne);
+                                FileUtilities.INSTANCE.storeCurrentPrimeStationToJson(PrimeStationOneControlActivity.this, primeStationOne);
                             }
 
                             @Override

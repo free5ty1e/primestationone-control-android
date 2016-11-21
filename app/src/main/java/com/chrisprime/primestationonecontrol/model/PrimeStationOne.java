@@ -57,7 +57,7 @@ public class PrimeStationOne {
     }
 
     public void updateStoredPrimestation(Context context) {
-        FileUtilities.storeCurrentPrimeStationToJson(context, this);
+        FileUtilities.INSTANCE.storeCurrentPrimeStationToJson(context, this);
     }
 
     @Override

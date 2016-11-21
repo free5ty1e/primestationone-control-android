@@ -141,7 +141,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
                         mTvFoundPi.setText(numPrimestationsFound > 0 ?
                                 numPrimestationsFound > 1 ? "Found " + numPrimestationsFound + " Primestations! xD" : "Found Primestation! :D"
                                 : "None found :(");
-                        FileUtilities.storeFoundPrimeStationsJson(getActivity(), mPrimeStationOneList);
+                        FileUtilities.INSTANCE.storeFoundPrimeStationsJson(getActivity(), mPrimeStationOneList);
 
 
                         //Clear lazy screen wakelock now that scan has completed
@@ -306,7 +306,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
 
     private void initializeFoundPrimeStationsListFromJson() {
         //restore json from file and use as found primestations without requiring a scan, if any were stored:
-        mPrimeStationOneList = FileUtilities.readJsonPrimestationList(getActivity());
+        mPrimeStationOneList = FileUtilities.INSTANCE.readJsonPrimestationList(getActivity());
         Timber.d("Deserialized json file into primeStationOneList: " + mPrimeStationOneList);
         if (mPrimeStationOneList == null) {
             mPrimeStationOneList = new ArrayList<>();

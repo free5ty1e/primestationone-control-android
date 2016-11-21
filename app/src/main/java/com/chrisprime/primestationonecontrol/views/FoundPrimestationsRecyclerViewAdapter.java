@@ -78,7 +78,7 @@ public class FoundPrimestationsRecyclerViewAdapter extends RecyclerView.Adapter<
         public void onClick(View v) {
             PrimeStationOneControlApplication.instance.setCurrentPrimeStationOne(primeStationOne);
             Toast.makeText(v.getContext(), "Current PrimeStation One set to: " + primeStationOne.toString(), Toast.LENGTH_LONG).show();
-            FileUtilities.storeCurrentPrimeStationToJson(v.getContext(), primeStationOne);
+            FileUtilities.INSTANCE.storeCurrentPrimeStationToJson(v.getContext(), primeStationOne);
         }
     }
 }
