@@ -14,11 +14,14 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.chrisprime.netscan.network.HostBean;
+import com.chrisprime.netscan.network.NetInfo;
 import com.chrisprime.primestationonecontrol.R;
 import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity;
 import com.chrisprime.primestationonecontrol.events.PrimeStationsListUpdatedEvent;
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
+import com.chrisprime.primestationonecontrol.utilities.HostScanner;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
 import com.squareup.otto.Subscribe;
@@ -38,12 +41,17 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
+public class PrimeStationOneDiscoveryFragment extends BaseFragment {
 
+    public static final String SUCCESS = "success";
+    public static final String CANCELLED = "cancelled";
     private List<PrimeStationOne> mPrimeStationOneList;
     private FoundPrimestationsRecyclerViewAdapter mFoundPrimestationsRecyclerViewAdapter;
     private Subscriber<String> mFindPiSubscriber;
     private Subscription mFindPiSubscription;
+
+
+
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -149,6 +157,46 @@ public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
 
     private String checkForPrimeStationOnes(String gatewayPrefix) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean fastMethodEnabled = preferences.getBoolean(getString(R.string.pref_key_discovery_method_fast_enable),
+                getResources().getBoolean(R.bool.pref_default_discovery_method_fast_enable));
+        if (fastMethodEnabled) {
+            return checkForPrimeStationOnesFastMethod(gatewayPrefix);
+        } else {
+            return checkForPrimeStationOnesSlowMethod(gatewayPrefix);
+        }
+    }
+
+    private String checkForPrimeStationOnesFastMethod(String gatewayPrefix) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int lastIpOctetMin = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_min),
+                getResources().getString(R.string.pref_default_ip_last_octet_min)));
+        int lastIpOctetMax = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_max),
+                getResources().getString(R.string.pref_default_ip_last_octet_max)));
+
+        long startIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMin);
+        long endIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMax);
+        for (long currentIp = startIp; currentIp <= endIp; currentIp++) {
+            long finalCurrentIp = currentIp;
+            if (determineIsScanning()) {  //Only if it wasn't cancelled!
+                String ipAddressString = NetInfo.getIpFromLongUnsigned(currentIp);
+                updateCurrentlyScanningAddress(ipAddressString);
+                HostBean host = new HostScanner(NetInfo.getIpFromLongUnsigned(finalCurrentIp)).scanForHost();
+                if (host == null) {
+                    Timber.d("Dead host %s ignored!", ipAddressString);
+                } else {
+                    Timber.d("Alive host %s found!  Checking to see if it's a Primestation...", ipAddressString);
+                    checkIsPrimeStationOne(ipAddressString);
+                }
+            } else {
+                return CANCELLED;
+            }
+        }
+        mFindPiSubscriber.onCompleted();
+        return SUCCESS;
+    }
+
+    private String checkForPrimeStationOnesSlowMethod(String gatewayPrefix) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         int lastIpOctetMin = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_min),
                 getResources().getString(R.string.pref_default_ip_last_octet_min)));
         int lastIpOctetMax = Integer.valueOf(preferences.getString(getString(R.string.pref_key_override_ip_last_octet_max),
@@ -157,26 +205,32 @@ public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
         for (int ipLastOctetToTry = lastIpOctetMin;
              ipLastOctetToTry <= lastIpOctetMax; ipLastOctetToTry++) {
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
-                String ipAddressToTry = gatewayPrefix + ipLastOctetToTry;
-
-                //Update status text to show current IP being scanned
-                getActivity().runOnUiThread(() -> mTvFoundPi.setText(String.format("%s...", ipAddressToTry)));
-//                if (NetworkUtilities.ping(ipAddressToTry)) {          //Seems faster to just try each IP with SSH...
-                String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry, (PrimeStationOneControlActivity) getActivity());
-                if (primeStationVersion.length() > 0) {
-                    String hostname = getHostname(ipAddressToTry);
-                    String mac = "";
-                    PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion, mac);
-                    Timber.d("Found PrimeStationOne: " + primeStationOne);
-                    mPrimeStationOneList.add(primeStationOne);
-                }
-//                }
+                checkIsPrimeStationOne(gatewayPrefix + ipLastOctetToTry);
             } else {
-                return "cancelled";
+                return CANCELLED;
             }
         }
         mFindPiSubscriber.onCompleted();
-        return "success";
+        return SUCCESS;
+    }
+
+    private void checkIsPrimeStationOne(String ipAddressToTry) {
+
+        //Update status text to show current IP being scanned
+        updateCurrentlyScanningAddress(ipAddressToTry);
+//                if (NetworkUtilities.ping(ipAddressToTry)) {          //Seems faster to just try each IP with SSH...
+        String primeStationVersion = NetworkUtilities.sshCheckForPi(ipAddressToTry, (PrimeStationOneControlActivity) getActivity());
+        if (primeStationVersion.length() > 0) {
+            String hostname = getHostname(ipAddressToTry);
+            String mac = "";
+            PrimeStationOne primeStationOne = new PrimeStationOne(ipAddressToTry, hostname, primeStationVersion, mac);
+            Timber.d("Found PrimeStationOne: " + primeStationOne);
+            mPrimeStationOneList.add(primeStationOne);
+        }
+    }
+
+    private void updateCurrentlyScanningAddress(String ipAddressToTry) {
+        getActivity().runOnUiThread(() -> mTvFoundPi.setText(String.format("%s...", ipAddressToTry)));
     }
 
     @NonNull
@@ -232,8 +286,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseEventBusFragment {
 
     @SuppressWarnings("unused")
     @Subscribe public void answerPrimeStationsListUpdatedEvent(PrimeStationsListUpdatedEvent primeStationsListUpdatedEvent) {
-        Timber.d(".answerPrimeStationsListUpdatedEvent: forcing update of primestation list to ensure data sync...");
+        Timber.d(".answerPrimeStationsListUpdatedEvent(): forcing update of primestation list to ensure data sync...");
         initializeFoundPrimeStationsListFromJson();
     }
-
 }

@@ -25,7 +25,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseEventBusFragment {
+abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseFragment {
 
     protected Observable<Integer> mPrimeStationCommandObservable;
     protected Subscriber<Integer> mPrimeStationCommandSubscriber;

@@ -1,6 +1,7 @@
 package com.chrisprime.primestationonecontrol;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
@@ -13,6 +14,7 @@ import timber.log.Timber;
 public class PrimeStationOneControlApplication extends Application {
     public static final String ID_EVENT_BUS_MAIN = "main";
 
+    //TODO: Eliminate singleton application object here in favor of injecting the ApplicationContextModule
     private static PrimeStationOneControlApplication sInstance;
     public static PrimeStationOneControlApplication getInstance() {
         return sInstance;
@@ -58,6 +60,10 @@ public class PrimeStationOneControlApplication extends Application {
 
     public void updateCurrentPrimeStationFromJson() {
         mCurrentPrimeStationOne = FileUtilities.readJsonCurrentPrimestation(this);
+    }
+
+    public static Context getAppResourcesContext() {
+        return sInstance.getApplicationContext();
     }
 
 

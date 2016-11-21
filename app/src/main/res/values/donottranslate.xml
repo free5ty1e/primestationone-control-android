@@ -24,9 +24,15 @@
 
     <string name="pref_header_general">General</string>
 
+    <string name="pref_key_discovery_method_fast_enable">discovery_method_fast_enable</string>
+    <string name="pref_title_discovery_method_fast_enable">Fast Discovery</string>
+    <string name="pref_description_discovery_method_fast_enable">Use new fast discovery method</string>
+    <bool name="pref_default_discovery_method_fast_enable">true</bool>
+
     <string name="pref_key_override_ip_enable">override_ip_enable</string>
     <string name="pref_title_override_ip">Override IP</string>
     <string name="pref_description_override_ip">Override IP range used in scan</string>
+    <bool name="pref_default_override_ip">false</bool>
 
     <string name="pref_key_override_ip_prefix">override_ip_prefix</string>
     <string name="pref_title_ip_prefix">IP Prefix</string>

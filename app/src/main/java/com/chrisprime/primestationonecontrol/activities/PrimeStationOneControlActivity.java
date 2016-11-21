@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +31,10 @@ import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.util.concurrent.ExecutorService;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -56,6 +61,21 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
     private CharSequence mTitle;
 
     private Observable mRetrieveImageObservable;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mIoThreadPoolEnabled = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        synchronized (mIoThreadPoolSync) {
+            mIoThreadPoolEnabled = false;
+        }
+    }
+
     private Subscriber<Uri> mRetrieveImageSubscriber;
 
     @Bind(R.id.iv_fullscreen)
@@ -64,6 +84,13 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
     @Bind(R.id.pb_centered)
     ProgressBar mCenteredProgressSpinner;
     private Subscription mRetreiveImageSubscription;
+
+    @Inject
+    ExecutorService mIoThreadPool;
+
+    private final Object mIoThreadPoolSync = new Object();
+    private boolean mIoThreadPoolEnabled = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -312,4 +339,13 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
     private boolean determineIfCurrentlyDownloadingSplashscreen() {
         return mRetreiveImageSubscription != null && !mRetrieveImageSubscriber.isUnsubscribed();
     }
+
+    public void runOnIoThread(@NonNull Runnable runnable) {
+        synchronized (mIoThreadPoolSync) {
+            if (mIoThreadPoolEnabled) {
+                mIoThreadPool.submit(runnable);
+            }
+        }
+    }
+
 }
