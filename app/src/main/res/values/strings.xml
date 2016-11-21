@@ -27,5 +27,9 @@
     <string name="button_intelligent_cloud_save_sync_text">Perform intelligent sync combining current PrimeStation saves on top of previous cloud backup</string>
 
     <string name="friendly_time_ago">" ago"</string>
+    <string name="empty_state_logo_content_description">empty_state_logo</string>
+    <string name="empty_discovery_no_primestations_discovered_text">No Primestations Discovered</string>
+    <string name="empty_discovery_description">Connect to the same wifi network as your Primestation(s) and start a scan to attempt to discover them! If you have set a custom username or password on your Primestation, configure that in Settings.</string>
+    <string name="empty_discovery_configure_button">CONFIGURE</string>
 
 </resources>

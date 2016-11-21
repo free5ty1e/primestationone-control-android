@@ -21,11 +21,11 @@ import com.chrisprime.primestationonecontrol.model.PrimeStationOne;
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities;
 import com.chrisprime.primestationonecontrol.utilities.HostScanner;
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities;
+import com.chrisprime.primestationonecontrol.views.DiscoveryEmptyView;
 import com.chrisprime.primestationonecontrol.views.EmptyRecyclerView;
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter;
 import com.squareup.otto.Subscribe;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,14 +60,29 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     @Bind(R.id.tv_found_pi)
     TextView mTvFoundPi;
 
+    //TODO: Show spinner as appropriate
     @Bind(R.id.rv_pi_list)
-            //TODO: Show empty state and spinner as appropriate
     EmptyRecyclerView mRvPiList;
+
+    @Bind(R.id.discovery_empty_view)
+    DiscoveryEmptyView mDiscoveryEmptyView;
 
     //TODO: Add finite scan progress bar too
 
     @Bind(R.id.btn_find_pi)
     Button mBtnFindPi;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_primestation_one_discovery, container, false);
+        ButterKnife.bind(this, rootView);
+        mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRvPiList.setEmptyView(mDiscoveryEmptyView);
+        initializeFoundPrimeStationsListFromJson();
+        updateDisplayedList();
+        return rootView;
+    }
 
     @OnClick(R.id.btn_find_pi)
     void onFindPiButtonClicked(View view) {
@@ -250,20 +265,6 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
             Timber.d("IP Prefix override inactive, prefix autodetected: " + gatewayPrefix);
         }
         return gatewayPrefix;
-    }
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_primestation_one_discovery, container, false);
-        ButterKnife.bind(this, rootView);
-        mRvPiList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        initializeFoundPrimeStationsListFromJson();
-
-        updateDisplayedList();
-
-        return rootView;
     }
 
     private void updateDisplayedList() {
