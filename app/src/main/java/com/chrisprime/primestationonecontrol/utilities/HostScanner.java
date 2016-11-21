@@ -32,7 +32,7 @@ public class HostScanner {
         try {
             InetAddress h = InetAddress.getByName(mAddr);
             // Rate control check
-            if (mRateControl.indicator != null && ++sNumHostsScanned % HOSTS_BETWEEN_RATE_ADAPTS == 0) {
+            if (mRateControl.getIndicator() != null && ++sNumHostsScanned % HOSTS_BETWEEN_RATE_ADAPTS == 0) {
                 mRateControl.adaptRate();
             }
 /*
@@ -47,8 +47,8 @@ public class HostScanner {
             if (h.isReachable(getRate())) {
                 Timber.i( "found using InetAddress ping "+ mAddr);
                 // Set indicator and get a rate
-                if (mRateControl.indicator == null) {
-                    mRateControl.indicator = mAddr;
+                if (mRateControl.getIndicator() == null) {
+                    mRateControl.setIndicator(mAddr);
                     mRateControl.adaptRate();
                 }
                 return host;
@@ -103,6 +103,6 @@ public class HostScanner {
     }
 
     private int getRate() {
-        return mRateControl.rate;
+        return mRateControl.getRate();
     }
 }
