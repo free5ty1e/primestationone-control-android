@@ -10,7 +10,7 @@ import com.squareup.otto.Bus;
  * Created by cpaian on 7/26/15.
  */
 public class BaseEventBusPreferenceActivity extends PreferenceActivity {
-    protected Bus mEventBus = PrimeStationOneControlApplication.getEventBus();
+    protected Bus mEventBus = PrimeStationOneControlApplication.eventBus;
 
     @Override
     public void onResume() {

@@ -60,7 +60,7 @@ public class PrimeStationOneCloudBackupControlsFragment extends PrimeStationOneB
         Timber.d("Mega login button clicked!");
 
         //Pop up dialog boxes allowing enter of username and password, prepopulated with preference (settable in settings), and stored as preference after press OK
-        PrimeStationOne primeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
+        PrimeStationOne primeStationOne = PrimeStationOneControlApplication.instance.getCurrentPrimeStationOne();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         primeStationOne.setMegaEmail(preferences.getString(getString(R.string.pref_key_mega_login_email),
                 getString(R.string.pref_default_mega_login_email)));

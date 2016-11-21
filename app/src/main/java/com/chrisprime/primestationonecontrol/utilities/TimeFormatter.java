@@ -29,7 +29,7 @@ public class TimeFormatter {
     }
 
     public static String getFriendlyTime(long periodInMilliseconds, boolean inPast) {
-        Context appResourcesContext = PrimeStationOneControlApplication.getInstance();
+        Context appResourcesContext = PrimeStationOneControlApplication.instance;
         StringBuilder stringBuilder = new StringBuilder();
         long remainingTimeDifference = periodInMilliseconds / 1000;
 
@@ -149,7 +149,7 @@ public class TimeFormatter {
 
     @Nullable
     public static String format(@StringRes int templateRes, @Nullable Calendar calendar, boolean lowerCaseAmPm) {
-        return format(PrimeStationOneControlApplication.getInstance().getString(templateRes), calendar, lowerCaseAmPm);
+        return format(PrimeStationOneControlApplication.instance.getString(templateRes), calendar, lowerCaseAmPm);
     }
 
     @Nullable

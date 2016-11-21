@@ -231,7 +231,7 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_show_quickref) {
-            PrimeStationOne primeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
+            PrimeStationOne primeStationOne = PrimeStationOneControlApplication.instance.getCurrentPrimeStationOne();
             if (primeStationOne == null) {
                 Toast.makeText(PrimeStationOneControlActivity.this, "No PrimeStation One currently selected!", Toast.LENGTH_SHORT).show();
             } else {

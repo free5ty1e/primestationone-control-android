@@ -73,7 +73,7 @@ public class NetworkUtilities {
     public static List<String> getPiPasswordsToTry() {
         PreferenceStore preferenceStore = PreferenceStore.getInstance();
         String customPassword = preferenceStore.getString(R.string.pref_key_custom_pi_password, "");
-        String[] passwords = PrimeStationOneControlApplication.getAppResourcesContext().getResources().getStringArray(R.array.array_passwords);
+        String[] passwords = PrimeStationOneControlApplication.Companion.getAppResourcesContext().getResources().getStringArray(R.array.array_passwords);
         List<String> passwordsToTry = new ArrayList<>();
         if (!TextUtils.isEmpty(customPassword)) {
             passwordsToTry.add(customPassword);

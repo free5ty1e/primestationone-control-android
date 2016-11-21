@@ -91,7 +91,7 @@ public class FileUtilities {
         String jsonString = new Gson().toJson(primeStationOneList);
         Timber.d("bundled found primestations into JSON string:\n" + jsonString);
         createAndSaveFile(context, PrimeStationOne.FOUND_PRIMESTATIONS_JSON_FILENAME, jsonString);
-        PrimeStationOneControlApplication.getEventBus().post(new PrimeStationsListUpdatedEvent());
+        PrimeStationOneControlApplication.eventBus.post(new PrimeStationsListUpdatedEvent());
     }
 
     public static void storeCurrentPrimeStationToJson(Context context, PrimeStationOne primeStationOne) {

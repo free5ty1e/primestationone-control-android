@@ -42,7 +42,7 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseFragme
     LinearLayout mButtonContainer;
 
     protected void sendCommandToCurrentPrimeStationOne(final String command, final boolean waitForReturnValueAndCommandOutput, final TextView textViewForConsoleUpdates) {
-        PrimeStationOne currentPrimeStationOne = PrimeStationOneControlApplication.getInstance().getCurrentPrimeStationOne();
+        PrimeStationOne currentPrimeStationOne = PrimeStationOneControlApplication.instance.getCurrentPrimeStationOne();
         if (currentPrimeStationOne == null) {
             Toast.makeText(getActivity(), "No Primestation currently selected, please select one from Search n Scan screen...", Toast.LENGTH_SHORT).show();
         } else {

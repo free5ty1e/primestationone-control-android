@@ -23,7 +23,7 @@ public class PreferencesModule {
     @Provides
     @Singleton
     SharedPreferences provideSharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(PrimeStationOneControlApplication.getInstance().getApplicationContext());
+        return PreferenceManager.getDefaultSharedPreferences(PrimeStationOneControlApplication.instance.getApplicationContext());
     }
 
 

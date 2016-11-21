@@ -40,7 +40,7 @@ public class PreferenceStore {
     }
 
     private Resources getResources() {
-        return PrimeStationOneControlApplication.getAppResourcesContext().getResources();
+        return PrimeStationOneControlApplication.Companion.getAppResourcesContext().getResources();
     }
 
     /**
