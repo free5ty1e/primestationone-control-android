@@ -52,7 +52,7 @@ abstract public class PrimeStationOneBaseSshCommanderFragment extends BaseFragme
                     new Observable.OnSubscribe<Integer>() {
                         @Override
                         public void call(Subscriber<? super Integer> sub) {
-                            sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(),
+                            sub.onNext(NetworkUtilities.INSTANCE.sendSshCommandToPi(currentPrimeStationOne.getIpAddress(),
                                     currentPrimeStationOne.getPiUser(),
                                     currentPrimeStationOne.getPiPassword(),
                                     PrimeStationOne.DEFAULT_PI_SSH_PORT, command, waitForReturnValueAndCommandOutput,

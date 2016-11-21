@@ -250,7 +250,7 @@ public class PrimeStationOneControlActivity extends BaseEventBusAppCompatActivit
                         mRetrieveImageObservable = Observable.create(
                                 sub -> {
                                     sub.onNext(
-                                            NetworkUtilities.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.getIpAddress(),
+                                            NetworkUtilities.INSTANCE.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.getIpAddress(),
                                                     primeStationOne.getPiUser(), primeStationOne.getPiPassword(),
                                                     PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION,
                                                     PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME));

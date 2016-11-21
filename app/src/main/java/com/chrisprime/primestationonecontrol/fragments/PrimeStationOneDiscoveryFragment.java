@@ -281,16 +281,16 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
         StringBuffer stringBuffer = new StringBuffer();
         NetworkUtilities.putAddress(stringBuffer, dhcpInfo.gateway);
         String gatewayIp = stringBuffer.toString();
-        String[] gatewayIpOctets = gatewayIp.split(NetworkUtilities.IP_SEPARATOR_CHAR_MATCHER);
+        String[] gatewayIpOctets = gatewayIp.split(NetworkUtilities.getIP_SEPARATOR_CHAR_MATCHER());
         String detectedGatewayPrefix = gatewayIpOctets.length == 0 ? "" : gatewayIpOctets[0]
-                + NetworkUtilities.IP_SEPARATOR_CHAR + gatewayIpOctets[1] + NetworkUtilities.IP_SEPARATOR_CHAR + gatewayIpOctets[2] + NetworkUtilities.IP_SEPARATOR_CHAR;
+                + NetworkUtilities.getIP_SEPARATOR_CHAR() + gatewayIpOctets[1] + NetworkUtilities.getIP_SEPARATOR_CHAR() + gatewayIpOctets[2] + NetworkUtilities.getIP_SEPARATOR_CHAR();
         Timber.d("gatewayIpOctets = " + Arrays.toString(gatewayIpOctets) + ", gatewayPrefix = "
                 + detectedGatewayPrefix + ", gatewayIp = " + gatewayIp + ", DhcpInfo = " + dhcpInfo);
 
         boolean ipPrefixOverrideEnabled = mPreferenceStore.getBoolean(R.string.pref_key_override_ip_enable, R.bool.pref_default_override_ip);
 
         if (ipPrefixOverrideEnabled) {
-            gatewayPrefix = mPreferenceStore.getString(R.string.pref_key_override_ip_prefix, R.string.pref_default_ip_prefix) + NetworkUtilities.IP_SEPARATOR_CHAR;
+            gatewayPrefix = mPreferenceStore.getString(R.string.pref_key_override_ip_prefix, R.string.pref_default_ip_prefix) + NetworkUtilities.getIP_SEPARATOR_CHAR();
             Timber.d("IP Prefix override active, forcing prefix to: " + gatewayPrefix);
         } else {
             gatewayPrefix = detectedGatewayPrefix;
