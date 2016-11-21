@@ -37,7 +37,7 @@ public class HostBean implements Parcelable {
     public int responseTime = 0; // ms
     public String ipAddress = null;
     public String hostname = null;
-    public String hardwareAddress = NetInfo.NOMAC;
+    public String hardwareAddress = NetInfo.Companion.getNOMAC();
     public String nicVendor = "Unknown";
     public String os = "Unknown";
     public HashMap<Integer, String> services = null;

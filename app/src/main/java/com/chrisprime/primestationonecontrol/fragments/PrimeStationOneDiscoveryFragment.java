@@ -185,8 +185,8 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     private String checkForPrimeStationOnesFastMethod(String gatewayPrefix) {
         int lastIpOctetMin = getLastIpOctetMin();
         int lastIpOctetMax = getLastIpOctetMax();
-        long startIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMin);
-        long endIp = NetInfo.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMax);
+        long startIp = NetInfo.Companion.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMin);
+        long endIp = NetInfo.Companion.getUnsignedLongFromIp(gatewayPrefix + lastIpOctetMax);
 
         mActiveIpScans = new HashSet<>();
         for (long currentIp = startIp; currentIp <= endIp; currentIp++) {
@@ -194,9 +194,9 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
             if (determineIsScanning()) {  //Only if it wasn't cancelled!
                 ipScanStarted(finalCurrentIp);
                 safeRunOnIoThread(() -> {
-                    String ipAddressString = NetInfo.getIpFromLongUnsigned(finalCurrentIp);
+                    String ipAddressString = NetInfo.Companion.getIpFromLongUnsigned(finalCurrentIp);
                     updateCurrentlyScanningAddress(ipAddressString);
-                    HostBean host = new HostScanner(NetInfo.getIpFromLongUnsigned(finalCurrentIp)).scanForHost();
+                    HostBean host = new HostScanner(NetInfo.Companion.getIpFromLongUnsigned(finalCurrentIp)).scanForHost();
                     if (host == null) {
                         Timber.d("Dead host %s ignored!", ipAddressString);
                     } else {
@@ -221,7 +221,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     }
 
     private void ipScanStarted(long ip) {
-        String ipString = NetInfo.getIpFromLongUnsigned(ip);
+        String ipString = NetInfo.Companion.getIpFromLongUnsigned(ip);
         mActiveIpScans.add(ipString);
         mProgressBar.setMax(mActiveIpScans.size());
         mProgressBar.setProgress(1);
@@ -230,7 +230,7 @@ public class PrimeStationOneDiscoveryFragment extends BaseFragment {
     }
 
     private void ipScanComplete(long ip) {
-        String ipString = NetInfo.getIpFromLongUnsigned(ip);
+        String ipString = NetInfo.Companion.getIpFromLongUnsigned(ip);
         mActiveIpScans.remove(ipString);
         mProgressBar.setMax(mActiveIpScans.size());
         Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", ipString, mActiveIpScans.size());
