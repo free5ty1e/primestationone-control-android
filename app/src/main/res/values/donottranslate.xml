@@ -2,31 +2,19 @@
 <resources>
 
     <!-- Preferences -->
-    <string-array name="pref_password_options">
-        <item>@string/pref_password_older_versions</item>
-        <item>@string/pref_password_newer_versions</item>
-        <item>@string/pref_password_custom</item>
-    </string-array>
-
-    <string name="pref_actual_password_older_versions">raspberry</string>
-    <string name="pref_actual_password_newer_versions">primestation1</string>
-    <string name="pref_actual_password_custom" />
-
-    <string name="pref_key_passwords">pref_key_passwords</string>
-    <string-array name="pref_password_values">
-        <item>@string/pref_actual_password_older_versions</item>
-        <item>@string/pref_actual_password_newer_versions</item>
-        <item>@string/pref_actual_password_custom</item>
-    </string-array>
-    <string name="pref_password_default">@string/pref_actual_password_newer_versions</string>
-
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_header_general">General</string>
 
+    <string name="pref_key_discovery_method_fast_enable">discovery_method_fast_enable</string>
+    <string name="pref_title_discovery_method_fast_enable">Fast Discovery</string>
+    <string name="pref_description_discovery_method_fast_enable">Use new fast discovery method</string>
+    <bool name="pref_default_discovery_method_fast_enable">true</bool>
+
     <string name="pref_key_override_ip_enable">override_ip_enable</string>
     <string name="pref_title_override_ip">Override IP</string>
     <string name="pref_description_override_ip">Override IP range used in scan</string>
+    <bool name="pref_default_override_ip">false</bool>
 
     <string name="pref_key_override_ip_prefix">override_ip_prefix</string>
     <string name="pref_title_ip_prefix">IP Prefix</string>
@@ -55,7 +43,13 @@
 
     <string name="pref_key_custom_pi_password">pref_key_custom_pi_password</string>
     <string name="pref_title_custom_pi_password">Pi Custom Password</string>
-    <string name="pref_default_custom_pi_password">primestation1</string>
+    <string name="pref_default_custom_pi_password"/>
+    <string name="pref_actual_password_older_versions">raspberry</string>
+    <string name="pref_actual_password_newer_versions">primestation1</string>
+    <string-array name="array_passwords">
+        <item>@string/pref_actual_password_newer_versions</item>
+        <item>@string/pref_actual_password_older_versions</item>
+    </string-array>
 
     <!-- BELOW ARE FROM EXAMPLE TEMPLATE -->
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>

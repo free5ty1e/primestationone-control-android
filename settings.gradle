@@ -1,2 +1,1 @@
-include ':app', 'netscanlib'
-project(':netscanlib').projectDir = new File('android-network-discovery/netscanlib')
+include ':app'

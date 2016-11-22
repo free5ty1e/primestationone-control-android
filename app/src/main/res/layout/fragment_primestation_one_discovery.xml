@@ -8,21 +8,54 @@
 
     <Button
         android:id="@+id/btn_find_pi"
-        android:text="@string/button_find_pi_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/button_find_pi_text" />
 
     <TextView
         android:id="@+id/tv_found_pi"
-        android:layout_toEndOf="@id/btn_find_pi"
-        android:layout_toRightOf="@id/btn_find_pi"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/btn_find_pi"
+        android:layout_toRightOf="@id/btn_find_pi" />
 
     <com.chrisprime.primestationonecontrol.views.EmptyRecyclerView
         android:id="@+id/rv_pi_list"
-        android:layout_below="@id/btn_find_pi"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/btn_find_pi"
+        android:layout_marginTop="12dp" />
+
+    <com.chrisprime.primestationonecontrol.views.DiscoveryEmptyView
+        android:id="@+id/discovery_empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/btn_find_pi"
+        android:layout_marginTop="12dp"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/discovery_progressbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/btn_find_pi"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/discovery_progressbar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:indeterminate="false" />
+
+        <ProgressBar
+            android:id="@+id/discovery_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="true" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
