@@ -286,8 +286,9 @@ dependencies {
 //    compile 'com.levelmoney.velodrome:velodrome:1.0'
 
     // http://parceler.org/
-    compile 'org.parceler:parceler-api:1.1.5'
-//    apt 'org.parceler:parceler:1.1.5'
+    compile 'org.parceler:parceler-api:1.1.6'
+//    apt 'org.parceler:parceler:1.1.6'
+    kapt 'org.parceler:parceler:1.1.6'
 
 /*
     //TODO: Try Robolectric 3.1.5+ once released, currently 3.1.0 - 3.1.4 is incompatible with Powermock - causes issues with xstream project parsing during Realm unit tests https://github.com/robolectric/robolectric/issues/1389
