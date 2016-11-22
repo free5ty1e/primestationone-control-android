@@ -28,6 +28,7 @@ import junit.framework.AssertionFailedError;
 
 import org.hamcrest.Matcher;
 
+//TODO: Figure out how to propertly convert this to Kotlin without breaking this or losing functionality for retry logic
 /**
  * Recreating Espresso's {@link android.support.test.espresso.base.DefaultFailureHandler}
  * since the source class is final
