@@ -41,11 +41,13 @@ class PrimeStationOneControlApplication : Application() {
 
         Injector.initializeApplicationComponent(this)
 
-        if (BuildConfig.DEBUG) {
+//        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+/*
         } else {
             Timber.plant(CrashReportingTree())
         }
+*/
 
         val buildType = if (BuildConfig.DEBUG) "debug" else "production"
         Timber.d("Launching " + buildType + " build version " + BuildConfig.VERSION_NAME + ", which is version code " + BuildConfig.VERSION_CODE)
