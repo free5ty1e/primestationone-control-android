@@ -7,17 +7,13 @@ import android.os.Build
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBar
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
-
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
 import com.chrisprime.primestationonecontrol.R
 import com.chrisprime.primestationonecontrol.dagger.Injector
@@ -30,21 +26,15 @@ import com.chrisprime.primestationonecontrol.utilities.FileUtilities
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-
-import java.util.concurrent.ExecutorService
-
-import javax.inject.Inject
-
-import butterknife.Bind
-import butterknife.ButterKnife
+import kotlinx.android.synthetic.main.activity_main.*
 import rx.Observable
 import rx.Subscriber
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import timber.log.Timber
-
-import android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences
+import java.util.concurrent.ExecutorService
+import javax.inject.Inject
 
 class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), NavigationDrawerFragment.NavigationDrawerCallbacks {
     /**
@@ -72,13 +62,7 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
     }
 
     private var mRetrieveImageSubscriber: Subscriber<Uri>? = null
-
-    @Bind(R.id.iv_fullscreen)
-    lateinit var mFullScreenImageView: ImageView
-
-    @Bind(R.id.pb_centered)
-    lateinit var mCenteredProgressSpinner: ProgressBar
-
+    
     private var mRetreiveImageSubscription: Subscription? = null
 
     @Inject
@@ -87,16 +71,14 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
     private val mIoThreadPoolSync = Any()
     private var mIoThreadPoolEnabled = false
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ButterKnife.bind(this)
         Injector.applicationComponent.inject(this)
 
-        mFullScreenImageView!!.setOnClickListener { v ->
-            mFullScreenImageView!!.visibility = View.GONE
-            mCenteredProgressSpinner!!.visibility = View.GONE
+        iv_fullscreen!!.setOnClickListener { v ->
+            iv_fullscreen!!.visibility = View.GONE
+            pb_centered!!.visibility = View.GONE
         }
 
         //Uncomment if we run out of ring buffer
@@ -221,7 +203,7 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
                     } else {
                         Toast.makeText(this, "Retrieving splashscreen...  " + currentPrimestationReportText, Toast.LENGTH_LONG).show()
 
-                        mCenteredProgressSpinner!!.visibility = View.VISIBLE
+                        pb_centered!!.visibility = View.VISIBLE
                         mRetrieveImageObservable = Observable.create<Uri> { sub ->
                             sub.onNext(
                                     NetworkUtilities.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.ipAddress,
@@ -237,14 +219,14 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
                                 val message = "retrieval of image completed!"
                                 Timber.d(message)
                                 Toast.makeText(this@PrimeStationOneControlActivity, message, Toast.LENGTH_SHORT).show()
-                                mCenteredProgressSpinner!!.visibility = View.GONE
+                                pb_centered!!.visibility = View.GONE
                                 displayFullScreenQuickRef(primeStationOne)
                                 FileUtilities.storeCurrentPrimeStationToJson(this@PrimeStationOneControlActivity, primeStationOne)
                             }
 
                             override fun onError(e: Throwable) {
                                 Timber.e(e, "Error with subscriber: " + e + ": " + e.message)
-                                mCenteredProgressSpinner!!.visibility = View.GONE
+                                pb_centered!!.visibility = View.GONE
                             }
 
                             override fun onNext(uri: Uri?) {
@@ -266,21 +248,21 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
     }
 
     private fun displayFullScreenQuickRef(primeStationOne: PrimeStationOne) {
-        mCenteredProgressSpinner!!.visibility = View.VISIBLE
+        pb_centered!!.visibility = View.VISIBLE
 
         //Display full screen for quick reference
         val splashscreenUri = primeStationOne.splashscreenUri
         Picasso.with(this).load(splashscreenUri).rotate(90f)//TODO: Look into why fit() breaks gingerbread's ability to show the fullscreen image
                 //                .fit()
-                .into(mFullScreenImageView!!, object : Callback {
+                .into(iv_fullscreen!!, object : Callback {
                     override fun onSuccess() {
-                        mFullScreenImageView!!.visibility = View.VISIBLE
-                        mCenteredProgressSpinner!!.visibility = View.GONE
+                        iv_fullscreen!!.visibility = View.VISIBLE
+                        pb_centered!!.visibility = View.GONE
                     }
 
                     override fun onError() {
                         Toast.makeText(this@PrimeStationOneControlActivity, "Error loading " + splashscreenUri, Toast.LENGTH_LONG).show()
-                        mCenteredProgressSpinner!!.visibility = View.GONE
+                        pb_centered!!.visibility = View.GONE
                     }
                 })
     }

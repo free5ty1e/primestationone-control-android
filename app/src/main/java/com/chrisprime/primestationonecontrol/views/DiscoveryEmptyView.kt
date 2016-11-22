@@ -4,29 +4,11 @@ import android.content.Context
 import android.support.annotation.StringRes
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.ScrollView
-import android.widget.TextView
-
 import com.chrisprime.primestationonecontrol.R
-
-import butterknife.Bind
-import butterknife.ButterKnife
-import rx.functions.Action0
+import kotlinx.android.synthetic.main.view_discovery_empty.view.*
 
 class DiscoveryEmptyView : ScrollView {
-
-    @Bind(R.id.view_discovery_empty_logo)
-    lateinit var mImageView: ImageView
-    @Bind(R.id.view_discovery_empty_title_textview)
-    lateinit var mTitleTextView: TextView
-    @Bind(R.id.view_discovery_empty_body_textview)
-    lateinit var mBodyTextView: TextView
-    @Bind(R.id.view_discovery_empty_button)
-    lateinit var mButton: Button
-
-    internal var mAlignTop = false
 
     constructor(context: Context) : super(context) {
         if (!isInEditMode) {
@@ -49,33 +31,27 @@ class DiscoveryEmptyView : ScrollView {
     private fun init(attrs: AttributeSet?) {
         View.inflate(context, R.layout.view_discovery_empty, this)
         isFillViewport = true
-        ButterKnife.bind(this)
     }
 
     fun setOnButtonClick(action0: () -> Unit) {
-        mButton.setOnClickListener { v -> action0.invoke() }
+        view_discovery_empty_button.setOnClickListener { v -> action0.invoke() }
     }
 
     fun setStrings(@StringRes titleStrId: Int, @StringRes bodyStrId: Int, @StringRes buttonStrId: Int) {
         if (titleStrId > -1) {
-            mImageView.visibility = View.GONE
-            mTitleTextView.visibility = View.VISIBLE
-            mTitleTextView.setText(titleStrId)
+            view_discovery_empty_logo.visibility = View.GONE
+            view_discovery_empty_title_textview.visibility = View.VISIBLE
+            view_discovery_empty_title_textview.setText(titleStrId)
         } else {
-            mImageView.visibility = View.VISIBLE
-            mTitleTextView.visibility = View.INVISIBLE
+            view_discovery_empty_logo.visibility = View.VISIBLE
+            view_discovery_empty_title_textview.visibility = View.INVISIBLE
         }
-        mBodyTextView.setText(bodyStrId)
+        view_discovery_empty_body_textview.setText(bodyStrId)
         if (buttonStrId > -1) {
-            mButton.visibility = View.VISIBLE
-            mButton.setText(buttonStrId)
+            view_discovery_empty_button.visibility = View.VISIBLE
+            view_discovery_empty_button.setText(buttonStrId)
         } else {
-            mButton.visibility = View.GONE
+            view_discovery_empty_button.visibility = View.GONE
         }
-    }
-
-    companion object {
-
-        val NULL_RESOURCE_ID = -1
     }
 }

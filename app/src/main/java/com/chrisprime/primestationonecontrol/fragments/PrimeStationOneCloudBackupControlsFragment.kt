@@ -6,53 +6,49 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
-import butterknife.Bind
-import butterknife.ButterKnife
-import butterknife.OnClick
 import com.afollestad.materialdialogs.MaterialDialog
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
 import com.chrisprime.primestationonecontrol.R
+import kotlinx.android.synthetic.main.fragment_primestation_one_cloud_backup_controls.*
 import timber.log.Timber
 
 class PrimeStationOneCloudBackupControlsFragment : PrimeStationOneBaseSshCommanderFragment() {
 
-    @Bind(R.id.sv_status)
-    lateinit var mSvStatus: ScrollView
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        return inflater!!.inflate(R.layout.fragment_primestation_one_cloud_backup_controls, container, false)
+    }
 
-    @Bind(R.id.tv_status)
-    lateinit var mTvStatus: TextView
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        button_logout_of_mega.setOnClickListener { onMegaLogoutButtonClicked(it) }
+        button_force_backup_to_mega.setOnClickListener { onMegaForceBackupOverwriteButtonClicked(it) }
+        button_force_restore_from_mega.setOnClickListener { onMegaForceRestoreFromCloudOverwriteLocalButtonClicked(it) }
+        button_intelligent_cloud_save_sync.setOnClickListener { onMegaIntelligentCloudSaveSyncButtonClicked(it) }
+        button_login_to_mega.setOnClickListener { onMegaLoginButtonClicked(it) }
+        initializeCommander(ll_button_container)
+    }
 
-    @Bind(R.id.ll_button_container)
-    lateinit var mButtonContainer: LinearLayout
-
-    @OnClick(R.id.button_logout_of_mega)
     internal fun onMegaLogoutButtonClicked(view: View) {
         Timber.d("Mega login button clicked!")
-        sendCommandToCurrentPrimeStationOne("megaCloudBakClearLogin.sh", true, mTvStatus, mTvStatus, mSvStatus)
+        sendCommandToCurrentPrimeStationOne("megaCloudBakClearLogin.sh", true, tv_status, tv_status, sv_status)
     }
 
-    @OnClick(R.id.button_force_backup_to_mega)
     internal fun onMegaForceBackupOverwriteButtonClicked(view: View) {
         Timber.d("Mega force backup overwrite button clicked!")
-        sendCommandToCurrentPrimeStationOne("megaCloudBackupSaveStatesAndSrams.sh", true, mTvStatus, mTvStatus, mSvStatus)
+        sendCommandToCurrentPrimeStationOne("megaCloudBackupSaveStatesAndSrams.sh", true, tv_status, tv_status, sv_status)
     }
 
-    @OnClick(R.id.button_force_restore_from_mega)
     internal fun onMegaForceRestoreFromCloudOverwriteLocalButtonClicked(view: View) {
         Timber.d("Mega force restore overwrite local button clicked!")
-        sendCommandToCurrentPrimeStationOne("megaCloudRestoreSaveStatesAndSrams.sh", true, mTvStatus, mTvStatus, mSvStatus)
+        sendCommandToCurrentPrimeStationOne("megaCloudRestoreSaveStatesAndSrams.sh", true, tv_status, tv_status, sv_status)
     }
 
-    @OnClick(R.id.button_intelligent_cloud_save_sync)
     internal fun onMegaIntelligentCloudSaveSyncButtonClicked(view: View) {
         Timber.d("Mega intelligent cloud save sync button clicked!")
-        sendCommandToCurrentPrimeStationOne("megaCloudSyncSaveStatesAndSrams.sh", true, mTvStatus, mTvStatus, mSvStatus)
+        sendCommandToCurrentPrimeStationOne("megaCloudSyncSaveStatesAndSrams.sh", true, tv_status, tv_status, sv_status)
     }
 
-    @OnClick(R.id.button_login_to_mega)
     internal fun onMegaLoginButtonClicked(view: View) {
         Timber.d("Mega login button clicked!")
 
@@ -91,17 +87,9 @@ class PrimeStationOneCloudBackupControlsFragment : PrimeStationOneBaseSshCommand
                         "Username = " + primeStationOne.megaEmail + "\n" +
                         "Password = " + primeStationOne.megaPassword + "\n" +
                         "_EOF_\n" +
-                        "cat ~/.megarc ; megals", true, mTvStatus, mTvStatus, mSvStatus)
+                        "cat ~/.megarc ; megals", true, tv_status, tv_status, sv_status)
             }.show()
         }.show()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val rootView = inflater!!.inflate(R.layout.fragment_primestation_one_cloud_backup_controls, container, false)
-        ButterKnife.bind(this, rootView)
-        initializeCommander(mButtonContainer)
-        return rootView
     }
 
     companion object {

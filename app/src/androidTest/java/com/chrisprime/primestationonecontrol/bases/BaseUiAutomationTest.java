@@ -16,11 +16,11 @@ abstract public class BaseUiAutomationTest extends BaseNoUiAutomationTest {
     public void setUp() throws Exception {
         super.setUp();
         injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-        mActivity = super.getActivity();
+        setMActivity(super.getActivity());
         //enforceLocalMockedContent();
 //        waitForIdleSync();      //Left in because this might be needed for some fragile tests in the future
         setActivity(getCurrentActivity());
-        Espresso.setFailureHandler(new CustomFailureHandler(mActivity));
+        Espresso.setFailureHandler(new CustomFailureHandler(getMActivity()));
     }
 
     @Override

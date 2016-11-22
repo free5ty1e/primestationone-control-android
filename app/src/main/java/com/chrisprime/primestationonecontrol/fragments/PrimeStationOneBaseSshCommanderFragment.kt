@@ -1,14 +1,7 @@
 package com.chrisprime.primestationonecontrol.fragments
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
-import butterknife.Bind
-import butterknife.ButterKnife
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
-import com.chrisprime.primestationonecontrol.R
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities
 import com.chrisprime.primestationonecontrol.utilities.SshCommandConsoleStdOutLineListener
@@ -98,7 +91,7 @@ abstract class PrimeStationOneBaseSshCommanderFragment : BaseFragment() {
     }
 
     /**
-     * Make sure to call this in your fragment's onCreateView!
+     * Make sure to call this in your fragment's onCreateView (or onViewCreated if you are using Kotlin synthetics)
      */
     protected fun initializeCommander(buttonContainer: LinearLayout) {
         //Populate the button list so we can easily run through and enable or disable them

@@ -6,12 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
-import butterknife.Bind
-import butterknife.ButterKnife
-import butterknife.OnClick
 import com.chrisprime.primestationonecontrol.R
 import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity
 import com.chrisprime.primestationonecontrol.dagger.Injector
@@ -21,10 +15,9 @@ import com.chrisprime.primestationonecontrol.utilities.FileUtilities
 import com.chrisprime.primestationonecontrol.utilities.HostScanner
 import com.chrisprime.primestationonecontrol.utilities.NetInfo
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities
-import com.chrisprime.primestationonecontrol.views.DiscoveryEmptyView
-import com.chrisprime.primestationonecontrol.views.EmptyRecyclerView
 import com.chrisprime.primestationonecontrol.views.FoundPrimestationsRecyclerViewAdapter
 import com.squareup.otto.Subscribe
+import kotlinx.android.synthetic.main.fragment_primestation_one_discovery.*
 import rx.Observable
 import rx.Subscriber
 import rx.Subscription
@@ -40,42 +33,24 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
     private var mFindPiSubscription: Subscription? = null
     private var mActiveIpScans: MutableSet<String>? = null
 
-    @Bind(R.id.tv_found_pi)
-    lateinit var mTvFoundPi: TextView
-
-    @Bind(R.id.rv_pi_list)
-    lateinit var mRvPiList: EmptyRecyclerView
-
-    @Bind(R.id.discovery_empty_view)
-    lateinit var mDiscoveryEmptyView: DiscoveryEmptyView
-
-    @Bind(R.id.btn_find_pi)
-    lateinit var mBtnFindPi: Button
-
-    @Bind(R.id.discovery_progressbar)
-    lateinit var mProgressBar: ProgressBar
-
-    @Bind(R.id.discovery_spinner)
-    lateinit var mSpinner: ProgressBar
-
-    @Bind(R.id.discovery_progressbar_layout)
-    lateinit var mProgressBars: View
-
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater!!.inflate(R.layout.fragment_primestation_one_discovery, container, false)
         Injector.applicationComponent.inject(this)
-        ButterKnife.bind(this, rootView)
-        mRvPiList.layoutManager = LinearLayoutManager(activity)
-        mDiscoveryEmptyView.setOnButtonClick({ (activity as PrimeStationOneControlActivity).onNavigationDrawerItemSelected(PrimeStationOneControlActivity.NAVIGATION_INDEX_SETTINGS) })
-        mRvPiList.setEmptyView(mDiscoveryEmptyView)
-        mRvPiList.setProgressView(mProgressBars)
         initializeFoundPrimeStationsListFromJson()
-        updateDisplayedList()
         return rootView
     }
 
-    @OnClick(R.id.btn_find_pi)
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        rv_pi_list.layoutManager = LinearLayoutManager(activity)
+        discovery_empty_view.setOnButtonClick({ (activity as PrimeStationOneControlActivity).onNavigationDrawerItemSelected(PrimeStationOneControlActivity.NAVIGATION_INDEX_SETTINGS) })
+        rv_pi_list.setEmptyView(discovery_empty_view)
+        rv_pi_list.setProgressView(discovery_progressbar_layout)
+        btn_find_pi.setOnClickListener { onFindPiButtonClicked(it) }
+        updateDisplayedList()
+    }
+
     fun onFindPiButtonClicked(view: View) {
         val isScanning = determineIsScanning()
         val scanStatusText = if (isScanning) "Currently scanning!" else "Not currently scanning!"
@@ -105,7 +80,7 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
                     activity.runOnUiThread {
                         setUiIdle()
                         val numPrimestationsFound = mPrimeStationOneList!!.size
-                        mTvFoundPi!!.text = if (numPrimestationsFound > 0)
+                        tv_found_pi!!.text = if (numPrimestationsFound > 0)
                             if (numPrimestationsFound > 1) "Found $numPrimestationsFound Primestations! xD" else "Found Primestation! :D"
                         else
                             "None found :("
@@ -127,13 +102,13 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
     }
 
     private fun setUiIdle() {
-        mBtnFindPi!!.setText(R.string.button_find_pi_text)
-        mRvPiList!!.setLoading(false)
+        btn_find_pi!!.setText(R.string.button_find_pi_text)
+        rv_pi_list!!.setLoading(false)
     }
 
     private fun setUiScanning() {
-        mBtnFindPi!!.setText(R.string.button_find_pi_cancel_text)
-        mRvPiList!!.setLoading(true)
+        btn_find_pi!!.setText(R.string.button_find_pi_cancel_text)
+        rv_pi_list!!.setLoading(true)
     }
 
     private fun determineIsScanning(): Boolean {
@@ -188,8 +163,8 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
     private fun ipScanStarted(ip: Long) {
         val ipString = NetInfo.getIpFromLongUnsigned(ip)
         mActiveIpScans!!.add(ipString)
-        mProgressBar!!.max = mActiveIpScans!!.size
-        mProgressBar!!.progress = 1
+        discovery_progressbar!!.max = mActiveIpScans!!.size
+        discovery_progressbar!!.progress = 1
         updateCurrentlyScanningAddress(ipString)
         Timber.d(".ipScanStarted(%s), number of active scans remaining: %d", ipString, mActiveIpScans!!.size)
     }
@@ -197,7 +172,7 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
     private fun ipScanComplete(ip: Long) {
         val ipString = NetInfo.getIpFromLongUnsigned(ip)
         mActiveIpScans!!.remove(ipString)
-        mProgressBar!!.max = mActiveIpScans!!.size
+        discovery_progressbar!!.max = mActiveIpScans!!.size
         Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", ipString, mActiveIpScans!!.size)
         if (mActiveIpScans!!.size == 0) {
             mFindPiSubscriber!!.onCompleted()
@@ -235,7 +210,7 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
     }
 
     private fun updateCurrentlyScanningAddress(ipAddressToTry: String) {
-        activity.runOnUiThread { mTvFoundPi!!.text = String.format("%s...", ipAddressToTry) }
+        activity.runOnUiThread { tv_found_pi!!.text = String.format("%s...", ipAddressToTry) }
     }
 
     private val currentGatewayPrefix: String
@@ -267,19 +242,19 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
 
     private fun updateDisplayedList() {
         mFoundPrimestationsRecyclerViewAdapter = FoundPrimestationsRecyclerViewAdapter(mPrimeStationOneList)
-        mRvPiList!!.adapter = mFoundPrimestationsRecyclerViewAdapter
+        rv_pi_list!!.adapter = mFoundPrimestationsRecyclerViewAdapter
     }
 
     private fun initializeFoundPrimeStationsListFromJson() {
         //restore json from file and use as found primestations without requiring a scan, if any were stored:
         mPrimeStationOneList = FileUtilities.readJsonPrimestationList(activity)?.toMutableList()
-        Timber.d("Deserialized json file into primeStationOneList: " + mPrimeStationOneList!!)
+        Timber.d("Deserialized json file into primeStationOneList: " + mPrimeStationOneList)
         if (mPrimeStationOneList == null) {
             mPrimeStationOneList = ArrayList<PrimeStationOne>()
         }
     }
 
-    @SuppressWarnings("unused")
+    @Suppress("unused")
     @Subscribe
     fun answerPrimeStationsListUpdatedEvent(primeStationsListUpdatedEvent: PrimeStationsListUpdatedEvent) {
         Timber.d(".answerPrimeStationsListUpdatedEvent(): forcing update of primestation list to ensure data sync...")

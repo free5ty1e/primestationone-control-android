@@ -4,18 +4,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
-
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
 import com.chrisprime.primestationonecontrol.R
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities
+import kotlinx.android.synthetic.main.recyclerview_found_primestations_item.view.*
 
-import butterknife.Bind
-import butterknife.ButterKnife
 
 /**
  * Created by cpaian on 7/18/15.
@@ -33,7 +28,8 @@ class FoundPrimestationsRecyclerViewAdapter(private val mPrimeStationOneList: Li
         foundPrimeStationsRecyclerViewHolder.primeStationOne = primeStationOne
 
         //Setting text view title
-        foundPrimeStationsRecyclerViewHolder.textView!!.text = primeStationOne.ipAddress +
+
+        foundPrimeStationsRecyclerViewHolder.itemView.found_primestation_title.text = primeStationOne.ipAddress +
                 "\n" + primeStationOne.hostname + "\n" + primeStationOne.version + "\n" +
                 primeStationOne.piUser + ":" + primeStationOne.piPassword + "\n" +
                 primeStationOne.mac
@@ -48,19 +44,9 @@ class FoundPrimestationsRecyclerViewAdapter(private val mPrimeStationOneList: Li
     }
 
     class FoundPrimeStationsRecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
-        @Bind(R.id.thumbnail)
-        lateinit var imageView: ImageView
-
-        @Bind(R.id.found_primestation_title)
-        lateinit var textView: TextView
-
-        @Bind(R.id.progress)
-        lateinit var progressBar: ProgressBar
-
         var primeStationOne: PrimeStationOne? = null
 
         init {
-            ButterKnife.bind(this, itemView)
             itemView.isClickable = true
             itemView.setOnClickListener(this)
         }
