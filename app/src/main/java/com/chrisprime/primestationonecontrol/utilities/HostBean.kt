@@ -9,7 +9,6 @@ package com.chrisprime.primestationonecontrol.utilities
 import com.chrisprime.primestationonecontrol.BuildConfig
 import java.util.*
 
-@org.parceler.Parcel
 class HostBean {
 
     var deviceType = TYPE_COMPUTER

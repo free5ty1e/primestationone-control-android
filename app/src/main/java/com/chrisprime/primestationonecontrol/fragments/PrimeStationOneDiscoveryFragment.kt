@@ -85,7 +85,7 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
                         else
                             "None found :("
                         FileUtilities.storeFoundPrimeStationsJson(activity, mPrimeStationOneList!!)
-
+                        updateCurrentlyScanningAddress(getString(R.string.scan_finished_text))
 
                         //Clear lazy screen wakelock now that scan has completed
                         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -176,11 +176,16 @@ class PrimeStationOneDiscoveryFragment : BaseFragment() {
         Timber.d(".ipScanComplete(%s), number of active scans remaining: %d", ipString, mActiveIpScans!!.size)
         if (mActiveIpScans!!.size == 0) {
             mFindPiSubscriber!!.onCompleted()
-            updateCurrentlyScanningAddress(getString(R.string.scan_finished_text))
         } else if (mActiveIpScans!!.size < 5) {
             Timber.v(".ipScanComplete(%s): active scans remaining = %s", ipString, mActiveIpScans)
             if (mActiveIpScans!!.size > 0) {
-                updateCurrentlyScanningAddress(mActiveIpScans!!.toTypedArray()[0])
+                val ipAddressToTry = mActiveIpScans!!.toTypedArray()[0]
+                @Suppress("SENSELESS_COMPARISON")
+                if (ipAddressToTry == null) {
+                    mFindPiSubscriber!!.onCompleted()
+                } else {
+                    updateCurrentlyScanningAddress(ipAddressToTry)
+                }
             }
         }
     }

@@ -2,48 +2,25 @@ package com.chrisprime.primestationonecontrol.model
 
 import android.content.Context
 import android.net.Uri
-
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
-
 import org.parceler.Parcel
+import org.parceler.ParcelProperty
 
 /**
  * Created by cpaian on 7/18/15.
  */
-@Parcel
-class PrimeStationOne {
-
-    @SerializedName("ipAddress")
-    var ipAddress: String
-    @SerializedName("hostname")
-    var hostname: String
-    @SerializedName("version")
-    var version: String
-    @SerializedName("mac")
-    var mac: String
-    @SerializedName("splashscreenUriString")
-    var splashscreenUriString: String? = null
-    @SerializedName("retrievedSplashscreen")
-    var isRetrievedSplashscreen = false
-    @SerializedName("megaEmail")
-    var megaEmail: String? = null
-    @SerializedName("megaPassword")
-    var megaPassword: String? = null
-    @SerializedName("piUser")
-    var piUser: String
-    @SerializedName("piPassword")
-    var piPassword: String
-
-    constructor(ipAddress: String, hostname: String, version: String, mac: String, piUser: String, piPassword: String) {
-        this.ipAddress = ipAddress
-        this.hostname = hostname
-        this.version = version
-        this.mac = mac
-        this.piUser = piUser
-        this.piPassword = piPassword
-    }
+@Parcel(Parcel.Serialization.BEAN)
+data class PrimeStationOne(
+        @ParcelProperty("ipAddress") var ipAddress: String? = null,
+        @ParcelProperty("hostname") var hostname: String? = null,
+        @ParcelProperty("version") var version: String? = null,
+        @ParcelProperty("mac") var mac: String? = null,
+        @ParcelProperty("splashscreenUriString") var splashscreenUriString: String? = null,
+        @ParcelProperty("retrievedSplashscreen") var isRetrievedSplashscreen: Boolean? = null,
+        @ParcelProperty("megaEmail") var megaEmail: String? = null,
+        @ParcelProperty("megaPassword") var megaPassword: String? = null,
+        @ParcelProperty("piUser") var piUser: String? = null,
+        @ParcelProperty("piPassword") var piPassword: String? = null) {
 
     fun updateStoredPrimestation(context: Context) {
         FileUtilities.storeCurrentPrimeStationToJson(context, this)
@@ -63,12 +40,6 @@ class PrimeStationOne {
                 ", piPassword='" + piPassword + '\'' +
                 '}'
     }
-
-    var splashscreenUri: Uri
-        get() = Uri.parse(splashscreenUriString)
-        set(splashscreenUri) {
-            this.splashscreenUriString = splashscreenUri.toString()
-        }
 
     companion object {
         val DEFAULT_PI_SSH_PORT = 22

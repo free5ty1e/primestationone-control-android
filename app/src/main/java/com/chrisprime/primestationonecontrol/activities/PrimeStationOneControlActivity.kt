@@ -197,7 +197,7 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
                     Toast.makeText(this, "Currently downloading, please wait...", Toast.LENGTH_SHORT).show()
                 } else {
                     val currentPrimestationReportText = "Current PrimeStation One is: " + primeStationOne.toString()
-                    if (primeStationOne.isRetrievedSplashscreen) {    //Already retrieved this splashscreen
+                    if (primeStationOne.isRetrievedSplashscreen!!) {    //Already retrieved this splashscreen
                         Toast.makeText(this, "Displaying splashscreen!  " + currentPrimestationReportText, Toast.LENGTH_LONG).show()
                         displayFullScreenQuickRef(primeStationOne)
                     } else {
@@ -206,8 +206,8 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
                         pb_centered!!.visibility = View.VISIBLE
                         mRetrieveImageObservable = Observable.create<Uri> { sub ->
                             sub.onNext(
-                                    NetworkUtilities.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.ipAddress,
-                                            primeStationOne.piUser, primeStationOne.piPassword,
+                                    NetworkUtilities.sshRetrieveAndSavePrimeStationFile(this, primeStationOne.ipAddress!!,
+                                            primeStationOne.piUser!!, primeStationOne.piPassword!!,
                                             PrimeStationOne.DEFAULT_PI_SSH_PORT, PrimeStationOne.DEFAULT_PRIMESTATION_SPLASH_SCREEN_FILE_LOCATION,
                                             PrimeStationOne.SPLASHSCREENWITHCONTROLSANDVERSION_PNG_FILE_NAME))
                             sub.onCompleted()
@@ -233,7 +233,7 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
                                 if (uri == null) {
                                     Toast.makeText(this@PrimeStationOneControlActivity, "Error downloading image from Primestation, maybe try again?", Toast.LENGTH_SHORT).show()
                                 } else {
-                                    primeStationOne.splashscreenUri = uri
+                                    primeStationOne.splashscreenUriString = uri.toString()
                                     primeStationOne.isRetrievedSplashscreen = true
                                 }
                             }
@@ -251,7 +251,7 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
         pb_centered!!.visibility = View.VISIBLE
 
         //Display full screen for quick reference
-        val splashscreenUri = primeStationOne.splashscreenUri
+        val splashscreenUri: Uri = Uri.parse(primeStationOne.splashscreenUriString)
         Picasso.with(this).load(splashscreenUri).rotate(90f)//TODO: Look into why fit() breaks gingerbread's ability to show the fullscreen image
                 //                .fit()
                 .into(iv_fullscreen!!, object : Callback {

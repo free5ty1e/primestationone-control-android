@@ -32,9 +32,9 @@ abstract class PrimeStationOneBaseSshCommanderFragment : BaseFragment() {
             setAllButtonsEnabledInList(false)
             mPrimeStationCommandObservable = Observable.create(
                     Observable.OnSubscribe<kotlin.Int> { sub ->
-                        sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.ipAddress,
-                                currentPrimeStationOne.piUser,
-                                currentPrimeStationOne.piPassword,
+                        sub.onNext(NetworkUtilities.sendSshCommandToPi(currentPrimeStationOne.ipAddress!!,
+                                currentPrimeStationOne.piUser!!,
+                                currentPrimeStationOne.piPassword!!,
                                 PrimeStationOne.DEFAULT_PI_SSH_PORT, command, waitForReturnValueAndCommandOutput,
                                 sshCommandConsoleStdOutLineListener = object: SshCommandConsoleStdOutLineListener {
                                     override fun processConsoleStdOutLine(line: String) {

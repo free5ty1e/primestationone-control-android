@@ -5,33 +5,15 @@ import android.net.DhcpInfo
 import android.net.Uri
 import android.net.wifi.WifiManager
 import android.text.TextUtils
-
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
 import com.chrisprime.primestationonecontrol.R
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne
-import com.jcraft.jsch.Channel
-import com.jcraft.jsch.ChannelExec
-import com.jcraft.jsch.ChannelSftp
-import com.jcraft.jsch.JSch
-import com.jcraft.jsch.JSchException
-import com.jcraft.jsch.Session
-import com.jcraft.jsch.SftpException
-
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.io.OutputStream
+import com.jcraft.jsch.*
+import timber.log.Timber
+import java.io.*
 import java.net.InetAddress
 import java.net.UnknownHostException
-import java.util.ArrayList
-import java.util.Collections
-
-import timber.log.Timber
+import java.util.*
 
 
 object NetworkUtilities {
@@ -89,7 +71,7 @@ object NetworkUtilities {
                 val hostname = getHostname(ip)
                 val mac = ""
                 Timber.d("Trying to log into %s with %s/%s...", ip, piUsername, passwordToTry)
-                primeStationOne = PrimeStationOne(ip, hostname, primestationVersionResponse!!, mac, piUsername, passwordToTry)
+                primeStationOne = PrimeStationOne(ip, hostname, primestationVersionResponse!!, mac, null, false, null, null, piUsername, passwordToTry)
                 Timber.d("Found PrimeStationOne: " + primeStationOne)
                 break
             }
