@@ -28,26 +28,21 @@ import junit.framework.AssertionFailedError;
 
 import org.hamcrest.Matcher;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * Recreating Espresso's {@link android.support.test.espresso.base.DefaultFailureHandler}
  * since the source class is final
  */
 public final class CustomFailureHandler implements FailureHandler {
 
-    private static final AtomicInteger failureCount = new AtomicInteger(0);
-    private final Context appContext;
-
     public CustomFailureHandler(
             Context appContext) {
-        this.appContext = Preconditions.checkNotNull(appContext);
+        Preconditions.checkNotNull(appContext);
     }
 
     @Override
     public void handle(Throwable error, Matcher<View> viewMatcher) {
         if (error instanceof EspressoException || error instanceof AssertionFailedError
-                || error instanceof AssertionError) {
+                || error instanceof AssertionError || error instanceof RuntimeException) {
             throw Throwables.propagate(getUserFriendlyError(error, viewMatcher));
         } else {
             throw Throwables.propagate(error);
@@ -77,14 +72,16 @@ public final class CustomFailureHandler implements FailureHandler {
             error = new AssertionFailedWithCauseError(error.getMessage(), error);
         }
 
-        error.setStackTrace(Thread.currentThread().getStackTrace());
+        if (!(error instanceof RuntimeException)) { //Only set stack traces if not extending runtimeexception to keep our logs clean
+            error.setStackTrace(Thread.currentThread().getStackTrace());
+        }
         return error;
     }
 
     //Below needs to be public if we are going to catch this particular assertion and use it for retry logic...
-    public static final class AssertionFailedWithCauseError extends AssertionFailedError {
+    static final class AssertionFailedWithCauseError extends AssertionFailedError {
         /* junit hides the cause constructor. */
-        public AssertionFailedWithCauseError(String message, Throwable cause) {
+        AssertionFailedWithCauseError(String message, Throwable cause) {
             super(message);
             initCause(cause);
         }
