@@ -289,7 +289,7 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
         return mRetreiveImageSubscription != null && !mRetrieveImageSubscriber!!.isUnsubscribed
     }
 
-    fun runOnIoThread(runnable: Runnable) {
+    fun runOnIoThread(runnable: () -> Unit) {
         synchronized(mIoThreadPoolSync) {
             if (mIoThreadPoolEnabled) {
                 mIoThreadPool!!.submit(runnable)

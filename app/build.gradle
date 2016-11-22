@@ -67,7 +67,7 @@ android {
 
     dexOptions {
         jumboMode = false
-        javaMaxHeapSize "2g" //Otherwise we run out of memory when building including the test coverage reports.http://stackoverflow.com/a/33854389/3686125
+//        javaMaxHeapSize "2g" //Otherwise we run out of memory when building including the test coverage reports.http://stackoverflow.com/a/33854389/3686125
     }
 
     compileOptions {
@@ -202,6 +202,10 @@ int numGitCommits() {
     return gitVersionInteger
 }
 
+kapt {
+    generateStubs = true
+}
+
 dependencies {
     //noinspection GradleDependency
     compile "com.android.support:design:${androidSupportLibraryVersion}"
@@ -260,7 +264,8 @@ dependencies {
     // Needed for dagger 2
     compile 'com.google.dagger:dagger:2.6.1'
     provided 'com.google.dagger:dagger-compiler:2.6.1'
-    androidTestApt 'com.google.dagger:dagger-compiler:2.6.1'
+//    androidTestApt 'com.google.dagger:dagger-compiler:2.6.1'
+    kapt 'com.google.dagger:dagger-compiler:2.6.1'
 
     //Event bus:
     compile 'org.greenrobot:eventbus:3.0.0'

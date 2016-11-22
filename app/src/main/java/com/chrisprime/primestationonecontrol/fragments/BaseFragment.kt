@@ -35,7 +35,7 @@ open class BaseFragment : Fragment() {
 
      * @param runnable a Runnable to run if the activity isn't null
      */
-    protected fun safeRunOnIoThread(runnable: Runnable) {
+    protected fun safeRunOnIoThread(runnable: () -> Unit) {
         val activity = activity as PrimeStationOneControlActivity
         activity.runOnIoThread(runnable)
     }

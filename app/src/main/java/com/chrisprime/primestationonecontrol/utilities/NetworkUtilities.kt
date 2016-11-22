@@ -206,9 +206,6 @@ object NetworkUtilities {
         return hostname
     }
 
-    interface SshCommandConsoleStdOutLineListener {
-        fun processConsoleStdOutLine(line: String)
-    }
 
     @JvmStatic fun sendSshCommandToPi(ip: String, user: String, password: String, port: Int, command: String,
                            waitForReturnValueAndCommandOutput: Boolean,

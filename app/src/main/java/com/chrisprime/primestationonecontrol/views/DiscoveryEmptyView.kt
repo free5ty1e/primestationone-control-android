@@ -52,25 +52,25 @@ class DiscoveryEmptyView : ScrollView {
         ButterKnife.bind(this)
     }
 
-    fun setOnButtonClick(action0: Action0) {
-        mButton!!.setOnClickListener { v -> action0.call() }
+    fun setOnButtonClick(action0: () -> Unit) {
+        mButton.setOnClickListener { v -> action0.invoke() }
     }
 
     fun setStrings(@StringRes titleStrId: Int, @StringRes bodyStrId: Int, @StringRes buttonStrId: Int) {
         if (titleStrId > -1) {
-            mImageView!!.visibility = View.GONE
-            mTitleTextView!!.visibility = View.VISIBLE
-            mTitleTextView!!.setText(titleStrId)
+            mImageView.visibility = View.GONE
+            mTitleTextView.visibility = View.VISIBLE
+            mTitleTextView.setText(titleStrId)
         } else {
-            mImageView!!.visibility = View.VISIBLE
-            mTitleTextView!!.visibility = View.INVISIBLE
+            mImageView.visibility = View.VISIBLE
+            mTitleTextView.visibility = View.INVISIBLE
         }
-        mBodyTextView!!.setText(bodyStrId)
+        mBodyTextView.setText(bodyStrId)
         if (buttonStrId > -1) {
-            mButton!!.visibility = View.VISIBLE
-            mButton!!.setText(buttonStrId)
+            mButton.visibility = View.VISIBLE
+            mButton.setText(buttonStrId)
         } else {
-            mButton!!.visibility = View.GONE
+            mButton.visibility = View.GONE
         }
     }
 
