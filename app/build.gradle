@@ -113,8 +113,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
 
             //TODO: We might be able to create a project submodule for this library and automatically utilize the ones we care about, but this might be more problematic than just manually updating the files and checking into our project when necessary
             //Now utilizing modular, separated proguard rule files - many of which are kept more or less up-to-date here: https://github.com/krschultz/android-proguard-snippets

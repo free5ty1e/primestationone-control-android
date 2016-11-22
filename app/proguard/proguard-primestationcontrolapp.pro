@@ -57,13 +57,13 @@
 -printseeds "../build/proguard-kept-classes-and-members.txt"
 -printusage "../build/proguard-stripped-classes-and-members.txt"
 
-#### Timber / log & log string formatting stripping optimizations ####
-#-assumenosideeffects public class timber.log.Timber {
-#    public static int v(...);
-#    public static int i(...);
-#    public static int d(...);
-#}
-    #We only want to keep the warning and error log calls for production builds (strip the rest out to prevent the app from even attempting to format the log strings for these calls)
+### Timber / log & log string formatting stripping optimizations ####
+-assumenosideeffects public class timber.log.Timber {
+    public static int v(...);
+    public static int i(...);
+    public static int d(...);
+}
+    #We only want to keep the warning and error log calls for production builds (strip the rest out to prevent the app from even attempting to format the log strings for these calls, or worse: crashing the app since these calls are gone from Timber in Prod!)
 #    public static int w(...);
 #    public static int e(...);
 
