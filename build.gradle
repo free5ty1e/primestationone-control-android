@@ -17,18 +17,18 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+//        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
-    apply from: file('gradle/retrolambda-dependencies.gradle'), to: buildscript
+//    apply from: file('gradle/retrolambda-dependencies.gradle'), to: buildscript
     apply from: file('gradle/jacoco-dependencies.gradle'), to: buildscript
     apply from: file('gradle/spoon-dependencies.gradle'), to: buildscript
 
     // Exclude the version that the android plugin depends on.
-    configurations.classpath.exclude group: 'com.android.tools.external.lombok'
+//    configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
 
 ext {
