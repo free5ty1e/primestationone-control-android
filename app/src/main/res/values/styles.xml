@@ -5,6 +5,10 @@
         <item name="colorPrimary">@color/prime_green</item>
     </style>
 
+    <style name="FullscreenAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/prime_green</item>
+    </style>
+
     <style name="PrimeStationOneControlButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
