@@ -76,7 +76,11 @@ class NavigationDrawerFragment : BaseFragment() {
                 actionBar.themedContext,
                 simpleListItemActivated1,
                 android.R.id.text1,
-                arrayOf(getString(R.string.title_primestation_search), getString(R.string.title_primestation_general_controls), getString(R.string.title_primestation_cloud_backup_controls), getString(R.string.action_settings)))
+                arrayOf(getString(R.string.title_primestation_search),
+                        getString(R.string.title_primestation_general_controls),
+                        getString(R.string.title_primestation_cloud_backup_controls),
+                        getString(R.string.title_primestation_virtual_gamepad),
+                        getString(R.string.action_settings)))
         mDrawerListView!!.setItemChecked(mCurrentSelectedPosition, true)
         return mDrawerListView
     }

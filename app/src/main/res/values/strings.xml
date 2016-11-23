@@ -3,6 +3,7 @@
     <string name="title_primestation_search">Search &amp; Select</string>
     <string name="title_primestation_general_controls">General Controls</string>
     <string name="title_primestation_cloud_backup_controls">Cloud Backup Controls</string>
+    <string name="title_primestation_virtual_gamepad">Virtual Gamepad</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

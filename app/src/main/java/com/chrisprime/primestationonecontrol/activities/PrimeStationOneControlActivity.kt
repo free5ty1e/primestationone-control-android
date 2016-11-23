@@ -24,6 +24,7 @@ import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneGeneralCon
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities
+import com.chrisprime.primestationonecontrol.views.WebViewFragment
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
@@ -141,14 +142,20 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
     override fun onNavigationDrawerItemSelected(position: Int) {
         // update the main content by replacing fragments
 
+
         when (position) {
             NAVIGATION_INDEX_DISCOVERY -> newMainFragment(PrimeStationOneDiscoveryFragment.newInstance(), R.string.title_primestation_search)
             NAVIGATION_INDEX_GENERAL_CONTROLS -> newMainFragment(PrimeStationOneGeneralControlsFragment.newInstance(), R.string.title_primestation_general_controls)
             NAVIGATION_INDEX_CLOUD_BACKUP -> newMainFragment(PrimeStationOneCloudBackupControlsFragment.newInstance(), R.string.title_primestation_cloud_backup_controls)
+            NAVIGATION_INDEX_VIRTUAL_GAMEPAD -> newMainFragment(WebViewFragment.newInstance(getString(R.string.title_primestation_virtual_gamepad), "http://" + getCurrentPrimeStationOne()!!.ipAddress + ":8080"), R.string.title_primestation_virtual_gamepad)
             NAVIGATION_INDEX_SETTINGS -> startActivity(Intent(this, SettingsActivity::class.java))
             else -> {
             }
         }
+    }
+
+    fun getCurrentPrimeStationOne(): PrimeStationOne? {
+        return (application as PrimeStationOneControlApplication).currentPrimeStationOne
     }
 
     fun newMainFragment(fragment: Fragment, titleResourceId: Int) {
@@ -284,7 +291,8 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
         val NAVIGATION_INDEX_DISCOVERY = 0
         val NAVIGATION_INDEX_GENERAL_CONTROLS = 1
         val NAVIGATION_INDEX_CLOUD_BACKUP = 2
-        val NAVIGATION_INDEX_SETTINGS = 3 //Settings -- keep moving this one so it's at the bottom, will have to re-enumerate if more screens added!
+        val NAVIGATION_INDEX_VIRTUAL_GAMEPAD = 3
+        val NAVIGATION_INDEX_SETTINGS = 4 //Settings -- keep moving this one so it's at the bottom, will have to re-enumerate if more screens added!
     }
 
 }
