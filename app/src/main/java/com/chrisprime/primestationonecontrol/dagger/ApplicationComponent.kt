@@ -2,6 +2,7 @@ package com.chrisprime.primestationonecontrol.dagger
 
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
 import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity
+import com.chrisprime.primestationonecontrol.activities.PrimeStationOneVirtualGamepadActivity
 import com.chrisprime.primestationonecontrol.dagger.modules.ApplicationContextModule
 import com.chrisprime.primestationonecontrol.dagger.modules.PreferencesModule
 import com.chrisprime.primestationonecontrol.dagger.modules.ThreadPoolModule
@@ -27,6 +28,8 @@ interface ApplicationComponent {
     fun inject(baseFragment: BaseFragment)
 
     fun inject(primeStationOneControlActivity: PrimeStationOneControlActivity)
+
+    fun inject(primeStationOneVirtualGamepadActivity: PrimeStationOneVirtualGamepadActivity)
 
     fun inject(preferencesStore: PreferenceStore)
 
