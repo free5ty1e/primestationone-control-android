@@ -1,14 +1,12 @@
 package com.chrisprime.primestationonecontrol.utilities
 
 import android.app.Activity
-import android.content.ContextWrapper
 import android.text.TextUtils
 import com.jraska.falcon.FalconSpoon
 import com.squareup.spoon.Spoon
 import timber.log.Timber
 import java.io.File
 import java.net.URLEncoder
-
 
 
 @Suppress("unused")
