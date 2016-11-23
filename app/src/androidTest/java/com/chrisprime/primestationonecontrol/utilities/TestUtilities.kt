@@ -49,6 +49,7 @@ import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import android.support.test.runner.lifecycle.Stage
 import junit.framework.Assert.assertNotNull
 import org.hamcrest.Matchers.equalToIgnoringCase
+import java.util.*
 
 /**
  * Created by cpaian on 4/23/16.
@@ -303,7 +304,7 @@ object TestUtilities {
     }
 
     @JvmOverloads @JvmStatic fun watchForWebControl(searchText: String, locator: Locator,
-                                         doThisFirstEachCycle: Action0? = null, numSecondsToWaitBeforeFailure: Int = DEFAULT_MAX_WAIT_TIME_SECONDS): Web.WebInteraction<Void> {
+                                                    doThisFirstEachCycle: Action0? = null, numSecondsToWaitBeforeFailure: Int = DEFAULT_MAX_WAIT_TIME_SECONDS): Web.WebInteraction<Void> {
         var webControl: Web.WebInteraction<Void>? = safeFindWebControl(searchText, locator)
         if (webControl == null) {
             for (i in 0..numSecondsToWaitBeforeFailure - 1) {
@@ -408,4 +409,17 @@ object TestUtilities {
     @JvmStatic fun closeNavDrawer() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.close())
     }
+
+    @JvmStatic fun setLocale(language: String, country: String) {
+        val locale = Locale(language, country)
+        // here we update locale for date formatters
+        Locale.setDefault(locale)
+        // here we update locale for app resources
+        val res = InstrumentationRegistry.getTargetContext().resources
+        val config = res.configuration
+        config.locale = locale
+        res.updateConfiguration(config, res.displayMetrics)
+    }
+
+
 }

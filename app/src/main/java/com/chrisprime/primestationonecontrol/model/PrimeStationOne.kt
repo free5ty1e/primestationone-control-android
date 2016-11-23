@@ -10,7 +10,14 @@ import org.parceler.ParcelProperty
  */
 @Parcel(Parcel.Serialization.BEAN)
 data class PrimeStationOne(
-        @ParcelProperty("ipAddress") var ipAddress: String? = null,
+        @ParcelProperty("ipAddress") var ipAddress: String? = null
+                ?.get {
+                    if (PrimeStationOne.Companion.mockIpOverride != null) {
+                        return@get PrimeStationOne.Companion.mockIpOverride
+                    } else {
+                        return@get this
+                    }
+        },
         @ParcelProperty("piUser") var piUser: String? = null,
         @ParcelProperty("piPassword") var piPassword: String? = null,
         @ParcelProperty("version") var version: String? = null,
@@ -53,5 +60,7 @@ data class PrimeStationOne(
         @JvmStatic fun generatePrimeStationOne(): PrimeStationOne {
             return PrimeStationOne("192.168.1.11", "pi", "primestation1", "Version 1.10 beta", "primestation1pi3")
         }
+
+        @JvmField var mockIpOverride: String? = null
     }
 }

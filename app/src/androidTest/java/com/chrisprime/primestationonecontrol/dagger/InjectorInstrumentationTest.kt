@@ -1,10 +1,9 @@
 package com.chrisprime.primestationonecontrol.dagger
 
-import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
-import com.chrisprime.primestationonecontrol.dagger.modules.ApplicationContextModule
+import com.chrisprime.primestationonecontrol.dagger.modules.ApplicationContextModuleInstrumentationTest
 import com.chrisprime.primestationonecontrol.dagger.modules.ThreadPoolModule
 
-open class Injector {
+class InjectorInstrumentationTest : Injector() {
     companion object {
 
         //Unfortunately, the below two declaration blocks have to be duplicated in the InjectorInstrumentationTest as I'm not sure how to extend a companion object...
@@ -19,9 +18,11 @@ open class Injector {
                 return sApplicationComponent!!
             }
 
-        fun initializeApplicationComponent(primeStationOneControlApplication: PrimeStationOneControlApplication) {
-            sApplicationComponent = DaggerApplicationComponent.builder().applicationContextModule(ApplicationContextModule(primeStationOneControlApplication)).threadPoolModule(ThreadPoolModule()).build()
+        fun initializeApplicationComponent() {
+            sApplicationComponent = DaggerApplicationComponentInstrumentationTest.builder()
+                    .applicationContextModuleInstrumentationTest(ApplicationContextModuleInstrumentationTest())
+                    .threadPoolModule(ThreadPoolModule())
+                    .build()
         }
-
     }
 }
