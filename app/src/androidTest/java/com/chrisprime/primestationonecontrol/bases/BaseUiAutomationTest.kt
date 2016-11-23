@@ -3,6 +3,7 @@ package com.chrisprime.primestationonecontrol.bases
 import android.app.Activity
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso
+import com.chrisprime.primestationonecontrol.activities.PrimeStationOneControlActivity
 import com.chrisprime.primestationonecontrol.utilities.CustomFailureHandler
 
 import com.chrisprime.primestationonecontrol.utilities.SpoonScreenshotUtilities
@@ -21,7 +22,7 @@ abstract class BaseUiAutomationTest : BaseNoUiAutomationTest() {
         //enforceLocalMockedContent();
         //        waitForIdleSync();      //Left in because this might be needed for some fragile tests in the future
         setActivity(currentActivity)
-        Espresso.setFailureHandler(CustomFailureHandler(mActivity))
+        Espresso.setFailureHandler(CustomFailureHandler((mActivity as PrimeStationOneControlActivity?)!!))
     }
 
     override fun setActivity(testActivity: Activity) {
