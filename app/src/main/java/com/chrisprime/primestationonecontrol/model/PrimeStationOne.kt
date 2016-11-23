@@ -11,15 +11,15 @@ import org.parceler.ParcelProperty
 @Parcel(Parcel.Serialization.BEAN)
 data class PrimeStationOne(
         @ParcelProperty("ipAddress") var ipAddress: String? = null,
-        @ParcelProperty("hostname") var hostname: String? = null,
+        @ParcelProperty("piUser") var piUser: String? = null,
+        @ParcelProperty("piPassword") var piPassword: String? = null,
         @ParcelProperty("version") var version: String? = null,
+        @ParcelProperty("hostname") var hostname: String? = null,
         @ParcelProperty("mac") var mac: String? = null,
         @ParcelProperty("splashscreenUriString") var splashscreenUriString: String? = null,
-        @ParcelProperty("retrievedSplashscreen") var isRetrievedSplashscreen: Boolean? = null,
+        @ParcelProperty("retrievedSplashscreen") var isRetrievedSplashscreen: Boolean? = false,
         @ParcelProperty("megaEmail") var megaEmail: String? = null,
-        @ParcelProperty("megaPassword") var megaPassword: String? = null,
-        @ParcelProperty("piUser") var piUser: String? = null,
-        @ParcelProperty("piPassword") var piPassword: String? = null) {
+        @ParcelProperty("megaPassword") var megaPassword: String? = null) {
 
     fun updateStoredPrimestation(context: Context) {
         FileUtilities.storeCurrentPrimeStationToJson(context, this)
@@ -49,5 +49,9 @@ data class PrimeStationOne(
         val PRIMESTATION_DATA_STORAGE_PREFIX = "ps1_"
         val FOUND_PRIMESTATIONS_JSON_FILENAME = PRIMESTATION_DATA_STORAGE_PREFIX + "found_primestations.json"
         val CURRENT_PRIMESTATION_JSON_FILENAME = PRIMESTATION_DATA_STORAGE_PREFIX + "current_primestation.json"
+
+        @JvmStatic fun generatePrimeStationOne(): PrimeStationOne {
+            return PrimeStationOne("192.168.1.11", "pi", "primestation1", "Version 1.10 beta", "primestation1pi3")
+        }
     }
 }

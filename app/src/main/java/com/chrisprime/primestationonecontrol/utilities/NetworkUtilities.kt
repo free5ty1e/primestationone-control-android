@@ -71,7 +71,7 @@ object NetworkUtilities {
                 val hostname = getHostname(ip)
                 val mac = ""
                 Timber.d("Trying to log into %s with %s/%s...", ip, piUsername, passwordToTry)
-                primeStationOne = PrimeStationOne(ip, hostname, primestationVersionResponse!!, mac, null, false, null, null, piUsername, passwordToTry)
+                primeStationOne = PrimeStationOne(ip, piUsername, passwordToTry, primestationVersionResponse!!, hostname, mac, null, false, null, null)
                 Timber.d("Found PrimeStationOne: " + primeStationOne)
                 break
             }

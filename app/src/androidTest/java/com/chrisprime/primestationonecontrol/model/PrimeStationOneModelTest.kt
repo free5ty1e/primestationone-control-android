@@ -29,7 +29,7 @@ class PrimeStationOneModelTest {
     @Test
     @Throws(Exception::class)
     fun testPrimeStationOneModelParcelable() {
-        val primeStationOneParcelSource: PrimeStationOne = PrimeStationOne("192.168.1.50", "primestationpi2.home", "v0.9999beta", "00-00-00-00-00-00", "pi", false, null, null, "pi", "primestation1")
+        val primeStationOneParcelSource: PrimeStationOne = PrimeStationOne("192.168.1.50", "pi", "primestation1", "v0.9999beta", "primestationpi2.home", "00-00-00-00-00-00", "pi", false, null, null)
         assertNotNull(primeStationOneParcelSource)
 
         val ip = primeStationOneParcelSource.ipAddress
