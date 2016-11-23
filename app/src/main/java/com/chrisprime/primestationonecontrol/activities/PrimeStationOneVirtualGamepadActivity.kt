@@ -7,7 +7,7 @@ import com.chrisprime.primestationonecontrol.dagger.Injector
 import com.chrisprime.primestationonecontrol.fragments.WebViewFragment
 
 /**
- * Created by cpaian on 11/22/16.
+ * Created by cpaian on 11/23/16.
  */
 class PrimeStationOneVirtualGamepadActivity : BaseEventBusAppCompatActivity() {
 
@@ -16,7 +16,7 @@ class PrimeStationOneVirtualGamepadActivity : BaseEventBusAppCompatActivity() {
         setContentView(R.layout.activity_virtual_gamepad)
         Injector.applicationComponent.inject(this)
 
-        newMainFragment(WebViewFragment.newInstance(getString(R.string.title_primestation_virtual_gamepad), "http://" + getCurrentPrimeStationOne()!!.ipAddress + ":8080"))
+        newMainFragment(WebViewFragment.newInstance(getString(R.string.title_primestation_virtual_gamepad), "http://" + getCurrentPrimeStationOne()?.ipAddress + ":8080"))
     }
 
     fun newMainFragment(fragment: Fragment) {
