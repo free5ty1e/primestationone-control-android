@@ -87,8 +87,8 @@ android {
 
         versionName getAppVersionName()
 
-        versionCode numGitCommits()
-//        versionCode dateVersionCode()
+//        versionCode numGitCommits()   //This method sometimes results in perceived downgrades during apk installs when working on different branches
+        versionCode dateVersionCode()
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         def testSuiteClass = "$applicationId.${whichTestSuite}"

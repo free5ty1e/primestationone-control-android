@@ -19,7 +19,7 @@ class PrimeStationOneControlActivityTest : BaseUiAutomationTest() {
         navigateTo("CloudBak", R.string.title_primestation_cloud_backup_controls, R.id.button_login_to_mega)
         navigateTo("VirtualGamePad", R.string.title_primestation_virtual_gamepad, R.id.fragment_webview_webview)
         Espresso.pressBack()
-        navigateTo("Settings", R.string.title_activity_settings, R.id.list)
+        navigateTo("Settings", R.string.title_activity_settings, android.R.id.list)
         Espresso.pressBack()
     }
 }
