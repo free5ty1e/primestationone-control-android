@@ -27,6 +27,7 @@
         <activity
             android:name=".activities.PrimeStationOneVirtualGamepadActivity"
             android:screenOrientation="landscape"
+            android:theme="@style/FullscreenAppTheme"
             android:label="@string/app_name">
         </activity>
 
