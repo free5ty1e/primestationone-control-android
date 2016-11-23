@@ -44,6 +44,9 @@ import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.espresso.web.sugar.Web.onWebView
 import android.support.test.espresso.web.webdriver.DriverAtoms.findElement
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import android.support.test.runner.lifecycle.Stage
+import com.google.common.collect.Iterables
 import junit.framework.Assert.assertNotNull
 import org.hamcrest.Matchers.equalToIgnoringCase
 
@@ -53,6 +56,26 @@ import org.hamcrest.Matchers.equalToIgnoringCase
 object TestUtilities {
 
     @JvmStatic val DEFAULT_MAX_WAIT_TIME_SECONDS = 60
+
+    @JvmStatic var currentActivity: Activity? = null
+        get() {
+            waitForIdleSync()
+            val activity = arrayOfNulls<Activity>(1)
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                try {
+                    val activityCollection = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+                    activity[0] = Iterables.getOnlyElement(activityCollection)
+                } catch (throwable: Throwable) {
+                    throwable.printStackTrace()
+                }
+            }
+            return activity[0]
+        }
+
+    @JvmStatic fun waitForIdleSync() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation?.waitForIdleSync()
+    }
 
     @JvmStatic fun matchToolbarTitle(
             title: String): ViewInteraction {

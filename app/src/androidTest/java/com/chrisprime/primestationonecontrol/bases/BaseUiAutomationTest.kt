@@ -31,7 +31,6 @@ abstract class BaseUiAutomationTest : BaseNoUiAutomationTest() {
 
     override fun setActivity(testActivity: Activity) {
         Timber.d(".setActivity(%s)", testActivity)
-        SpoonScreenshotUtilities.sScreenshotActivity = testActivity
         super.setActivity(testActivity)
     }
 
