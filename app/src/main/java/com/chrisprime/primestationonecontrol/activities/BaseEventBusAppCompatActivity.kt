@@ -3,6 +3,7 @@ package com.chrisprime.primestationonecontrol.activities
 import android.support.v7.app.AppCompatActivity
 
 import com.chrisprime.primestationonecontrol.PrimeStationOneControlApplication
+import com.chrisprime.primestationonecontrol.model.PrimeStationOne
 import com.squareup.otto.Bus
 
 /**
@@ -19,6 +20,10 @@ open class BaseEventBusAppCompatActivity : AppCompatActivity() {
     public override fun onPause() {
         super.onPause()
         mEventBus.unregister(this)
+    }
+
+    fun getCurrentPrimeStationOne(): PrimeStationOne? {
+        return (application as PrimeStationOneControlApplication).currentPrimeStationOne
     }
 }
 

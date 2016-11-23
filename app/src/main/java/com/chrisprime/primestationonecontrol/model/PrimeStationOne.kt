@@ -1,7 +1,6 @@
 package com.chrisprime.primestationonecontrol.model
 
 import android.content.Context
-import android.net.Uri
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities
 import org.parceler.Parcel
 import org.parceler.ParcelProperty

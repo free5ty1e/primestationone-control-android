@@ -1,5 +1,5 @@
 def appVersionName() {
-    return "0.4.1";
+    return "0.5.0";
 }
 
 def getAppName() {
@@ -235,6 +235,8 @@ dependencies {
     compile 'com.jcraft:jsch:0.1.54'
 
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
+
+//    compile 'com.github.rahatarmanahmed:circularprogressview:2.5.0' //requires api14
 
     //ReactiveX Dependencies:
     compile 'io.reactivex:rxjava:1.1.2'
