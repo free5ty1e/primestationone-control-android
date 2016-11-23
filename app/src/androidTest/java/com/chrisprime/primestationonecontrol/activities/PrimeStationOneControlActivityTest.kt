@@ -22,8 +22,8 @@ class PrimeStationOneControlActivityTest : BaseUiTest() {
         PrimeStationOneControlApplication.instance.currentPrimeStationOne = PrimeStationOne.generatePrimeStationOne()
 
         //Commented out for Travis testing:
-//        navigateTo("VirtualGamePad", R.string.title_primestation_virtual_gamepad, R.id.fragment_webview_webview)
-//        Espresso.pressBack()
+        navigateTo("VirtualGamePad", R.string.title_primestation_virtual_gamepad, R.id.fragment_webview_webview)
+        Espresso.pressBack()
 
         navigateTo("Settings", R.string.title_activity_settings, android.R.id.list)
         Espresso.pressBack()
