@@ -25,7 +25,7 @@ class PrimeStationOneGeneralControlsFragment : PrimeStationOneBaseSshCommanderFr
 
     fun onPanicKillAllButtonClicked(view: View) {
         Timber.d("Panic killAllEmusAndEs button clicked!")
-        sendCommandToCurrentPrimeStationOne("killall emulationstation ; killall retroarch ; killall reicast ; emulationstation 2>&1 > /dev/tty1 &", false, tv_status, tv_status, sv_status)
+        sendCommandToCurrentPrimeStationOne("killall mupen64plus ; killall emulationstation ; killall retroarch ; killall reicast ; emulationstation 2>&1 > /dev/tty1 &", false, tv_status, tv_status, sv_status)
     }
 
     fun onRestartPrimeStationButtonClicked(view: View) {
