@@ -1,4 +1,4 @@
-package com.chrisprime.primestationonecontrol.views
+package com.chrisprime.primestationonecontrol.fragments
 
 import android.graphics.Bitmap
 import android.os.Bundle

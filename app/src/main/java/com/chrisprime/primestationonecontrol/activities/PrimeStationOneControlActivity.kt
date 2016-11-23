@@ -24,7 +24,7 @@ import com.chrisprime.primestationonecontrol.fragments.PrimeStationOneGeneralCon
 import com.chrisprime.primestationonecontrol.model.PrimeStationOne
 import com.chrisprime.primestationonecontrol.utilities.FileUtilities
 import com.chrisprime.primestationonecontrol.utilities.NetworkUtilities
-import com.chrisprime.primestationonecontrol.views.WebViewFragment
+import com.chrisprime.primestationonecontrol.fragments.WebViewFragment
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
