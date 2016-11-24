@@ -98,6 +98,12 @@ class SettingsActivity : BaseEventBusPreferenceActivity() {
         }
     }
 
+    override fun isValidFragment(fragmentName: String): Boolean {
+        return (GeneralPreferenceFragment::class.java.name == fragmentName ||
+                DataSyncPreferenceFragment::class.java.name == fragmentName ||
+                NotificationPreferenceFragment::class.java.name == fragmentName)
+    }
+
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
