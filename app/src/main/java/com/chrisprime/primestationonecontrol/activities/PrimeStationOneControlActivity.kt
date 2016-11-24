@@ -265,6 +265,7 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
         //Display full screen for quick reference
         val splashscreenUriString = primeStationOne.splashscreenUriString
         if (TextUtils.isEmpty(splashscreenUriString)) {
+            pb_centered!!.visibility = View.GONE
             Toast.makeText(this, "Could not connect to Primestation for some reason!  Is it powered and connected?  Are you on the same network?", Toast.LENGTH_LONG).show()
             return
         }
