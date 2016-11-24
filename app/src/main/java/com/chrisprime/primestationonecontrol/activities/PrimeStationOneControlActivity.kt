@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -262,7 +263,14 @@ class PrimeStationOneControlActivity : BaseEventBusAppCompatActivity(), Navigati
         pb_centered!!.visibility = View.VISIBLE
 
         //Display full screen for quick reference
-        val splashscreenUri: Uri = Uri.parse(primeStationOne.splashscreenUriString)
+        val splashscreenUriString = primeStationOne.splashscreenUriString
+        if (TextUtils.isEmpty(splashscreenUriString)) {
+            pb_centered!!.visibility = View.GONE
+            Toast.makeText(this, "Could not connect to Primestation for some reason!  Is it powered and connected?  Are you on the same network?", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val splashscreenUri: Uri = Uri.parse(splashscreenUriString)
         Picasso.with(this).load(splashscreenUri).rotate(90f)//TODO: Look into why fit() breaks gingerbread's ability to show the fullscreen image
                 //                .fit()
                 .into(iv_fullscreen!!, object : Callback {
