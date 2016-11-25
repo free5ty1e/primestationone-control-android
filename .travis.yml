@@ -1,9 +1,8 @@
 language: android
-#sudo: required
+sudo: required
 
 jdk:
 #    - oraclejdk7 -- appears to come with the android language setting, above
-    - oraclejdk8
 
 env:
     global:
@@ -43,11 +42,43 @@ android:
 #        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
 
+before_install:
+#  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo apt-get update -q
+
+  #Ensure all the things we want to execute are executable
+  - chmod +x gradlew
+  - chmod +x bash/*.sh
+
+  #Install GO language
+  - sudo apt-get install -y cowsay golang
+  - export "GOPATH=$HOME/gocode"
+  #Install Ansize, written in GO
+  - go get github.com/nfnt/resize
+  - go get github.com/jhchen/ansize
+  - sudo cp "$GOPATH/bin/ansize" /usr/local/bin/
+  - ansize
+
+  #Ansize some images to test console output
+  - cowsay -f unipony "Generating Beavis and Butthead ANSI art..."
+  - rm beavis_butthead.jpg
+  - wget https://pbs.twimg.com/profile_images/2221189782/beavis_butthead.jpg
+  - ansize beavis_butthead.jpg beavis_butthead.ansi 160
+
+  - rm cornholio.jpg
+  - wget http://i.imgur.com/vHCzBxU.jpg
+  - mv vHCzBxU.jpg cornholio.jpg
+  - ansize cornholio.jpg cornholio.ansi 160
+
+  #Exercise some colorful font generation
+  - bash/createAnsiFontText.sh primestationfancytextimage 200 'white' 'Helvetica-BoldOblique' '.P.R.I.M.E.' 200 'yellow' 'URW-Palladio-L-Bold' '.S.T.A.T.I.O.N.' 200 'blue' 'Bitstream-Charter-Bold' '.O.N.E.' 200 'green' 'Liberation-Mono-Bold' "v1.0.3!" 'black' 35 160
+
 # Emulator Management: Create, Start and Wait
 before_script:
     - echo "JAVA_HOME = $JAVA_HOME"
     - echo "JAVA8_HOME = $JAVA8_HOME"
     - echo "JAVA7_HOME = $JAVA7_HOME"
+
 #    - echo Creating and starting Android Emulator API10...
 #    - echo no | android create avd --force -n test10 -t android-10 --abi armeabi
 #    - emulator -avd test10 -no-skin -no-audio -no-window &
@@ -73,10 +104,9 @@ before_script:
 
 #The below default command times out after only waiting for one minute to bring up the Android AVD emulator, not enough!!
 #    - android-wait-for-emulator
-    - ./wait-for-emulator-ready.sh
+    - bash/waitForEmulatorReady.sh
 
     #- adb shell input keyevent 82 &
-    - chmod +x gradlew
 
 script:
     - ./gradlew clean build spoon --info --full-stacktrace
