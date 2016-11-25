@@ -14,20 +14,19 @@ env:
 
 android:
     components:
-#         Uncomment the lines below if you want to
-        # use the latest revision of Android SDK Tools
-        - platform-tools
-        - tools
-        - extra
+        - platform-tools,tools,extra,build-tools-25.0.0,android-21,android-25
+#        - tools
+#        - extra
 
         # The BuildTools version used by your project
-        - build-tools-25.0.0
+#        - build-tools-25.0.0
 
         # The Emulator API level, if different from the SDK version
+#        Currently commented out to speed up builds, this is included in the (current) default Travis build VM
 #        - android-21
 
         # The SDK version used to compile your project
-        - android-25
+#        - android-25
 
         # Additional components
         #- extra-google-google_play_services
@@ -38,14 +37,14 @@ android:
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
   #        - sys-img-armeabi-v7a-android-19
+
+#        Currently commented out to speed up builds, this is included in the (current) default Travis build VM
 #        - sys-img-armeabi-v7a-android-21
+
   #        - sys-img-armeabi-v7a-android-22
   #        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
 
-#  licenses:
-#    - 'android-sdk-license-.+'
-#    - 'google-gdk-license-.+'
 
 before_install:
   - android list sdk --no-ui --all --extended
@@ -105,15 +104,16 @@ before_script:
 #    - ./gradlew clean build connectedAndroidTest
 #    - echo Killing emulator....
 #    - killall emulator64-arm
-    - echo "Creating and starting Android Emulator..."
+    - echo "Creating and starting Lollipop / API 21 Android Emulator..."
     - echo no | android create avd --sdcard 1G --force --name test21 --target android-21 --abi armeabi-v7a --skin 1080x1920
 #    - emulator -avd test21 -no-skin -no-audio -no-window &
     - emulator -avd test21 -no-audio -no-window &
 
 #The below default command times out after only waiting for one minute to bring up the Android AVD emulator, not enough!!
 #    - android-wait-for-emulator
-#    - bash/waitForEmulatorReady.sh
+    - bash/waitForEmulatorReady.sh
 
+#No need to send the unlock "key" anymore, as Spoon will take care of that <3
     #- adb shell input keyevent 82 &
 
 script:
