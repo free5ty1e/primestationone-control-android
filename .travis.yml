@@ -1,5 +1,5 @@
 language: android
-#sudo: required
+sudo: required
 
 jdk:
 #    - oraclejdk7 -- appears to come with the android language setting, above
@@ -14,40 +14,84 @@ env:
 
 android:
     components:
-        # Uncomment the lines below if you want to
-        # use the latest revision of Android SDK Tools
-        - platform-tools
-        - tools
-        - extra
+        - platform-tools,tools,extra,,android-21,build-tools-25.0.0,android-25
+#        - tools
+#        - extra
 
         # The BuildTools version used by your project
         - build-tools-25.0.0
 
         # The Emulator API level, if different from the SDK version
-        - android-21
+#        Currently commented out to speed up builds, this is included in the (current) default Travis build VM
+#        - android-21
 
         # The SDK version used to compile your project
         - android-25
 
         # Additional components
         #- extra-google-google_play_services
-        - extra-google-m2repository
-        - extra-android-m2repository
-        - addon-google_apis-google-25
+#        - extra-google-m2repository
+#        - extra-android-m2repository
+#        - addon-google_apis-google-25
 
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
-#        - sys-img-armeabi-v7a-android-19
-        - sys-img-armeabi-v7a-android-21
-#        - sys-img-armeabi-v7a-android-22
-#        - sys-img-armeabi-v7a-android-23
+  #        - sys-img-armeabi-v7a-android-19
+
+#        Currently commented out to speed up builds, this is included in the (current) default Travis build VM
+#        - sys-img-armeabi-v7a-android-21
+
+  #        - sys-img-armeabi-v7a-android-22
+  #        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
+
+
+before_install:
+#  - android list sdk --no-ui --all --extended
+
+#  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo apt-get update -q
+
+  #Ensure all the things we want to execute are executable
+  - chmod +x gradlew
+  - chmod +x bash/*.sh
+
+  #Install GO language and cowsay
+  - sudo apt-get install -y cowsay golang lynx links2
+  - PATH=$PATH:/usr/games
+  - export PATH
+  - export "GOPATH=$HOME/gocode"
+
+  #Install Ansize, written in GO
+  - go get github.com/nfnt/resize
+  - go get github.com/jhchen/ansize
+  - sudo cp "$GOPATH/bin/ansize" /usr/local/bin/
+  - ansize
+
+  #Ansize some images to test console output
+  - cowsay -f unipony "Generating Beavis and Butthead ANSI art..."
+  - wget https://pbs.twimg.com/profile_images/2221189782/beavis_butthead.jpg
+  - ansize beavis_butthead.jpg beavis_butthead.ansi 140
+
+  - wget http://i.imgur.com/vHCzBxU.jpg
+  - mv vHCzBxU.jpg cornholio.jpg
+  - ansize cornholio.jpg cornholio.ansi 140
+
+  #Exercise some colorful font generation
+  - bash/createAnsiFontText.sh primestationfancytextimage 200 'white' 'Helvetica-BoldOblique' '.P.R.I.M.E.' 200 'yellow' 'URW-Palladio-L-Bold' '.S.T.A.T.I.O.N.' 200 'blue' 'Bitstream-Charter-Bold' '.O.N.E.' 200 'green' 'Liberation-Mono-Bold' "v1.0.3!" 'black' 35 140
+
+  #Try some text web browsing
+    #This line so far just shows the last ANSI line of Lynx instead of logging the entire screen...
+#  - lynx -term=ansi
+    #This line shows the entire page without color but still just sits there...
+#  - lynx -term=vt100
 
 # Emulator Management: Create, Start and Wait
 before_script:
     - echo "JAVA_HOME = $JAVA_HOME"
     - echo "JAVA8_HOME = $JAVA8_HOME"
     - echo "JAVA7_HOME = $JAVA7_HOME"
+
 #    - echo Creating and starting Android Emulator API10...
 #    - echo no | android create avd --force -n test10 -t android-10 --abi armeabi
 #    - emulator -avd test10 -no-skin -no-audio -no-window &
@@ -66,17 +110,17 @@ before_script:
 #    - ./gradlew clean build connectedAndroidTest
 #    - echo Killing emulator....
 #    - killall emulator64-arm
-    - echo "Creating and starting Android Emulator..."
+    - echo "Creating and starting Lollipop / API 21 Android Emulator..."
     - echo no | android create avd --sdcard 1G --force --name test21 --target android-21 --abi armeabi-v7a --skin 1080x1920
 #    - emulator -avd test21 -no-skin -no-audio -no-window &
     - emulator -avd test21 -no-audio -no-window &
 
 #The below default command times out after only waiting for one minute to bring up the Android AVD emulator, not enough!!
 #    - android-wait-for-emulator
-    - ./wait-for-emulator-ready.sh
+    - bash/waitForEmulatorReady.sh
 
+#No need to send the unlock "key" anymore, as Spoon will take care of that <3
     #- adb shell input keyevent 82 &
-    - chmod +x gradlew
 
 script:
     - ./gradlew clean build spoon --info --full-stacktrace
