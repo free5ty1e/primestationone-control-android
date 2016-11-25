@@ -84,7 +84,8 @@ before_install:
   #Try some text web browsing
     #This line so far just shows the last ANSI line of Lynx instead of logging the entire screen...
 #  - lynx -term=ansi
-  - lynx -term=vt100
+    #This line shows the entire page without color but still just sits there...
+#  - lynx -term=vt100
 
 # Emulator Management: Create, Start and Wait
 before_script:
