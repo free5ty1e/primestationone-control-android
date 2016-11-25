@@ -2,6 +2,7 @@ language: android
 #sudo: required
 
 jdk:
+#    - oraclejdk7 -- appears to come with the android language setting, above
     - oraclejdk8
 
 env:
@@ -23,7 +24,7 @@ android:
         - build-tools-25.0.0
 
         # The Emulator API level, if different from the SDK version
-        - android-22
+        - android-21
 
         # The SDK version used to compile your project
         - android-25
@@ -37,7 +38,8 @@ android:
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
 #        - sys-img-armeabi-v7a-android-19
-        - sys-img-armeabi-v7a-android-22
+        - sys-img-armeabi-v7a-android-21
+#        - sys-img-armeabi-v7a-android-22
 #        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
 
@@ -65,11 +67,16 @@ before_script:
 #    - echo Killing emulator....
 #    - killall emulator64-arm
     - echo "Creating and starting Android Emulator..."
-    - echo no | android create avd --sdcard 1G --force -n test22 -t android-22 --abi armeabi-v7a
-    - emulator -avd test22 -no-skin -no-audio -no-window &
-    - android-wait-for-emulator
-    - chmod +x gradlew
+    - echo no | android create avd --sdcard 1G --force --name test21 --target android-21 --abi armeabi-v7a --skin 1080x1920
+#    - emulator -avd test21 -no-skin -no-audio -no-window &
+    - emulator -avd test21 -no-audio -no-window &
+
+#The below default command times out after only waiting for one minute to bring up the Android AVD emulator, not enough!!
+#    - android-wait-for-emulator
+    - ./wait-for-emulator-ready.sh
+
     #- adb shell input keyevent 82 &
+    - chmod +x gradlew
 
 script:
     - ./gradlew clean build spoon --info --full-stacktrace
@@ -81,9 +88,42 @@ after_script:
     - killall emulator64-arm
     - echo "Dumping lint report out to console so it can be reviewed, save the following to an HTML file and open in a web browser for a nice report..."
     - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
     - cat /home/travis/build/free5ty1e/primestationone-control-android/app/build/outputs/lint-results.html
+    - echo "-----------------------------------------------------------------------------------------"
+
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
     - echo "-----------------------------------------------------------------------------------------"
     - echo "-----------------------------------------------------------------------------------------"
     - echo "Dumping lint report out to console so it can be reviewed, save the following to an XML file and autoformat (or use online XML formatter)..."
     - echo "-----------------------------------------------------------------------------------------"
     - cat /home/travis/build/free5ty1e/primestationone-control-android/app/build/outputs/lint-results.xml
+
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "Dumping Jacoco unit test coverage report out to console so it can be reviewed"
+    - echo "-----------------------------------------------------------------------------------------"
+    - cat /home/travis/build/free5ty1e/primestationone-control-android/app/build/reports/jacoco/debug/index.html
+
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "Dumping Jacoco instrumentation test coverage report out to console so it can be reviewed"
+    - echo "-----------------------------------------------------------------------------------------"
+    - cat /home/travis/build/free5ty1e/primestationone-control-android/app/build/reports/coverage/debug/index.html
+
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "-----------------------------------------------------------------------------------------"
+    - echo "Dumping Spoon automated test report out to console so it can be reviewed"
+    - echo "-----------------------------------------------------------------------------------------"
+    - cat /home/travis/build/free5ty1e/primestationone-control-android/app/build/spoon/debug/index.html
+
+    - echo "now attempting to visualize screenshots with ascii art..."
