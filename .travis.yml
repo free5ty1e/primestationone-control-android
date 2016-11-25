@@ -13,7 +13,7 @@ env:
         - JAVA8_HOME=/usr/lib/jvm/java-8-oracle
 
 android:
-#    components:
+    components:
 #         Uncomment the lines below if you want to
         # use the latest revision of Android SDK Tools
 #        - platform-tools
@@ -27,7 +27,7 @@ android:
 #        - android-21
 
         # The SDK version used to compile your project
-#        - android-25
+        - android-25
 
         # Additional components
         #- extra-google-google_play_services
@@ -66,14 +66,14 @@ before_install:
   #Ansize some images to test console output
   - cowsay -f unipony "Generating Beavis and Butthead ANSI art..."
   - wget https://pbs.twimg.com/profile_images/2221189782/beavis_butthead.jpg
-  - ansize beavis_butthead.jpg beavis_butthead.ansi 160
+  - ansize beavis_butthead.jpg beavis_butthead.ansi 140
 
   - wget http://i.imgur.com/vHCzBxU.jpg
   - mv vHCzBxU.jpg cornholio.jpg
-  - ansize cornholio.jpg cornholio.ansi 160
+  - ansize cornholio.jpg cornholio.ansi 140
 
   #Exercise some colorful font generation
-  - bash/createAnsiFontText.sh primestationfancytextimage 200 'white' 'Helvetica-BoldOblique' '.P.R.I.M.E.' 200 'yellow' 'URW-Palladio-L-Bold' '.S.T.A.T.I.O.N.' 200 'blue' 'Bitstream-Charter-Bold' '.O.N.E.' 200 'green' 'Liberation-Mono-Bold' "v1.0.3!" 'black' 35 160
+  - bash/createAnsiFontText.sh primestationfancytextimage 200 'white' 'Helvetica-BoldOblique' '.P.R.I.M.E.' 200 'yellow' 'URW-Palladio-L-Bold' '.S.T.A.T.I.O.N.' 200 'blue' 'Bitstream-Charter-Bold' '.O.N.E.' 200 'green' 'Liberation-Mono-Bold' "v1.0.3!" 'black' 35 140
 
 # Emulator Management: Create, Start and Wait
 before_script:
