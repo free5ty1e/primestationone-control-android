@@ -14,7 +14,8 @@ env:
 
 android:
     components:
-        - platform-tools,tools,extra,build-tools-25.0.0,android-21,android-25
+        - platform-tools
+          #,tools,extra,build-tools-25.0.0,android-21,android-25
 #        - tools
 #        - extra
 
@@ -81,7 +82,9 @@ before_install:
   - bash/createAnsiFontText.sh primestationfancytextimage 200 'white' 'Helvetica-BoldOblique' '.P.R.I.M.E.' 200 'yellow' 'URW-Palladio-L-Bold' '.S.T.A.T.I.O.N.' 200 'blue' 'Bitstream-Charter-Bold' '.O.N.E.' 200 'green' 'Liberation-Mono-Bold' "v1.0.3!" 'black' 35 140
 
   #Try some text web browsing
-  - lynx -term=ansi
+    #This line so far just shows the last ANSI line of Lynx instead of logging the entire screen...
+#  - lynx -term=ansi
+  - lynx -term=vt100
 
 # Emulator Management: Create, Start and Wait
 before_script:
@@ -114,7 +117,7 @@ before_script:
 
 #The below default command times out after only waiting for one minute to bring up the Android AVD emulator, not enough!!
 #    - android-wait-for-emulator
-    - bash/waitForEmulatorReady.sh
+#    - bash/waitForEmulatorReady.sh
 
 #No need to send the unlock "key" anymore, as Spoon will take care of that <3
     #- adb shell input keyevent 82 &
