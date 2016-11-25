@@ -1,4 +1,4 @@
-#language: android
+language: android
 sudo: required
 
 #jdk:
@@ -12,7 +12,7 @@ env:
         - JAVA7_HOME=/usr/lib/jvm/java-7-oracle
         - JAVA8_HOME=/usr/lib/jvm/java-8-oracle
 
-#android:
+android:
 #    components:
 #         Uncomment the lines below if you want to
         # use the latest revision of Android SDK Tools
@@ -51,9 +51,12 @@ before_install:
   - chmod +x gradlew
   - chmod +x bash/*.sh
 
-  #Install GO language
+  #Install GO language and cowsay
   - sudo apt-get install -y cowsay golang
+  - PATH=$PATH:/usr/games
+  - export PATH
   - export "GOPATH=$HOME/gocode"
+
   #Install Ansize, written in GO
   - go get github.com/nfnt/resize
   - go get github.com/jhchen/ansize
