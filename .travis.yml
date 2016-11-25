@@ -14,19 +14,19 @@ env:
 
 android:
     components:
-        - platform-tools,tools,extra,build-tools-25.0.0,android-25,android-21
+        - platform-tools,tools,extra,,android-21,build-tools-25.0.0,android-25
 #        - tools
 #        - extra
 
         # The BuildTools version used by your project
-#        - build-tools-25.0.0
+        - build-tools-25.0.0
 
         # The Emulator API level, if different from the SDK version
 #        Currently commented out to speed up builds, this is included in the (current) default Travis build VM
 #        - android-21
 
         # The SDK version used to compile your project
-#        - android-25
+        - android-25
 
         # Additional components
         #- extra-google-google_play_services
@@ -47,7 +47,7 @@ android:
 
 
 before_install:
-  - android list sdk --no-ui --all --extended
+#  - android list sdk --no-ui --all --extended
 
 #  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -q
