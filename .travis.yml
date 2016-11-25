@@ -1,8 +1,9 @@
-language: android
+#language: android
 sudo: required
 
-jdk:
+#jdk:
 #    - oraclejdk7 -- appears to come with the android language setting, above
+#    - oraclejdk8
 
 env:
     global:
@@ -11,35 +12,35 @@ env:
         - JAVA7_HOME=/usr/lib/jvm/java-7-oracle
         - JAVA8_HOME=/usr/lib/jvm/java-8-oracle
 
-android:
-    components:
-        # Uncomment the lines below if you want to
+#android:
+#    components:
+#         Uncomment the lines below if you want to
         # use the latest revision of Android SDK Tools
-        - platform-tools
-        - tools
-        - extra
+#        - platform-tools
+#        - tools
+#        - extra
 
         # The BuildTools version used by your project
-        - build-tools-25.0.0
+#        - build-tools-25.0.0
 
         # The Emulator API level, if different from the SDK version
-        - android-21
+#        - android-21
 
         # The SDK version used to compile your project
-        - android-25
+#        - android-25
 
         # Additional components
         #- extra-google-google_play_services
-        - extra-google-m2repository
-        - extra-android-m2repository
-        - addon-google_apis-google-25
+#        - extra-google-m2repository
+#        - extra-android-m2repository
+#        - addon-google_apis-google-25
 
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
-#        - sys-img-armeabi-v7a-android-19
-        - sys-img-armeabi-v7a-android-21
-#        - sys-img-armeabi-v7a-android-22
-#        - sys-img-armeabi-v7a-android-23
+  #        - sys-img-armeabi-v7a-android-19
+#        - sys-img-armeabi-v7a-android-21
+  #        - sys-img-armeabi-v7a-android-22
+  #        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
 
 before_install:
