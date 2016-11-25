@@ -81,7 +81,7 @@ before_install:
   - bash/createAnsiFontText.sh primestationfancytextimage 200 'white' 'Helvetica-BoldOblique' '.P.R.I.M.E.' 200 'yellow' 'URW-Palladio-L-Bold' '.S.T.A.T.I.O.N.' 200 'blue' 'Bitstream-Charter-Bold' '.O.N.E.' 200 'green' 'Liberation-Mono-Bold' "v1.0.3!" 'black' 35 140
 
   #Try some text web browsing
-  - lynx
+  - lynx -term=ansi
 
 # Emulator Management: Create, Start and Wait
 before_script:
