@@ -48,6 +48,8 @@ android:
     - 'google-gdk-license-.+'
 
 before_install:
+  - android list sdk --no-ui --all --extended
+
 #  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -q
 
