@@ -43,9 +43,9 @@ android:
   #        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
 
-  licenses:
-    - 'android-sdk-license-.+'
-    - 'google-gdk-license-.+'
+#  licenses:
+#    - 'android-sdk-license-.+'
+#    - 'google-gdk-license-.+'
 
 before_install:
   - android list sdk --no-ui --all --extended
