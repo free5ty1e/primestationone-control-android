@@ -106,7 +106,7 @@ before_script:
 
 #The below default command times out after only waiting for one minute to bring up the Android AVD emulator, not enough!!
 #    - android-wait-for-emulator
-    - bash/waitForEmulatorReady.sh
+#    - bash/waitForEmulatorReady.sh
 
     #- adb shell input keyevent 82 &
 
