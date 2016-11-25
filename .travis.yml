@@ -16,9 +16,9 @@ android:
     components:
 #         Uncomment the lines below if you want to
         # use the latest revision of Android SDK Tools
-#        - platform-tools
-#        - tools
-#        - extra
+        - platform-tools
+        - tools
+        - extra
 
         # The BuildTools version used by your project
         - build-tools-25.0.0
@@ -42,6 +42,10 @@ android:
   #        - sys-img-armeabi-v7a-android-22
   #        - sys-img-armeabi-v7a-android-23
         #- sys-img-x86-android-17
+
+  licenses:
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 
 before_install:
 #  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
