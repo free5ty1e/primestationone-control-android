@@ -14,8 +14,8 @@ env:
 
 android:
     components:
-        - platform-tools,tools
-        #,extra,build-tools-25.0.0,android-21,android-25
+        - platform-tools,build-tools-25.0.0,android-25
+        #,tools,extra,android-21
 #        - tools
 #        - extra
 
